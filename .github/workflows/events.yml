@@ -1,0 +1,116 @@
+on:
+  # https://docs.github.com/ja/actions/using-workflows/events-that-trigger-workflows
+  branch_protection_rule:
+  check_run:
+  check_suite:
+  create:
+  delete:
+  deployment:
+  deployment_status:
+  discussion:
+  discussion_comment:
+  fork:
+  gollum:
+  issue_comment:
+  issues:
+  label:
+  milestone:
+  page_build:
+  project:
+  project_card:
+  project_column:
+  public:
+  push:
+  pull_request:
+    types:
+      - assigned
+      - unassigned
+      - labeled
+      - unlabeled
+      - opened
+      - edited
+      - closed
+      - reopened
+      - synchronize
+      - converted_to_draft
+      - ready_for_review
+      - locked
+      - unlocked
+      - review_requested
+      - review_request_removed
+      - auto_merge_enabled
+      - auto_merge_disabled
+  # pull_request_comment: # -> issue_comment
+  pull_request_review:
+  pull_request_review_comment:
+  pull_request_target:
+    types:
+      - assigned
+      - unassigned
+      - labeled
+      - unlabeled
+      - opened
+      - edited
+      - closed
+      - reopened
+      - synchronize
+      - converted_to_draft
+      - ready_for_review
+      - locked
+      - unlocked
+      - review_requested
+      - review_request_removed
+      - auto_merge_enabled
+      - auto_merge_disabled
+  registry_package:
+  release:
+  repository_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+  status:
+  watch:
+  workflow_call:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Submodule Update]
+    types:
+      - completed
+
+name: Event Info
+jobs:
+  context:
+    name: Show Context
+    runs-on: ubuntu-18.04
+    environment: ci-specs
+    services:
+      jenkins:
+        image: jenkins/jenkins:latest
+        credentials:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        env:
+          JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/casc_configs
+        ports:
+          - 8080:8080
+          - 50000:50000
+      agent1:
+        image: ubuntu:latest
+    steps:
+    - name: $github
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo "${GITHUB_CONTEXT}"
+    - name: $job
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: |
+        echo "${JOB_CONTEXT}"
+    - name: $runner
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: |
+        echo "${RUNNER_CONTEXT}"
+    - name: ENV
+      run: |
+        env
