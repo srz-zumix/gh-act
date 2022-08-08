@@ -1,33 +1,33 @@
 {
     "action": "synchronize",
     "after": "${HEAD}",
-    "before": "$(gh pr view --json commits --jq .commits[].oid | tail -2 | head -1)",
+    "before": "${BEFORE}",
     "number": ${PR_NUMBER},
     "pull_request": {
         "_links": {
             "comments": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments"
             },
             "commits": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits"
             },
             "html": {
                 "href": "${HTML_HREF}"
             },
             "issue": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}"
             },
             "review_comment": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/comments{/number}"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments{/number}"
             },
             "review_comments": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments"
             },
             "self": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"
             },
             "statuses": {
-                "href": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/statuses/${HEAD}"
+                "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/${HEAD}"
             }
         },
         "active_lock_reason": null,
@@ -40,16 +40,16 @@
             "label": "${OWNER}:${BASE_REF}",
             "ref": "${BASE_REF}",
             "repo": ${BASE_REPO_JSON},
-            "sha": "cbdccfe362bfadaa6c5e3eb00d73ce27e602455f",
+            "sha": "$(git rev-parse ${BASE_REF})",
             "user": ${BASE_USER_JSON}
         },
         "body": "$(gh pr view --json body --jq .body)",
         "changed_files": ${PR_CHANGED_FILES},
         "closed_at": "${PR_CLOSED_AT}",
         "comments": ${PR_COMMENTS},
-        "comments_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments",
+        "comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments",
         "commits": ${PR_COMMITS},
-        "commits_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits",
+        "commits_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits",
         "created_at": "${PR_CREATED_AT}",
         "deletions": ${PR_DELETIONS},
         "diff_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}.diff",
@@ -63,7 +63,7 @@
         },
         "html_url": "${HTML_HREF}",
         "id": 0,
-        "issue_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}",
+        "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}",
         "labels": $(gh pr view --json labels --jq .labels),
         "locked": false,
         "maintainer_can_modify": ${PR_MAINTAINER_CAN_MODIFY},
@@ -80,14 +80,14 @@
         "rebaseable": null,
         "requested_reviewers": [],
         "requested_teams": [],
-        "review_comment_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/comments{/number}",
+        "review_comment_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments{/number}",
         "review_comments": ${PR_REVIEWS},
-        "review_comments_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments",
+        "review_comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments",
         "state": "${PR_STATE}",
-        "statuses_url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/statuses/${HEAD}",
+        "statuses_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/${HEAD}",
         "title": "$(gh pr view --json title --jq .title)",
         "updated_at": "${PR_UPDATED_AT}",
-        "url": "https://api.${GITHUB_HOSTNAME}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}",
+        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}",
         "user": ${BASE_USER_JSON}
     },
     "repository": ${BASE_REPO_JSON},

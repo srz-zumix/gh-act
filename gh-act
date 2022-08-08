@@ -16,7 +16,7 @@ die() {
 
 parse_params() {
     # default values of variables set from params
-    EVENT_NAME='push'
+    EVENT_NAME=
     EVENT_PATH=
     GITHUB_HOSTNAME='github.com'
 
@@ -49,14 +49,24 @@ parse_params() {
         --userns ) shift ;;
         -W| --workflows ) shift ;;
         -?*) ;;
-        *)
-            EVENT_NAME="$1"
-            break
+        ?*)
+            if [ -z "${EVENT_NAME}" ]; then
+                EVENT_NAME="$1"
+            fi
             ;;
+        *) break ;;
         esac
         shift
     done
 
+    if [ "${GITHUB_HOSTNAME}" = "github.com" ]; then
+        GITHUB_API="api.github.com"
+    else
+        GITHUB_API="${GITHUB_HOSTNAME}/api/v3"
+    fi
+    if [ -z "${EVENT_NAME}" ]; then
+        EVENT_NAME="push"
+    fi
     return 0
 }
 
@@ -157,36 +167,57 @@ REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
     . "${ACT_ENV}.${PREFIX}"
 }
 
-if [ -z "${EVENT_PATH}" ] && [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
+function create_event_json() {
+    EVENT_FILE_PATH="$1"
+    if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
+
+        # common
+        OWNER=$(gh repo view --json owner --jq .owner.login)
+        REPO=$(gh repo view --json name --jq .name)
+
+        if [ "${EVENT_NAME}" == "pull_request" ]; then
+            pr_env
+            HEAD=$(gh pr view --json commits --jq .commits[].oid | tail -1)
+            BEFORE=$(gh pr view --json commits --jq .commits[].oid | tail -2 | head -1)
+
+            # base
+            repo_env "${OWNER}/${REPO}" "BASE"
+            BASE_USER_JSON=$(user_json "${OWNER}")
+            BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
+        else
+            if [ "${EVENT_NAME}" == "push" ]; then
+                COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"commiter\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"%B%-\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+                echo "${COMMITS}"
+            fi
+            HEAD=$(git rev-parse HEAD)
+            BEFORE=$(git rev-parse HEAD^)
+            HEAD_OWNER="${OWNER}"
+            HEAD_REPO="${REPO}"
+        fi
+
+        # head
+        repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
+
+        HEAD_USER_JSON=$(user_json "${HEAD_OWNER}")
+        HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
+
+        TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
+        eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"
+    fi
+}
+
+
+if [ ! -f "${EVENT_PATH}" ]; then
     TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
     trap "rm -rf ${TEMPFILE_DIR}" EXIT
 
-    TEMPFILE="${TEMPFILE_DIR}/event.json"
+    if [ -z "${EVENT_PATH}" ]; then
+        EVENT_PATH="${TEMPFILE_DIR}/event.json"
+    fi
 
-    pr_env
-
-    HEAD=$(gh pr view --json commits --jq .commits[].oid | tail -1)
-
-    # base
-    OWNER=$(gh repo view --json owner --jq .owner.login)
-    REPO=$(gh repo view --json name --jq .name)
-    repo_env "${OWNER}/${REPO}" "BASE"
-    BASE_USER_JSON=$(user_json "${OWNER}")
-    BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
-
-    # head
-    repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
-
-    HEAD_USER_JSON=$(user_json "${HEAD_OWNER}")
-    HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
-
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
-    eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${TEMPFILE}"
-
-    # cat "${TEMPFILE}"
-    act "$@" --eventpath "${TEMPFILE}"
+    create_event_json "${EVENT_PATH}"
+    # cat "${EVENT_PATH}"
+    act "$@" --eventpath "${EVENT_PATH}"
 else
-
     act "$@"
-
 fi
