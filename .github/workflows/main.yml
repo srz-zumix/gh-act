@@ -15,7 +15,9 @@ jobs:
         fetch-depth: 0
     - name: Fetch
       run: |
+        git branch
         git fetch origin ${{ github.base_ref }}
+        git fetch --all
     - name: Install act
       run: |
         curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
