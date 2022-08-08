@@ -7,3 +7,6 @@ install: # install gh extention
 
 act_value_opts:
 	@act --help | grep -o -e "-.*\s*string\w*\s" | sed -e "s/,/|/g" -e "s/string.*/) shift ;;/g"
+
+clean:
+	rm -rf gh-act.*

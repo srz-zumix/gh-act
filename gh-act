@@ -1,35 +1,192 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-echo "Hello gh-act!"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-# Snippets to help get started:
+msg() {
+    echo >&2 -e "${1-}"
+}
 
-# Determine if an executable is in the PATH
-# if ! type -p ruby >/dev/null; then
-#   echo "Ruby not found on the system" >&2
-#   exit 1
-# fi
+die() {
+    local msg=$1
+    local code=${2-1} # default exit status 1
+    msg "$msg"
+    exit "$code"
+}
 
-# Pass arguments through to another command
-# gh issue list "$@" -R cli/cli
+parse_params() {
+    # default values of variables set from params
+    EVENT_NAME='push'
+    EVENT_PATH=
+    GITHUB_HOSTNAME='github.com'
 
-# Using the gh api command to retrieve and format information
-# QUERY='
-#   query($endCursor: String) {
-#     viewer {
-#       repositories(first: 100, after: $endCursor) {
-#         nodes {
-#           nameWithOwner
-#           stargazerCount
-#         }
-#       }
-#     }
-#   }
-# '
-# TEMPLATE='
-#   {{- range $repo := .data.viewer.repositories.nodes -}}
-#     {{- printf "name: %s - stargazers: %v\n" $repo.nameWithOwner $repo.stargazerCount -}}
-#   {{- end -}}
-# '
-# exec gh api graphql -f query="${QUERY}" --paginate --template="${TEMPLATE}"
+    while :; do
+        case "${1-}" in
+        -a| --actor ) shift ;;
+        --artifact-server-path ) shift ;;
+        --artifact-server-port ) shift ;;
+        --container-architecture ) shift ;;
+        --container-cap-add ) shift ;;
+        --container-cap-drop ) shift ;;
+        --container-daemon-socket ) shift ;;
+        --defaultbranch ) shift ;;
+        -C| --directory ) shift ;;
+        --env ) shift ;;
+        --env-file ) shift ;;
+        -e| --eventpath )
+            EVENT_PATH="${2-}"
+            shift ;;
+        --github-instance )
+            GITHUB_HOSTNAME="${2-}"
+            shift ;;
+        -j| --job ) shift ;;
+        -P| --platform ) shift ;;
+        --remote-name ) shift ;;
+        --replace-ghe-action-token-with-github-com ) shift ;;
+        --replace-ghe-action-with-github-com ) shift ;;
+        -s| --secret ) shift ;;
+        --secret-file ) shift ;;
+        --userns ) shift ;;
+        -W| --workflows ) shift ;;
+        -?*) ;;
+        *)
+            EVENT_NAME="$1"
+            break
+            ;;
+        esac
+        shift
+    done
+
+    return 0
+}
+
+parse_params "$@"
+
+function user_json {
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/user.json" | sed -e 's/"/\\"/g')
+    USERNAME=$1
+    eval "echo -e \"${TEMPLATE}\""
+}
+
+function repo_json {
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/repo.json" | sed -e 's/"/\\"/g')
+
+    OWNER="$1"
+    REPO="$2"
+    REPOSITORY="$1/$2"
+
+    VISIBILITY=public
+    if [ "${REPO_IS_PRIVATE}" = "true" ]; then
+        VISIBILITY=private
+    fi
+
+    OWNER_JSON="$3"
+
+    eval "echo -e \"${TEMPLATE}\""
+}
+
+function pr_env {
+    ACT_ENV="${TEMPFILE_DIR}/.pr.env"
+    gh pr view --json \
+        additions,baseRefName,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,updatedAt,url \
+        --template '
+PR_ADDITIONS="{{.additions}}"
+BASE_REF="{{.baseRefName}}"
+PR_CLOSED_AT="{{.closedAt}}"
+PR_COMMENTS="{{ len .comments}}"
+PR_COMMITS="{{ len .commits}}"
+PR_CREATED_AT="{{.createdAt}}"
+PR_DELETIONS="{{.deletions}}"
+PR_CHANGED_FILES="{{ len .files}}"
+HEAD_REF="{{.headRefName}}"
+HEAD_OWNER="{{.headRepositoryOwner.login}}"
+HEAD_REPO="{{.headRepository.name}}"
+PR_IS_DRAFT="{{.isDraft}}"
+PR_NODE_ID="{{.id}}"
+PR_MAINTAINER_CAN_MODIFY="{{.maintainerCanModify}}"
+PR_MERGED_AT="{{.mergedAt}}"
+PR_MERGED_BY="{{.mergedBy}}"
+PR_MILESTONE="{{.milestone}}"
+PR_NUMBER="{{.number}}"
+PR_REVIEWS="{{ len .reviews}}"
+PR_STATE="{{.state}}"
+PR_UPDATED_AT="{{.updatedAt}}"
+HTML_HREF="{{.url}}"
+' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
+
+function repo_env {
+    REPOSITORY="$1"
+    PREFIX="$2"
+    ACT_ENV="${TEMPFILE_DIR}/.repo.env"
+    gh repo view "${REPOSITORY}" --json \
+        createdAt,defaultBranchRef,deleteBranchOnMerge,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pushedAt,rebaseMergeAllowed,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
+        --template '
+REPO_CREATED_AT="{{.createdAt}}"
+REPO_DEFAULT_BRANCH_REF="{{.defaultBranchRef.name}}"
+REPO_DELETE_BRANCH_ON_MERGE="{{.deleteBranchOnMerge}}"
+REPO_DISK_USAGE="{{.diskUsage}}"
+REPO_FORK_COUNT="{{.forkCount}}"
+REPO_HAS_ISSUES_ENABLED="{{.hasIssuesEnabled}}"
+REPO_HAS_PROJECTS_ENABLED="{{.hasProjectsEnabled}}"
+REPO_HAS_WIKI_ENABLED="{{.hasWikiEnabled}}"
+REPO_HOMEPAGE_URL="{{.homepageUrl}}"
+REPO_IS_ARCHIVED="{{.isArchived}}"
+REPO_IS_FORK="{{.isFork}}"
+REPO_IS_PRIVATE="{{.isPrivate}}"
+REPO_ISSUES_TOTAL_COUNT="{{.issues.totalCount}}"
+REPO_IS_TEMPLATE="{{.isTemplate}}"
+REPO_LICENSE_INFO_KEY="{{.licenseInfo.key}}"
+REPO_LICENSE_INFO_NAME="{{.licenseInfo.name}}"
+REPO_MERGE_COMMIT_ALLOWED="{{.mergeCommitAllowed}}"
+REPO_MIRROR_URL="{{.mirrorUrl}}"
+PREO_NODE_ID="{{.id}}"
+REPO_PRIMARY_LANGUAGE="{{if .primaryLanguage}}{{.primaryLanguage.name}}{{else}}null{{end}}"
+REPO_PUSHED_AT="{{.pushedAt}}"
+REPO_REBASE_MERGE_ALLOWED="{{.rebaseMergeAllowed}}"
+REPO_SQUASH_MERGE_ALLOWED="{{.squashMergeAllowed}}"
+REPO_SSH_URL="{{.sshUrl}}"
+REPO_STARGAZER_COUNT="{{.stargazerCount}}"
+REPO_UPDATED_AT="{{.updatedAt}}"
+REPO_URL="{{.url}}"
+REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
+' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
+    . "${ACT_ENV}"
+    sed -e "s/^/${PREFIX}_/g" < "${ACT_ENV}" > "${ACT_ENV}.${PREFIX}"
+    . "${ACT_ENV}.${PREFIX}"
+}
+
+if [ -z "${EVENT_PATH}" ] && [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
+    TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+    trap "rm -rf ${TEMPFILE_DIR}" EXIT
+
+    TEMPFILE="${TEMPFILE_DIR}/event.json"
+
+    pr_env
+
+    HEAD=$(gh pr view --json commits --jq .commits[].oid | tail -1)
+
+    # base
+    OWNER=$(gh repo view --json owner --jq .owner.login)
+    REPO=$(gh repo view --json name --jq .name)
+    repo_env "${OWNER}/${REPO}" "BASE"
+    BASE_USER_JSON=$(user_json "${OWNER}")
+    BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
+
+    # head
+    repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
+
+    HEAD_USER_JSON=$(user_json "${HEAD_OWNER}")
+    HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
+
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
+    eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${TEMPFILE}"
+
+    # cat "${TEMPFILE}"
+    act "$@" --eventpath "${TEMPFILE}"
+else
+
+    act "$@"
+
+fi
