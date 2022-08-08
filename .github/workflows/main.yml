@@ -17,6 +17,11 @@ jobs:
       run: |
         curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
         echo "./bin" >> "${GITHUB_PATH}"
+        {
+          echo "-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
+          echo "-P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04"
+          echo "-P ubuntu-18.04=ghcr.io/catthehacker/ubuntu:act-18.04"
+        } > .actrc
     - name: Install gh-act
       run: |
         make install
