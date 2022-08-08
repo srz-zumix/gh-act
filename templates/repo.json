@@ -59,7 +59,7 @@
     "milestones_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/milestones{/number}",
     "mirror_url": "${REPO_MIRROR_URL}",
     "name": "${REPO}",
-    "node_id": "${PREO_NODE_ID}",
+    "node_id": "${REPO_NODE_ID}",
     "notifications_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/notifications{?since,all,participating}",
     "open_issues": ${REPO_ISSUES_TOTAL_COUNT},
     "open_issues_count": ${REPO_ISSUES_TOTAL_COUNT},
