@@ -33,7 +33,7 @@
     "git_commits_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/git/commits{/sha}",
     "git_refs_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/git/refs{/sha}",
     "git_tags_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/git/tags{/sha}",
-    "git_url": "${REPO_SSH_URL}",
+    "git_url": "git://${GITHUB_HOSTNAME}/${OWNER}/${REPO}.git",
     "has_downloads": true,
     "has_issues": ${REPO_HAS_ISSUES_ENABLED},
     "has_pages": true,

@@ -10,6 +10,10 @@
     "deleted": false,
     "forced": false,
     "head_commit": ${COMMITS},
+    "pusher": {
+        "email": "$(git config --get user.email)",
+        "name": "$(git config --get user.name)"
+    },
     "ref": "$(git symbolic-ref HEAD)",
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
