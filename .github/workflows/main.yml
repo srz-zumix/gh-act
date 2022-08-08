@@ -1,0 +1,28 @@
+name: gh act tests
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install act
+      run: |
+        curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+    - name: Install gh-act
+      run: |
+        make install
+    - name: Dump github.event
+      env:
+        GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
+      run: |
+        echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
+    - name: Create act event.json
+      run: |
+        gh act "${{ github.event_name }}" -n -e gh_act_event_raw.json
+        jq . < gh_act_event_raw.json > gh_act_event.json
+    - name: Diff
+      run: |
+        diff github_event.json gh_act_event.json

@@ -186,8 +186,8 @@ function create_event_json() {
             BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
         else
             if [ "${EVENT_NAME}" == "push" ]; then
-                COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"commiter\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"%B%-\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
-                echo "${COMMITS}"
+                COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B" | sed -e 's/$/\\\\n/g' | tr -d '\n')
+                COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"commiter\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
             fi
             HEAD=$(git rev-parse HEAD)
             BEFORE=$(git rev-parse HEAD^)
