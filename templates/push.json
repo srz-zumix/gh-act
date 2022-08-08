@@ -9,37 +9,8 @@
     "created": false,
     "deleted": false,
     "forced": false,
-    "head_commit": {
-    "author": {
-        "email": "zumix.cpp@gmail.com",
-        "name": "srz_zumix",
-        "username": "srz-zumix"
-    },
-    "committer": {
-        "email": "zumix.cpp@gmail.com",
-        "name": "srz_zumix",
-        "username": "srz-zumix"
-    },
-    "distinct": true,
-    "id": "${HEAD}",
-    "message": "add pull_request event",
-    "timestamp": "2022-08-08T12:54:35+09:00",
-    "tree_id": "eaff87b4830f8ba1ad559caead038310558a7122",
-    "url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/${HEAD}"
-    },
-    "pusher": {
-    "email": "zumix.cpp@gmail.com",
-    "name": "srz-zumix"
-    },
-    "ref": "refs/heads/feature/first",
-    "repository": {
-    "allow_forking": true,
-    "archive_url": "https://api.github.com/repos/srz-zumix/gh-act/{archive_format}{/ref}",
-    "archived": false,
-    "assignees_url": "https://api.github.com/repos/srz-zumix/gh-act/assignees{/user}",
-    "blobs_url": "https://api.github.com/repos/srz-zumix/gh-act/git/blobs{/sha}",
-    "branches_url": "https://api.github.com/repos/srz-zumix/gh-act/branches{/branch}",
-    "web_commit_signoff_required": false
-    },
+    "head_commit": ${COMMITS},
+    "ref": "$(git symbolic-ref HEAD)",
+    "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
 }
