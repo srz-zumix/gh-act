@@ -32,8 +32,9 @@ jobs:
         echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
     - name: Create act event.json
       run: |
+        git rev-parse main
         gh act "${{ github.event_name }}" -n -e gh_act_event_raw.json
         jq . < gh_act_event_raw.json > gh_act_event.json
     - name: Diff
       run: |
-        diff github_event.json gh_act_event.json
+        diff github_event.json gh_act_event.json || :

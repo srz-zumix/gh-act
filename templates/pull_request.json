@@ -43,7 +43,7 @@
             "sha": "$(git rev-parse ${BASE_REF})",
             "user": ${BASE_USER_JSON}
         },
-        "body": "$(gh pr view --json body --jq .body)",
+        $(gh pr view --json body | grep -o -e '"body":".*"' | sed -e 's/\\r\\n/\\\\n/g'),
         "changed_files": ${PR_CHANGED_FILES},
         "closed_at": "${PR_CLOSED_AT}",
         "comments": ${PR_COMMENTS},
@@ -83,7 +83,7 @@
         "review_comment_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments{/number}",
         "review_comments": ${PR_REVIEWS},
         "review_comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments",
-        "state": "${PR_STATE}",
+        "state": "${PR_STATE,,}",
         "statuses_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/${HEAD}",
         "title": "$(gh pr view --json title --jq .title)",
         "updated_at": "${PR_UPDATED_AT}",

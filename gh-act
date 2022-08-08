@@ -132,7 +132,7 @@ function repo_env {
     PREFIX="$2"
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
     gh repo view "${REPOSITORY}" --json \
-        createdAt,defaultBranchRef,deleteBranchOnMerge,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pushedAt,rebaseMergeAllowed,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
+        createdAt,defaultBranchRef,deleteBranchOnMerge,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
         --template '
 REPO_CREATED_AT="{{.createdAt}}"
 REPO_DEFAULT_BRANCH_REF="{{.defaultBranchRef.name}}"
@@ -151,9 +151,10 @@ REPO_IS_TEMPLATE="{{.isTemplate}}"
 REPO_LICENSE_INFO_KEY="{{.licenseInfo.key}}"
 REPO_LICENSE_INFO_NAME="{{.licenseInfo.name}}"
 REPO_MERGE_COMMIT_ALLOWED="{{.mergeCommitAllowed}}"
-REPO_MIRROR_URL="{{.mirrorUrl}}"
+REPO_MIRROR_URL="{{if .mirrorUrl}}{{.mirrorUrl}}{{else}}null{{end}}"
 REPO_NODE_ID="{{.id}}"
 REPO_PRIMARY_LANGUAGE="{{if .primaryLanguage}}{{.primaryLanguage.name}}{{else}}null{{end}}"
+REPO_PULL_REQUESTS_TOTAL_COUNT="{{.pullRequests.totalCount}}"
 REPO_PUSHED_AT="{{.pushedAt}}"
 REPO_REBASE_MERGE_ALLOWED="{{.rebaseMergeAllowed}}"
 REPO_SQUASH_MERGE_ALLOWED="{{.squashMergeAllowed}}"
