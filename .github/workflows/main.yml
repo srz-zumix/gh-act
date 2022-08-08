@@ -18,6 +18,8 @@ jobs:
         fetch-depth: 0
     - name: Fetch
       run: |
+        git rev-parse --symbolic-full-name --branches
+        git rev-parse --symbolic-full-name --remotes=origin
         git branch
         git fetch origin ${{ github.base_ref }}
         git fetch --all
