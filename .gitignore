@@ -1,0 +1,4 @@
+tmp/
+gh-act.*/
+*.json
+!templates/*.json

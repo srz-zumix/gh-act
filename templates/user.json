@@ -1,0 +1,20 @@
+{
+    "avatar_url": "",
+    "events_url": "https://${GITHUB_API}/users/${USERNAME}/events{/privacy}",
+    "followers_url": "https://${GITHUB_API}/users/${USERNAME}/followers",
+    "following_url": "https://${GITHUB_API}/users/${USERNAME}/following{/other_user}",
+    "gists_url": "https://${GITHUB_API}/users/${USERNAME}/gists{/gist_id}",
+    "gravatar_id": "",
+    "html_url": "https://${GITHUB_HOSTNAME}/${USERNAME}",
+    "id": 0,
+    "login": "${USERNAME}",
+    "node_id": "",
+    "organizations_url": "https://${GITHUB_API}/users/${USERNAME}/orgs",
+    "received_events_url": "https://${GITHUB_API}/users/${USERNAME}/received_events",
+    "repos_url": "https://${GITHUB_API}/users/${USERNAME}/repos",
+    "site_admin": false,
+    "starred_url": "https://${GITHUB_API}/users/${USERNAME}/starred{/owner}{/repo}",
+    "subscriptions_url": "https://${GITHUB_API}/users/${USERNAME}/subscriptions",
+    "type": "User",
+    "url": "https://${GITHUB_API}/users/${USERNAME}"
+}

@@ -1,0 +1,20 @@
+{
+    "after": "${HEAD}",
+    "base_ref": null,
+    "before": "${BEFORE}",
+    "commits": [
+        ${COMMITS}
+    ],
+    "compare": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/compare/${BEFORE}...${HEAD}",
+    "created": false,
+    "deleted": false,
+    "forced": false,
+    "head_commit": ${COMMITS},
+    "pusher": {
+        "email": "$(git config --get user.email)",
+        "name": "$(git config --get user.name)"
+    },
+    "ref": "$(git symbolic-ref HEAD)",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
