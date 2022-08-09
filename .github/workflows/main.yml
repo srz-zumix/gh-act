@@ -11,6 +11,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
+        ref: ${{ github.base_ref }}
+        fetch-depth: 0
+      if: github.event_name == 'pull_request'
+    - uses: actions/checkout@v3
+      with:
         ref: ${{ (github.event_name == 'pull_request' && github.head_ref) || github.ref }}
         fetch-depth: 0
     - name: Install act
