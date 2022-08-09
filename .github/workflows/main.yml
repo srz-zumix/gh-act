@@ -18,10 +18,10 @@ jobs:
         fetch-depth: 0
     - name: Fetch
       run: |
+        git fetch origin ${{ github.base_ref }} --unshallow
         git rev-parse --symbolic-full-name --branches
         git rev-parse --symbolic-full-name --remotes=origin
         git branch
-        git fetch origin ${{ github.base_ref }}
         git fetch --all
     - name: Install act
       run: |
