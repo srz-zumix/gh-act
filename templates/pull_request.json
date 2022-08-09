@@ -40,7 +40,7 @@
             "label": "${OWNER}:${BASE_REF}",
             "ref": "${BASE_REF}",
             "repo": ${BASE_REPO_JSON},
-            "sha": "$(git rev-parse ${BASE_REF})",
+            "sha": "$(git rev-parse refs/heads/${BASE_REF})",
             "user": ${BASE_USER_JSON}
         },
         $(gh pr view --json body | grep -o -e '"body":".*"' | sed -e 's/\\r\\n/\\\\n/g'),
