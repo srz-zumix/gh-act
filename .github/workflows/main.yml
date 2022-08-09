@@ -11,14 +11,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 0
-    - uses: actions/checkout@v3
-      with:
         ref: ${{ (github.event_name == 'pull_request' && github.head_ref) || github.ref }}
         fetch-depth: 0
     - name: Fetch
       run: |
-        git fetch origin ${{ github.base_ref }} --unshallow
+        git fetch origin +refs/heads/*:refs/remotes/origin/*
         git rev-parse --symbolic-full-name --branches
         git rev-parse --symbolic-full-name --remotes=origin
         git branch
