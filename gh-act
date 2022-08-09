@@ -73,13 +73,13 @@ parse_params() {
 parse_params "$@"
 
 function user_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/user.json" | sed -e 's/"/\\"/g')
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/user.json" | sed -e 's/"/\\"/g')
     USERNAME=$1
     eval "echo -e \"${TEMPLATE}\""
 }
 
 function repo_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/repo.json" | sed -e 's/"/\\"/g')
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/repo.json" | sed -e 's/"/\\"/g')
 
     OWNER="$1"
     REPO="$2"
