@@ -186,6 +186,7 @@ function create_event_json() {
             repo_env "${OWNER}/${REPO}" "BASE"
             BASE_USER_JSON=$(user_json "${OWNER}")
             BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
+            BASE_SHA=$(gh api --method GET -H "Accept: application/vnd.github.v3+json" /repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF} --jq .object.sha)
         else
             if [ "${EVENT_NAME}" == "push" ]; then
                 COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
