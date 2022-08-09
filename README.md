@@ -2,6 +2,10 @@
 
 gh-act generates and configures event.json for [act][]
 
+## Installation
+
+> gh extension install srz-zumix/gh-act
+
 ## Usage
 
 ```sh
