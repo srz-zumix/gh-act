@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
+GH_ACT_VERSION=0.1
+
 msg() {
     echo >&2 -e "${1-}"
 }
@@ -48,6 +50,9 @@ parse_params() {
         --secret-file ) shift ;;
         --userns ) shift ;;
         -W| --workflows ) shift ;;
+        --version )
+            echo "gh-act version ${GH_ACT_VERSION}"
+            ;;
         -?*) ;;
         ?*)
             if [ -z "${EVENT_NAME}" ]; then
