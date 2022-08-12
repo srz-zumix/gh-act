@@ -21,7 +21,7 @@ parse_params() {
     EVENT_NAME=
     EVENT_PATH=
     GITHUB_HOSTNAME='github.com'
-    AUTO_GITHUB_TOKEN=${AUTO_GITHUB_TOKEN:-true}
+    AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
 
     while :; do
         case "${1-}" in
@@ -273,10 +273,18 @@ function create_event_json() {
 
 declare -a ACT_OPTIONS
 if "${AUTO_GITHUB_TOKEN}"; then
-    if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
-        GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "${HOME}/.config/gh/hosts.yml" | grep -e oauth_token | cut -d: -f2 | xargs echo)
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
         ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
-    fi    
+    else
+        if [ -n "${GH_TOKEN:-}" ]; then
+            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
+        else
+            if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
+                GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "${HOME}/.config/gh/hosts.yml" | grep -e oauth_token | cut -d: -f2 | xargs echo)
+                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+            fi
+        fi
+    fi
 fi
 
 if [ ! -f "${EVENT_PATH}" ]; then

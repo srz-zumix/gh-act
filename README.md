@@ -25,3 +25,27 @@ Please check [test workflow][](Diff step) for the difference between the generat
 
 [act]:https://github.com/nektos/act
 [test workflow]:https://github.com/srz-zumix/gh-act/actions/workflows/main.yml
+
+## Features
+
+### Events
+
+Supported Events
+
+* pull_request
+* pull_request_review
+* pull_request_target
+* push
+* schedule
+
+### GITHUB_TOKEN
+
+gh-act passes following token as GITHUB_TOKEN secret to act.
+
+* GITHUB_TOKEN
+* GH_TOKEN
+* ~/.config/gh/hosts.yml token
+
+Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
+
+> GHACT_AUTO_GITHUB_TOKEN=false gh act ...
