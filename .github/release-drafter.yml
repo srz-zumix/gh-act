@@ -1,0 +1,52 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+categories:
+  - title: 'BREAKING CHANGES'
+    labels:
+      - 'BREAKING CHANGE'
+  - title: 'Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: 'Dependency'
+    labels:
+      - 'dependency'
+  - title: 'Fixes'
+    labels:
+      - 'fix'
+      - 'bug'
+      - 'security'
+  - title: 'Documentation'
+    labels:
+      - 'document'
+      - 'documents'
+      - 'documentation'
+  - title: 'Internal improvement'
+    labels:
+      - 'CI'
+exclude-labels:
+  - 'dependencies'
+  - 'renovate'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+version-resolver:
+  major:
+    labels:
+      - 'BREAKING CHANGE'
+  minor:
+    labels:
+      - 'feature'
+      - 'enhancement'
+      - 'dependency'
+  patch:
+    labels:
+      - 'fix'
+      - 'bug'
+      - 'security'
+  default: patch
+template: |
+  [Compare $PREVIOUS_TAG with v$RESOLVED_VERSION](https://github.com/srz-zumix/gh-act/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
+
+  ## Changes
+
+  $CHANGES
