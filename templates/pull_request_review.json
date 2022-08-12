@@ -1,0 +1,27 @@
+{
+  "action": "submitted",
+  "changes": {},
+  "pull_request": ${PULL_REQUEST_JSON},
+  "repository": ${BASE_REPO_JSON},
+  "review": {
+    "_links": {
+      "html": {
+        "href": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#pullrequestreview-${PR_REVIEW_ID}"
+      },
+      "pull_request": {
+        "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"
+      }
+    },
+    "author_association": "${PR_REVIEW_AUTHOR_ASSOCIATION}",
+    "body": "${PR_REVIEW_BODY}",
+    "commit_id": "${HEAD}",
+    "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#pullrequestreview-${PR_REVIEW_ID}",
+    "id": ${PR_REVIEW_ID},
+    "node_id": "",
+    "pull_request_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}",
+    "state": "${PR_REVIEW_STATE,,}",
+    "submitted_at": "${PR_REVIEW_SUBMITTED_AT}",
+    "user": ${PR_REVIEW_USER_JSON}
+  },
+  "sender": ${HEAD_USER_JSON}
+}

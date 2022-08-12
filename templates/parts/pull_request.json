@@ -62,7 +62,7 @@
     "labels": $(gh pr view --json labels --jq .labels),
     "locked": false,
     "maintainer_can_modify": ${PR_MAINTAINER_CAN_MODIFY},
-    "merge_commit_sha": "7f0ea76dddafbbf353d3c5b0ae43a72be648898f",
+    "merge_commit_sha": "${PR_POTENTIAL_MERGE_COMMIT}",
     "mergeable": null,
     "mergeable_state": "unknown",
     "merged": false,
