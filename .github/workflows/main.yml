@@ -51,8 +51,8 @@ jobs:
   noop:
     runs-on: ubuntu-latest
     # jobs.*.if では env 参照できない
-    # act の場合 toJson したときには event 以下しか取得できないので、それを利用してスキップしている
-    if: "! contains(toJson(github), 'event_name')"
+    # act の場合 github.actor_id がないのでそれを利用
+    if: github.actor_id == null
     steps:
     - uses: actions/checkout@v3
       with:
