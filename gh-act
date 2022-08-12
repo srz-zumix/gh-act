@@ -100,6 +100,11 @@ function repo_json {
     eval "echo -e \"${TEMPLATE}\""
 }
 
+function pull_request_json {
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/pull_request.json" | sed -e 's/"/\\"/g')
+    eval "echo -e \"${TEMPLATE}\""
+}
+
 function pr_env {
     ACT_ENV="${TEMPFILE_DIR}/.pr.env"
     gh pr view --json \
@@ -208,6 +213,11 @@ function create_event_json() {
 
         HEAD_USER_JSON=$(user_json "${HEAD_OWNER}")
         HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
+
+        if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
+            # pull_rquest_json
+            PULL_REQUEST_JSON=$(pull_request_json)
+        fi
 
         TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
         eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"
