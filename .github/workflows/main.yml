@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     # jobs.*.if では env 参照できない
     # act の場合 toJson したときには event 以下しか取得できないので、それを利用してスキップしている
-    if: ! contains(toJson(github), 'event_name')
+    if: "! contains(toJson(github), 'event_name')"
     steps:
     - uses: actions/checkout@v3
       with:
