@@ -1,6 +1,8 @@
 name: gh act tests
 on:
   pull_request:
+  pull_request_review:
+  pull_request_target:
   push:
 
 jobs:
