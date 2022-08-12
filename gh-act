@@ -77,15 +77,17 @@ parse_params() {
 
 parse_params "$@"
 
-function user_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/user.json" | sed -e 's/"/\\"/g')
-    USERNAME=$1
+function parts_json {
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/$1.json" | sed -e 's/"/\\"/g')
     eval "echo -e \"${TEMPLATE}\""
 }
 
-function repo_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/repo.json" | sed -e 's/"/\\"/g')
+function user_json {
+    USERNAME=$1
+    parts_json user
+}
 
+function repo_json {
     OWNER="$1"
     REPO="$2"
     REPOSITORY="$1/$2"
@@ -97,12 +99,7 @@ function repo_json {
 
     OWNER_JSON="$3"
 
-    eval "echo -e \"${TEMPLATE}\""
-}
-
-function pull_request_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/pull_request.json" | sed -e 's/"/\\"/g')
-    eval "echo -e \"${TEMPLATE}\""
+    parts_json repo
 }
 
 function pr_env {
@@ -252,8 +249,13 @@ function create_event_json() {
         HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
 
         if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
-            # pull_rquest_json
-            PULL_REQUEST_JSON=$(pull_request_json)
+            if [[ "${EVENT_NAME}" =~ .*review.* ]]; then
+                # pull_rquest_json
+                PULL_REQUEST_JSON=$(parts_json pull_request.min)
+            else
+                # pull_rquest_json
+                PULL_REQUEST_JSON=$(parts_json pull_request)
+            fi
         fi
 
         TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')

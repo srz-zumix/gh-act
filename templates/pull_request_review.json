@@ -1,6 +1,5 @@
 {
   "action": "submitted",
-  "changes": {},
   "pull_request": ${PULL_REQUEST_JSON},
   "repository": ${BASE_REPO_JSON},
   "review": {

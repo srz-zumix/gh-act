@@ -55,6 +55,8 @@
         "key": "${REPO_LICENSE_INFO_KEY}",
         "name": "${REPO_LICENSE_INFO_NAME}"
     },
+    "merge_commit_message": "PR_TITLE",
+    "merge_commit_title": "MERGE_MESSAGE",
     "merges_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/merges",
     "milestones_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/milestones{/number}",
     "mirror_url": "${REPO_MIRROR_URL}",
@@ -69,6 +71,8 @@
     "pushed_at": "${REPO_PUSHED_AT}",
     "releases_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/releases{/id}",
     "size": ${REPO_DISK_USAGE},
+    "squash_merge_commit_message": "COMMIT_MESSAGES",
+    "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
     "ssh_url": "${REPO_SSH_URL}",
     "stargazers_count": ${REPO_STARGAZER_COUNT},
     "stargazers_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/stargazers",
