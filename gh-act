@@ -77,15 +77,17 @@ parse_params() {
 
 parse_params "$@"
 
-function user_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/user.json" | sed -e 's/"/\\"/g')
-    USERNAME=$1
+function parts_json {
+    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/$1.json" | sed -e 's/"/\\"/g')
     eval "echo -e \"${TEMPLATE}\""
 }
 
-function repo_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/repo.json" | sed -e 's/"/\\"/g')
+function user_json {
+    USERNAME=$1
+    parts_json user
+}
 
+function repo_json {
     OWNER="$1"
     REPO="$2"
     REPOSITORY="$1/$2"
@@ -97,7 +99,7 @@ function repo_json {
 
     OWNER_JSON="$3"
 
-    eval "echo -e \"${TEMPLATE}\""
+    parts_json repo
 }
 
 function pr_env {
@@ -123,6 +125,7 @@ PR_MERGED_AT="{{.mergedAt}}"
 PR_MERGED_BY="{{.mergedBy}}"
 PR_MILESTONE="{{.milestone}}"
 PR_NUMBER="{{.number}}"
+PR_POTENTIAL_MERGE_COMMIT="{{.potentialMergeCommit.oid}}"
 PR_REVIEWS="{{ len .reviews}}"
 PR_STATE="{{.state}}"
 PR_UPDATED_AT="{{.updatedAt}}"
@@ -130,6 +133,25 @@ HTML_HREF="{{.url}}"
 ' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
     . "${ACT_ENV}"
 
+}
+
+function pr_review_env {
+    # FIXME: PR_REVIEW_ID
+    ACT_ENV="${TEMPFILE_DIR}/.pr_review.env"
+    gh pr view --json \
+        reviews \
+        --template '
+{{$last := 0}}
+{{range $index, $element := .reviews}}{{$last = $index}}{{end}}
+{{$last_review := index .reviews $last}}
+PR_REVIEW_ID=0
+PR_REVIEW_USER="{{$last_review.author.login}}"
+PR_REVIEW_BODY="{{$last_review.body | js}}"
+PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
+PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
+PR_REVIEW_STATE="{{$last_review.state}}"
+' | sed -e '/^$/d' -e 's/<no value>/null/g' -e 's/\u000D/\\\\r/g' -e 's/\u000A/\\\\n/g' > "${ACT_ENV}"
+    . "${ACT_ENV}"
 }
 
 function repo_env {
@@ -185,6 +207,7 @@ function create_event_json() {
         if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
             pr_env
             HEAD=$(gh pr view --json commits --jq .commits[].oid | tail -1)
+            HEAD_USER=$(gh pr view --json commits --jq .commits[].authors[].login | tail -1)
             BEFORE=$(gh pr view --json commits --jq .commits[].oid | tail -2 | head -1)
 
             # base
@@ -192,6 +215,21 @@ function create_event_json() {
             BASE_USER_JSON=$(user_json "${OWNER}")
             BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
             BASE_SHA=$(gh api --hostname ${GITHUB_HOSTNAME} --method GET -H "Accept: application/vnd.github.v3+json" /repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF} --jq .object.sha)
+
+            if [[ "${EVENT_NAME}" =~ .*review.* ]]; then
+                PR_REIVE_LENGTH=$(gh pr view --json reviews --jq '.reviews | length')
+                if [ "${PR_REIVE_LENGTH}" == "0" ]; then
+                    PR_REVIEW_ID=0
+                    PR_REVIEW_USER="${HEAD_USER}"
+                    PR_REVIEW_BODY="gh-act review"
+                    PR_REVIEW_AUTHOR_ASSOCIATION="OWNER"
+                    PR_REVIEW_SUBMITTED_AT="${PR_UPDATED_AT}"
+                    PR_REVIEW_STATE="COMMENTED"
+                else
+                    pr_review_env
+                fi
+                PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
+            fi
         else
             if [ "${EVENT_NAME}" == "push" ]; then
                 COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
@@ -200,14 +238,25 @@ function create_event_json() {
             HEAD=$(git rev-parse HEAD)
             BEFORE=$(git rev-parse HEAD^)
             HEAD_OWNER="${OWNER}"
+            HEAD_USER="$(git log -1 --pretty=format:%an)"
             HEAD_REPO="${REPO}"
         fi
 
         # head
         repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
 
-        HEAD_USER_JSON=$(user_json "${HEAD_OWNER}")
+        HEAD_USER_JSON=$(user_json "${HEAD_USER}")
         HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_USER_JSON}")
+
+        if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
+            if [[ "${EVENT_NAME}" =~ .*review.* ]]; then
+                # pull_rquest_json
+                PULL_REQUEST_JSON=$(parts_json pull_request.min)
+            else
+                # pull_rquest_json
+                PULL_REQUEST_JSON=$(parts_json pull_request)
+            fi
+        fi
 
         TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
         eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"

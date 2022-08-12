@@ -1,0 +1,87 @@
+{
+    "_links": {
+        "comments": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments"
+        },
+        "commits": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits"
+        },
+        "html": {
+            "href": "${HTML_HREF}"
+        },
+        "issue": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}"
+        },
+        "review_comment": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments{/number}"
+        },
+        "review_comments": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments"
+        },
+        "self": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"
+        },
+        "statuses": {
+            "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/${HEAD}"
+        }
+    },
+    "active_lock_reason": null,
+    "additions": ${PR_ADDITIONS},
+    "assignee": null,
+    "assignees": $(gh pr view --json assignees --jq .assignees),
+    "author_association": "OWNER",
+    "auto_merge": null,
+    "base": {
+        "label": "${OWNER}:${BASE_REF}",
+        "ref": "${BASE_REF}",
+        "repo": ${BASE_REPO_JSON},
+        "sha": "${BASE_SHA}",
+        "user": ${BASE_USER_JSON}
+    },
+    $(gh pr view --json body | grep -o -e '"body":".*"' | sed -e 's/\\n/\\\\n/g' -e 's/\\r/\\\\r/g' -e 's/:""/: null/g'),
+    "changed_files": ${PR_CHANGED_FILES},
+    "closed_at": "${PR_CLOSED_AT}",
+    "comments": ${PR_COMMENTS},
+    "comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments",
+    "commits": ${PR_COMMITS},
+    "commits_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/commits",
+    "created_at": "${PR_CREATED_AT}",
+    "deletions": ${PR_DELETIONS},
+    "diff_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}.diff",
+    "draft": ${PR_IS_DRAFT},
+    "head": {
+        "label": "${OWNER}:${HEAD_REF}",
+        "ref": "${HEAD_REF}",
+        "repo": ${HEAD_REPO_JSON},
+        "sha": "${HEAD}",
+        "user": ${HEAD_USER_JSON}
+    },
+    "html_url": "${HTML_HREF}",
+    "id": 0,
+    "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}",
+    "labels": $(gh pr view --json labels --jq .labels),
+    "locked": false,
+    "maintainer_can_modify": ${PR_MAINTAINER_CAN_MODIFY},
+    "merge_commit_sha": "${PR_POTENTIAL_MERGE_COMMIT}",
+    "mergeable": null,
+    "mergeable_state": "unknown",
+    "merged": false,
+    "merged_at": "${PR_MERGED_AT}",
+    "merged_by": "${PR_MERGED_BY}",
+    "milestone": "${PR_MILESTONE}",
+    "node_id": "${PR_NODE_ID}",
+    "number": ${PR_NUMBER},
+    "patch_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}.patch",
+    "rebaseable": null,
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "review_comment_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments{/number}",
+    "review_comments": ${PR_REVIEWS},
+    "review_comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/comments",
+    "state": "${PR_STATE,,}",
+    "statuses_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/${HEAD}",
+    "title": "$(gh pr view --json title --jq .title)",
+    "updated_at": "${PR_UPDATED_AT}",
+    "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}",
+    "user": ${BASE_USER_JSON}
+}
