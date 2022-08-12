@@ -1,0 +1,16 @@
+name: Release drafter
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  draft_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        id: release-drafter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
