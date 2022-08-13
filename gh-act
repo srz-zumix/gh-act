@@ -85,12 +85,27 @@ parse_params "$@"
 
 function parts_json {
     TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/$1.json" | sed -e 's/"/\\"/g')
-    eval "echo -e \"${TEMPLATE}\""
+    eval "echo -E \"${TEMPLATE}\""
+
+}
+
+function filter_env {
+    sed -e '/^$/d' \
+        -e 's/<no value>/null/g' \
+        -e 's/\\\\r/\\\\\\\\r/g' \
+        -e 's/\\\\n/\\\\\\\\n/g' \
+        -e 's/\\u000D/\\\\r/g' \
+        -e 's/\\u000A/\\\\n/g'
 }
 
 function user_json {
     USERNAME=$1
     parts_json user
+}
+
+function issue_json {
+    ISSUE_NUMBER=$1
+    parts_json issue
 }
 
 function repo_json {
@@ -111,10 +126,11 @@ function repo_json {
 function pr_env {
     ACT_ENV="${TEMPFILE_DIR}/.pr.env"
     gh pr view --json \
-        additions,baseRefName,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,updatedAt,url \
+        additions,baseRefName,body,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,title,updatedAt,url \
         --template '
 PR_ADDITIONS="{{.additions}}"
 BASE_REF="{{.baseRefName}}"
+PR_BODY="{{.body | js}}"
 PR_CLOSED_AT="{{.closedAt}}"
 PR_COMMENTS="{{ len .comments}}"
 PR_COMMITS="{{ len .commits}}"
@@ -134,9 +150,10 @@ PR_NUMBER="{{.number}}"
 PR_POTENTIAL_MERGE_COMMIT="{{.potentialMergeCommit.oid}}"
 PR_REVIEWS="{{ len .reviews}}"
 PR_STATE="{{.state}}"
+PR_TITLE="{{.title | js}}"
 PR_UPDATED_AT="{{.updatedAt}}"
 PR_URL="{{.url}}"
-' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
+' | filter_env > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
@@ -155,7 +172,7 @@ PR_REVIEW_BODY="{{$last_review.body | js}}"
 PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
 PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
 PR_REVIEW_STATE="{{$last_review.state}}"
-' | sed -e '/^$/d' -e 's/<no value>/null/g' -e 's/\u000D/\\\\r/g' -e 's/\u000A/\\\\n/g' > "${ACT_ENV}"
+' | filter_env > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
@@ -177,7 +194,7 @@ ISSUE_UPDATED_AT="{{.updatedAt}}"
 ISSUE_URL="{{.url}}"
 {{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
 ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
-' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
+' | filter_env > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
@@ -217,7 +234,7 @@ REPO_STARGAZER_COUNT="{{.stargazerCount}}"
 REPO_UPDATED_AT="{{.updatedAt}}"
 REPO_URL="{{.url}}"
 REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
-' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
+' | filter_env > "${ACT_ENV}"
     . "${ACT_ENV}"
     sed -e "s/^/${PREFIX}_/g" < "${ACT_ENV}" > "${ACT_ENV}.${PREFIX}"
     . "${ACT_ENV}.${PREFIX}"
@@ -258,7 +275,7 @@ function create_event_json() {
                 PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
             fi
         else
-            if [[ "${EVENT_NAME}" =~ ^issues.* ]]; then
+            if [[ "${EVENT_NAME}" =~ ^issue.* ]]; then
                 if [ -z "${ISSUE_NUMBER:-}" ]; then
                     ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
                 fi
@@ -314,7 +331,7 @@ function create_event_json() {
         fi
 
         TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
-        eval "echo -e \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"
+        eval "echo -E \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"
     else
         echo "{}" > "${EVENT_FILE_PATH}"
     fi
