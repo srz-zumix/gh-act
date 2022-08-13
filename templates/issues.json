@@ -13,7 +13,7 @@
     "events_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}/events",
     "html_url": "${ISSUE_URL}",
     "id": 0,
-    "labels": $(gh issue view ${ISSUE_NUMBER} --json labels),
+    ${ISSUE_LABELS},
     "labels_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}/labels{/name}",
     "locked": false,
     "milestone": null,

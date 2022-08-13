@@ -165,7 +165,7 @@ function issue_env {
         author,assignees,closedAt,comments,createdAt,id,reactionGroups,state,title,updatedAt,url \
         --template '
 ISSUE_AUTHOR="{{.author.login}}"
-ISSUE_ASSIGNEE="{{(index .assignees 0).login}}"
+ISSUE_ASSIGNEE="{{if (len .assignees)}}{{(index .assignees 0).login}}{{end}}"
 ISSUE_ASSIGNEES="{{range $index, $element := .assignees}}{{$element.login -}} {{end}}"
 ISSUE_CLOSED_AT="{{if .closedAt}}{{.closedAt}}{{else}}null{{end}}"
 ISSUE_COMMENTS="{{ len .comments}}"
@@ -176,7 +176,7 @@ ISSUE_TITLE="{{.title}}"
 ISSUE_UPDATED_AT="{{.updatedAt}}"
 ISSUE_URL="{{.url}}"
 {{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
-ISSUE_REACTION_TOTAL_COUNT=$((0+{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
+ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
 ' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
@@ -265,15 +265,21 @@ function create_event_json() {
 
                 issue_env "${ISSUE_NUMBER}"
 
+                ISSUE_LABELS=$(gh issue view ${ISSUE_NUMBER} --json labels)
+                ISSUE_LABELS=${ISSUE_LABELS#{}
+                ISSUE_LABELS=${ISSUE_LABELS%\}}
+
                 if [ -n "${ISSUE_ASSIGNEE}" ]; then
                     ASSIGNEE_USER_JSON=$(user_json "${ISSUE_ASSIGNEE}")
                 fi
-                for assignee in "${ISSUE_ASSIGNEES}"; do
-                    if [ -n "${ASSIGNEES_JSON:-}" ]; then
-                       ASSIGNEES_JSON+=","
-                    fi
-                    ASSIGNEES_JSON+=$(user_json "${assignee}")
-                done
+                if [ -n "${ISSUE_ASSIGNEES}" ]; then
+                    for assignee in "${ISSUE_ASSIGNEES}"; do
+                        if [ -n "${ASSIGNEES_JSON:-}" ]; then
+                        ASSIGNEES_JSON+=","
+                        fi
+                        ASSIGNEES_JSON+=$(user_json "${assignee}")
+                    done
+                fi
 
                 HEAD_OWNER="${OWNER}"
                 HEAD_REPO="${REPO}"
