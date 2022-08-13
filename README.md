@@ -32,6 +32,8 @@ Please check [test workflow][](Diff step) for the difference between the generat
 
 Supported Events
 
+* issue_comment
+* issues
 * pull_request
 * pull_request_review
 * pull_request_target
