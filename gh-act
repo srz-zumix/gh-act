@@ -135,10 +135,9 @@ PR_POTENTIAL_MERGE_COMMIT="{{.potentialMergeCommit.oid}}"
 PR_REVIEWS="{{ len .reviews}}"
 PR_STATE="{{.state}}"
 PR_UPDATED_AT="{{.updatedAt}}"
-HTML_HREF="{{.url}}"
+PR_URL="{{.url}}"
 ' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
     . "${ACT_ENV}"
-
 }
 
 function pr_review_env {
@@ -157,6 +156,28 @@ PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
 PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
 PR_REVIEW_STATE="{{$last_review.state}}"
 ' | sed -e '/^$/d' -e 's/<no value>/null/g' -e 's/\u000D/\\\\r/g' -e 's/\u000A/\\\\n/g' > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
+
+function issue_env {
+    ACT_ENV="${TEMPFILE_DIR}/.issue.env"
+    gh issue view "$1" --json \
+        author,assignees,closedAt,comments,createdAt,id,reactionGroups,state,title,updatedAt,url \
+        --template '
+ISSUE_AUTHOR="{{.author.login}}"
+ISSUE_ASSIGNEE="{{(index .assignees 0).login}}"
+ISSUE_ASSIGNEES="{{range $index, $element := .assignees}}{{$element.login -}} {{end}}"
+ISSUE_CLOSED_AT="{{if .closedAt}}{{.closedAt}}{{else}}null{{end}}"
+ISSUE_COMMENTS="{{ len .comments}}"
+ISSUE_CREATED_AT="{{.createdAt}}"
+ISSUE_NODE_ID="{{.id}}"
+ISSUE_STATE="{{.state}}"
+ISSUE_TITLE="{{.title}}"
+ISSUE_UPDATED_AT="{{.updatedAt}}"
+ISSUE_URL="{{.url}}"
+{{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
+ISSUE_REACTION_TOTAL_COUNT=$((0+{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
+' | sed -e '/^$/d' -e 's/<no value>/null/g' > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
@@ -237,15 +258,37 @@ function create_event_json() {
                 PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
             fi
         else
-            if [ "${EVENT_NAME}" == "push" ]; then
-                COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
-                COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+            if [[ "${EVENT_NAME}" =~ ^issues.* ]]; then
+                if [ -z "${ISSUE_NUMBER:-}" ]; then
+                    ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
+                fi
+
+                issue_env "${ISSUE_NUMBER}"
+
+                if [ -n "${ISSUE_ASSIGNEE}" ]; then
+                    ASSIGNEE_USER_JSON=$(user_json "${ISSUE_ASSIGNEE}")
+                fi
+                for assignee in "${ISSUE_ASSIGNEES}"; do
+                    if [ -n "${ASSIGNEES_JSON:-}" ]; then
+                       ASSIGNEES_JSON+=","
+                    fi
+                    ASSIGNEES_JSON+=$(user_json "${assignee}")
+                done
+
+                HEAD_OWNER="${OWNER}"
+                HEAD_REPO="${REPO}"
+                HEAD_USER="${ISSUE_AUTHOR}"
+            else
+                if [ "${EVENT_NAME}" == "push" ]; then
+                    COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
+                    COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+                fi
+                HEAD=$(git rev-parse HEAD)
+                BEFORE=$(git rev-parse HEAD^)
+                HEAD_OWNER="${OWNER}"
+                HEAD_REPO="${REPO}"
+                HEAD_USER="$(git log -1 --pretty=format:%an)"
             fi
-            HEAD=$(git rev-parse HEAD)
-            BEFORE=$(git rev-parse HEAD^)
-            HEAD_OWNER="${OWNER}"
-            HEAD_USER="$(git log -1 --pretty=format:%an)"
-            HEAD_REPO="${REPO}"
         fi
 
         # head
