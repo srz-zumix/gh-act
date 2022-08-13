@@ -1,0 +1,31 @@
+{
+  "action": "created",
+  "comment": {
+    "author_association": "${ISSUE_COMMENT_AUTHOR_ASSOCIATION}",
+    "body": "${ISSUE_COMMENT_BODY}",
+    "created_at": "${ISSUE_COMMENT_CREATED_AT}",
+    "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}#issuecomment-${ISSUE_COMMENT_ID}",
+    "id": ${ISSUE_COMMENT_ID},
+    "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}",
+    "node_id": "",
+    "performed_via_github_app": null,
+    "reactions": {
+      "+1": ${ISSUE_COMMENT_REACTION_THUMBS_UP_COUNT:-0},
+      "-1": ${ISSUE_COMMENT_REACTION_THUMBS_DOWN_COUNT:-0},
+      "confused": ${ISSUE_COMMENT_REACTION_CONFUSED_COUNT:-0},
+      "eyes": ${ISSUE_COMMENT_REACTION_EYES_COUNT:-0},
+      "heart": ${ISSUE_COMMENT_REACTION_HEART_COUNT:-0},
+      "hooray": ${ISSUE_COMMENT_REACTION_HOORAY_COUNT:-0},
+      "laugh": ${ISSUE_COMMENT_REACTION_LAUGH_COUNT:-0},
+      "rocket": ${ISSUE_COMMENT_REACTION_ROCKET_COUNT:-0},
+      "total_count": ${ISSUE_COMMENT_REACTION_TOTAL_COUNT:-0},
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/comments/${ISSUE_COMMENT_ID}/reactions"
+    },
+    "updated_at": "${ISSUE_COMMENT_UPDATED_AT}",
+    "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/comments/${ISSUE_COMMENT_ID}",
+    "user": ${ISSUE_COMMENT_USER_JSON}
+  },
+  "issue": ${ISSUE_JSON},
+  "repository": ${HEAD_REPO_JSON},
+  "sender": ${HEAD_USER_JSON}
+}
