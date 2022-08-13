@@ -21,6 +21,7 @@ parse_params() {
     EVENT_NAME=
     EVENT_PATH=
     GITHUB_HOSTNAME='github.com'
+    AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
 
     while :; do
         case "${1-}" in
@@ -46,7 +47,12 @@ parse_params() {
         --remote-name ) shift ;;
         --replace-ghe-action-token-with-github-com ) shift ;;
         --replace-ghe-action-with-github-com ) shift ;;
-        -s| --secret ) shift ;;
+        -s| --secret )
+            if [[ "${2-}" =~ GITHUB_TOKEN ]]; then
+                AUTO_GITHUB_TOKEN=false
+            fi
+            shift
+            ;;
         --secret-file ) shift ;;
         --userns ) shift ;;
         -W| --workflows ) shift ;;
@@ -265,6 +271,21 @@ function create_event_json() {
     fi
 }
 
+declare -a ACT_OPTIONS
+if "${AUTO_GITHUB_TOKEN}"; then
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+        ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+    else
+        if [ -n "${GH_TOKEN:-}" ]; then
+            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
+        else
+            if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
+                GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "${HOME}/.config/gh/hosts.yml" | grep -e oauth_token | cut -d: -f2 | xargs echo)
+                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+            fi
+        fi
+    fi
+fi
 
 if [ ! -f "${EVENT_PATH}" ]; then
     TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
@@ -272,11 +293,11 @@ if [ ! -f "${EVENT_PATH}" ]; then
 
     if [ -z "${EVENT_PATH}" ]; then
         EVENT_PATH="${TEMPFILE_DIR}/event.json"
+       ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
     fi
 
     create_event_json "${EVENT_PATH}"
     # cat "${EVENT_PATH}"
-    act "$@" --eventpath "${EVENT_PATH}"
-else
-    act "$@"
 fi
+
+act "$@" ${ACT_OPTIONS[@]}

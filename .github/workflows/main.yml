@@ -15,6 +15,14 @@ jobs:
       with:
         ref: ${{ (contains(github.event_name, 'pull_request') && github.event.pull_request.head.ref) || github.ref }}
         fetch-depth: 0
+    - name: Install gh
+      run: |
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        apt update
+        apt install gh
+      if: ${{ env.ACT }}
     - name: Install act
       run: |
         curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
@@ -34,8 +42,18 @@ jobs:
         echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
     - name: Create act event.json
       run: |
-        gh act "${{ github.event_name }}" -n -e gh_act_event_raw.json
+        gh act "${{ github.event_name }}" -e gh_act_event_raw.json -j noop
         jq . < gh_act_event_raw.json > gh_act_event.json
     - name: Diff
       run: |
         diff github_event.json gh_act_event.json || :
+
+  noop:
+    runs-on: ubuntu-latest
+    # jobs.*.if では env 参照できない
+    # act の場合 github.actor_id がないのでそれを利用
+    if: github.actor_id == null
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ (contains(github.event_name, 'pull_request') && github.event.pull_request.head.ref) || github.ref }}
