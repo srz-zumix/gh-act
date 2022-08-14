@@ -226,6 +226,7 @@ function repo_env {
     REPOSITORY="$1"
     PREFIX="$2"
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
+    # shellcheck disable=SC2016
     gh repo view "${REPOSITORY}" --json \
         createdAt,defaultBranchRef,deleteBranchOnMerge,description,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,repositoryTopics,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
         --template '
