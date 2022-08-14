@@ -92,11 +92,15 @@ function parts_json {
 function filter_env {
     sed -e '/^$/d' \
         -e 's/<no value>/null/g' \
-        -e 's/\\\\r/\\\\\\\\r/g' \
-        -e 's/\\\\n/\\\\\\\\n/g' \
         -e "s/\\\\'/'/g" \
-        -e 's/\\u000D/\\\\r/g' \
-        -e 's/\\u000A/\\\\n/g'
+        -e 's/\\u000D/\\r/g' \
+        -e 's/\\u000A/\\n/g' \
+        -e 's/\\u0026/\&/g' \
+        -e 's/\\u003C/</g' \
+        -e 's/\\u003D/=/g' \
+        -e 's/\\u003E/>/g' \
+        -e 's/\\/\\\\/g' \
+        -e 's/\\"/\\\\\"/g'
 }
 
 function user_json {
