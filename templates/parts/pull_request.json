@@ -28,7 +28,7 @@
     "active_lock_reason": null,
     "additions": ${PR_ADDITIONS},
     "assignee": null,
-    "assignees": $(gh pr view --json assignees --jq .assignees),
+    "assignees": $(gh pr view ${PULL_REQUEST_SPEC} --json assignees --jq .assignees),
     "author_association": "OWNER",
     "auto_merge": null,
     "base": {
@@ -59,7 +59,7 @@
     "html_url": "${PR_URL}",
     "id": 0,
     "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}",
-    "labels": $(gh pr view --json labels --jq .labels),
+    "labels": $(gh pr view ${PULL_REQUEST_SPEC} --json labels --jq .labels),
     "locked": false,
     "maintainer_can_modify": ${PR_MAINTAINER_CAN_MODIFY},
     "merge_commit_sha": "${PR_POTENTIAL_MERGE_COMMIT}",

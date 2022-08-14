@@ -126,7 +126,7 @@ function repo_json {
 
 function pr_env {
     ACT_ENV="${TEMPFILE_DIR}/.pr.env"
-    gh pr view --json \
+    gh pr view ${1:-} --json \
         additions,baseRefName,body,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,title,updatedAt,url \
         --template '
 PR_ADDITIONS="{{.additions}}"
@@ -161,7 +161,7 @@ PR_URL="{{.url}}"
 function pr_review_env {
     # FIXME: PR_REVIEW_ID
     ACT_ENV="${TEMPFILE_DIR}/.pr_review.env"
-    gh pr view --json \
+    gh pr view ${1:-} --json \
         reviews \
         --template '
 {{$last := 0}}
@@ -262,10 +262,18 @@ REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
 
 
 function pull_request_event_envs() {
-    pr_env
-    HEAD=$(gh pr view --json commits --jq .commits[].oid | tail -1)
-    HEAD_USER=$(gh pr view --json commits --jq .commits[].authors[].login | tail -1)
-    BEFORE=$(gh pr view --json commits --jq .commits[].oid | tail -2 | head -1)
+    # configurable vars
+    # PULL_REQUEST_SPEC
+    # PULL_REQUEST_NUMBER
+    PULL_REQUEST_SPEC="${PULL_REQUEST_SPEC:-}"
+    if [ -n "${PULL_REQUEST_NUMBER:-}" ]; then
+        PULL_REQUEST_SPEC="${PULL_REQUEST_NUMBER}"
+    fi
+
+    pr_env "${PULL_REQUEST_SPEC}"
+    HEAD=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -1)
+    HEAD_USER=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].authors[].login | tail -1)
+    BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
 
     # base
     repo_env "${OWNER}/${REPO}" "BASE"
@@ -274,8 +282,7 @@ function pull_request_event_envs() {
     BASE_SHA=$(gh api --hostname ${GITHUB_HOSTNAME} --method GET -H "Accept: application/vnd.github.v3+json" /repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF} --jq .object.sha)
 
     if [[ "${EVENT_NAME}" =~ .*review.* ]]; then
-        PR_REIVE_LENGTH=$(gh pr view --json reviews --jq '.reviews | length')
-        if [ "${PR_REIVE_LENGTH}" == "0" ]; then
+        if [ "${PR_REVIEWS}" == "0" ]; then
             PR_REVIEW_ID=0
             PR_REVIEW_USER="${HEAD_USER}"
             PR_REVIEW_BODY="gh-act review"
@@ -283,7 +290,7 @@ function pull_request_event_envs() {
             PR_REVIEW_SUBMITTED_AT="${PR_UPDATED_AT}"
             PR_REVIEW_STATE="COMMENTED"
         else
-            pr_review_env
+            pr_review_env "${PULL_REQUEST_SPEC}"
         fi
         PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
     fi
@@ -292,6 +299,7 @@ function pull_request_event_envs() {
 
 function issue_event_envs() {
     # configurable vars
+    # ISSUE_NUMBER
     if [ -z "${ISSUE_NUMBER:-}" ]; then
         ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
     fi
