@@ -1,5 +1,6 @@
 name: gh act tests
 on:
+  create:
   issue_comment:
   issues:
   pull_request:

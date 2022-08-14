@@ -1,0 +1,9 @@
+{
+    "description": "${HEAD_REPO_DESCRIPTION}",
+    "master_branch": "${HEAD_REPO_DEFAULT_BRANCH_REF}",
+    "pusher_type": "user",
+    "ref": "$(git branch --show-current)",
+    "ref_type": "branch",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
