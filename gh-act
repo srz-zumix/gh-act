@@ -226,12 +226,14 @@ function repo_env {
     REPOSITORY="$1"
     PREFIX="$2"
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
+    # shellcheck disable=SC2016
     gh repo view "${REPOSITORY}" --json \
-        createdAt,defaultBranchRef,deleteBranchOnMerge,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
+        createdAt,defaultBranchRef,deleteBranchOnMerge,description,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,repositoryTopics,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
         --template '
 REPO_CREATED_AT="{{.createdAt}}"
 REPO_DEFAULT_BRANCH_REF="{{.defaultBranchRef.name}}"
 REPO_DELETE_BRANCH_ON_MERGE="{{.deleteBranchOnMerge}}"
+REPO_DESCRIPTION="{{.description | js}}"
 REPO_DISK_USAGE="{{.diskUsage}}"
 REPO_FORK_COUNT="{{.forkCount}}"
 REPO_HAS_ISSUES_ENABLED="{{.hasIssuesEnabled}}"
@@ -252,6 +254,7 @@ REPO_PRIMARY_LANGUAGE="{{if .primaryLanguage}}{{.primaryLanguage.name}}{{else}}n
 REPO_PULL_REQUESTS_TOTAL_COUNT="{{.pullRequests.totalCount}}"
 REPO_PUSHED_AT="{{.pushedAt}}"
 REPO_REBASE_MERGE_ALLOWED="{{.rebaseMergeAllowed}}"
+REPO_REPOSITORY_TOPICS="{{if .repositoryTopics}}{{range $index, $element := .repositoryTopics}}{{$element.name}} {{end -}}{{else}}null{{end}}"
 REPO_SQUASH_MERGE_ALLOWED="{{.squashMergeAllowed}}"
 REPO_SSH_URL="{{.sshUrl}}"
 REPO_STARGAZER_COUNT="{{.stargazerCount}}"
