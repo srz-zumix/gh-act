@@ -3,7 +3,7 @@
     "comment": {
       "_links": {
         "html": {
-          "href": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/3#discussion_r944355616"
+          "href": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#discussion_r944355616"
         },
         "pull_request": {
           "href": "${PR_URL}"
@@ -17,7 +17,7 @@
       "commit_id": "${HEAD}",
       "created_at": "${PR_UPDATED_AT}",
       "diff_hunk": "",
-      "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/3#discussion_r944355616",
+      "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#discussion_r944355616",
       "id": 0,
       "line": 1,
       "node_id": "",
