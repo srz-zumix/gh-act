@@ -1,0 +1,14 @@
+{
+    "action": "created",
+    "label": {
+      "color": "${LABEL_COLOR}",
+      "default": ${LABEL_IS_DEFAULT},
+      "description": "${LABEL_DESCRIPTION}",
+      "id": 0,
+      "name": "${LABEL_NAME}",
+      "node_id": "${LABEL_NODE_ID}",
+      "url": "${LABEL_URL}"
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}

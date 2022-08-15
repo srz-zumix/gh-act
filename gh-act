@@ -348,6 +348,35 @@ function issue_event_envs() {
 }
 
 
+function label_event_envs() {
+    LABEL_COUNT=$(gh label list --json name --jq length)
+    if [ "${LABEL_COUNT}" == "0" ]; then
+        LABEL_COLOR="d73a4a"
+        LABEL_DESCRIPTION="gh-act label"
+        LABEL_NODE_ID=""
+        LABEL_IS_DEFAULT="false"
+        LABEL_NAME="gh act"
+        LABEL_URL="https://${GITHUB_API}/repos/${OWNER}/${REPO}/labels/gh%20act"
+    else
+        ACT_ENV="${TEMPFILE_DIR}/.label.env"
+        gh label list --json \
+            color,description,id,isDefault,name,url \
+            --template '
+{{$last := 0}}
+{{range $index, $element := .}}{{$last = $index}}{{end}}
+{{$label := index . $last}}
+LABEL_COLOR="{{$label.color}}"
+LABEL_DESCRIPTION="{{$label.description | js}}"
+LABEL_NODE_ID="{{$label.id}}"
+LABEL_IS_DEFAULT="{{$label.isDefault}}"
+LABEL_NAME="{{$label.name}}"
+LABEL_URL="{{$label.url}}"
+' | filter_env > "${ACT_ENV}"
+        . "${ACT_ENV}"
+    fi
+}
+
+
 function create_event_json() {
     EVENT_FILE_PATH="$1"
     if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
@@ -365,6 +394,9 @@ function create_event_json() {
                 if [ "${EVENT_NAME}" == "push" ]; then
                     COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
                     COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+                fi
+                if [ "${EVENT_NAME}" == "label" ]; then
+                    label_event_envs
                 fi
                 HEAD=$(git rev-parse HEAD)
                 BEFORE=$(git rev-parse HEAD^)
