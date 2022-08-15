@@ -84,7 +84,7 @@ parse_params() {
 parse_params "$@"
 
 function parts_json {
-    TEMPLATE=$(cat "${SCRIPT_DIR}/templates/parts/$1.json" | sed -e 's/"/\\"/g')
+    TEMPLATE=$(sed -e 's/"/\\"/g' "${SCRIPT_DIR}/templates/parts/$1.json")
     eval "echo -E \"${TEMPLATE}\""
 
 }
@@ -130,6 +130,7 @@ function repo_json {
 
 function pr_env {
     ACT_ENV="${TEMPFILE_DIR}/.pr.env"
+    # shellcheck disable=SC2016,SC2086
     gh pr view ${1:-} --json \
         additions,baseRefName,body,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,title,updatedAt,url \
         --template '
@@ -165,6 +166,7 @@ PR_URL="{{.url}}"
 function pr_review_env {
     # FIXME: PR_REVIEW_ID
     ACT_ENV="${TEMPFILE_DIR}/.pr_review.env"
+    # shellcheck disable=SC2016,SC2086
     gh pr view ${1:-} --json \
         reviews \
         --template '
@@ -183,6 +185,7 @@ PR_REVIEW_STATE="{{$last_review.state}}"
 
 function issue_env {
     ACT_ENV="${TEMPFILE_DIR}/.issue.env"
+    # shellcheck disable=SC2016
     gh issue view "$1" --json \
         author,assignees,body,closedAt,comments,createdAt,id,reactionGroups,state,title,updatedAt,url \
         --template '
@@ -206,6 +209,7 @@ ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$
 
 function issue_comment_env {
     ACT_ENV="${TEMPFILE_DIR}/.issue.comment.env"
+    # shellcheck disable=SC2016
     gh issue view "$1" --json \
         comments \
         --template '
@@ -278,15 +282,18 @@ function pull_request_event_envs() {
     fi
 
     pr_env "${PULL_REQUEST_SPEC}"
+    # shellcheck disable=SC2086
     HEAD=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -1)
+    # shellcheck disable=SC2086
     HEAD_USER=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].authors[].login | tail -1)
+    # shellcheck disable=SC2086
     BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
 
     # base
     repo_env "${OWNER}/${REPO}" "BASE"
     BASE_USER_JSON=$(user_json "${OWNER}")
     BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
-    BASE_SHA=$(gh api --hostname ${GITHUB_HOSTNAME} --method GET -H "Accept: application/vnd.github.v3+json" /repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF} --jq .object.sha)
+    BASE_SHA=$(gh api --hostname "${GITHUB_HOSTNAME}" --method GET -H "Accept: application/vnd.github.v3+json" "/repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF}" --jq .object.sha)
 
     if [[ "${EVENT_NAME}" =~ .*review.* ]]; then
         if [ "${PR_REVIEWS}" == "0" ]; then
@@ -313,7 +320,7 @@ function issue_event_envs() {
 
     issue_env "${ISSUE_NUMBER}"
 
-    ISSUE_LABELS=$(gh issue view ${ISSUE_NUMBER} --json labels)
+    ISSUE_LABELS=$(gh issue view "${ISSUE_NUMBER}" --json labels)
     ISSUE_LABELS=${ISSUE_LABELS#{}
     ISSUE_LABELS=${ISSUE_LABELS%\}}
 
@@ -321,9 +328,9 @@ function issue_event_envs() {
         ASSIGNEE_USER_JSON=$(user_json "${ISSUE_ASSIGNEE}")
     fi
     if [ -n "${ISSUE_ASSIGNEES}" ]; then
-        for assignee in "${ISSUE_ASSIGNEES}"; do
+        for assignee in ${ISSUE_ASSIGNEES}; do
             if [ -n "${ASSIGNEES_JSON:-}" ]; then
-            ASSIGNEES_JSON+=","
+                ASSIGNEES_JSON+=","
             fi
             ASSIGNEES_JSON+=$(user_json "${assignee}")
         done
@@ -427,7 +434,7 @@ function create_event_json() {
             fi
         fi
 
-        TEMPLATE=$(cat "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" | sed -e 's/"/\\"/g')
+        TEMPLATE=$(sed -e 's/"/\\"/g' "${SCRIPT_DIR}/templates/${EVENT_NAME}.json")
         eval "echo -E \"${TEMPLATE}\"" | sed -e 's/"null"/null/g' > "${EVENT_FILE_PATH}"
     else
         echo "{}" > "${EVENT_FILE_PATH}"
@@ -452,7 +459,7 @@ fi
 
 if [ ! -f "${EVENT_PATH}" ]; then
     TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
-    trap "rm -rf ${TEMPFILE_DIR}" EXIT
+    trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
 
     if [ -z "${EVENT_PATH}" ]; then
         EVENT_PATH="${TEMPFILE_DIR}/event.json"
@@ -463,4 +470,4 @@ if [ ! -f "${EVENT_PATH}" ]; then
     # cat "${EVENT_PATH}"
 fi
 
-act "$@" ${ACT_OPTIONS[@]}
+act "$@" "${ACT_OPTIONS[@]}"
