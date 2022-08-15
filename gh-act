@@ -359,6 +359,7 @@ function label_event_envs() {
         LABEL_URL="https://${GITHUB_API}/repos/${OWNER}/${REPO}/labels/gh%20act"
     else
         ACT_ENV="${TEMPFILE_DIR}/.label.env"
+        # shellcheck disable=SC2016
         gh label list --json \
             color,description,id,isDefault,name,url \
             --template '
