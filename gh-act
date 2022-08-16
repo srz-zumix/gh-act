@@ -464,7 +464,7 @@ function create_event_json() {
 
         HEAD_OWNER_JSON=$(user_json "${HEAD_OWNER}")
         HEAD_USER_JSON=$(user_json "${HEAD_USER}")
-        if [ ! "${HEAD_USER_JSON}" =~ .*login.* ]; then
+        if [[ ! "${HEAD_USER_JSON}" =~ .*login.* ]]; then
             HEAD_USER_JSON="${HEAD_OWNER_JSON}"
         fi
         HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_OWNER_JSON}")
