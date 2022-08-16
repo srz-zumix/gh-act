@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
@@ -126,7 +126,7 @@ function user_json {
     "gists_url": "{{.gists_url}}",
     "gravatar_id": "{{.gravatar_id}}",
     "html_url": "{{.html_url}}",
-    "id": {{.id}},
+    "id": {{printf "%.F" .id}},
     "login": "{{.login}}",
     "node_id": "{{.node_id}}",
     "organizations_url": "{{.organizations_url}}",
@@ -140,10 +140,10 @@ function user_json {
 }'
     if is_valid_user "${1}"; then
         gh api --hostname "${GITHUB_HOSTNAME}" -H "Accept: application/vnd.github.v3+json" \
-            "/users/$1" --template "${USER_JSON_TEMPLATE}" 2>/dev/null
+            "/users/$1" --template "${USER_JSON_TEMPLATE}"
     else
         gh api --hostname "${GITHUB_HOSTNAME}" -H "Accept: application/vnd.github.v3+json" \
-            "/user" --template "${USER_JSON_TEMPLATE}" 2>/dev/null
+            "/user" --template "${USER_JSON_TEMPLATE}" || :
     fi
 }
 
@@ -464,6 +464,9 @@ function create_event_json() {
 
         HEAD_OWNER_JSON=$(user_json "${HEAD_OWNER}")
         HEAD_USER_JSON=$(user_json "${HEAD_USER}")
+        if [ ! "${HEAD_USER_JSON}" =~ .*login.* ]; then
+            HEAD_USER_JSON="${HEAD_OWNER_JSON}"
+        fi
         HEAD_REPO_JSON=$(repo_json "${HEAD_OWNER}" "${HEAD_REPO}" "${HEAD_OWNER_JSON}")
 
         if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
