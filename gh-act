@@ -22,6 +22,8 @@ parse_params() {
     EVENT_PATH=
     GITHUB_HOSTNAME='github.com'
     AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
+    ACT_JOB=
+    WORKFLOWS_PATH=.github/workflows
 
     while :; do
         case "${1-}" in
@@ -42,7 +44,10 @@ parse_params() {
         --github-instance )
             GITHUB_HOSTNAME="${2-}"
             shift ;;
-        -j| --job ) shift ;;
+        -j| --job )
+            ACT_JOB="${2-}"
+            shift
+            ;;
         -P| --platform ) shift ;;
         --remote-name ) shift ;;
         --replace-ghe-action-token-with-github-com ) shift ;;
@@ -55,7 +60,10 @@ parse_params() {
             ;;
         --secret-file ) shift ;;
         --userns ) shift ;;
-        -W| --workflows ) shift ;;
+        -W| --workflows )
+            WORKFLOWS_PATH="${2-}"
+            shift
+            ;;
         --version )
             echo "gh-act version ${GH_ACT_VERSION}"
             ;;
@@ -405,6 +413,11 @@ function create_event_json() {
                 fi
                 if [ "${EVENT_NAME}" == "label" ]; then
                     label_event_envs
+                fi
+                if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
+                    WORKFLOWS_FILES=($(ls "${WORKFLOWS_PATH}"))
+                    WORKFLOWS_FILES_REGEXP=$(IFS=\|; echo "${WORKFLOWS_FILES[*]}")
+                    WORKFLOW_YAML=$(act workflow_dispatch --list | grep "${ACT_JOB:-workflow_dispatch}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
                 fi
                 HEAD=$(git rev-parse HEAD)
                 BEFORE=$(git rev-parse HEAD^)
