@@ -32,13 +32,17 @@ Please check [test workflow][](Diff step) for the difference between the generat
 
 Supported Events
 
+* create
+* delete
 * issue_comment
 * issues
+* label
 * pull_request
 * pull_request_review
 * pull_request_target
 * push
 * schedule
+* workflow_dispatch
 
 ### GITHUB_TOKEN
 

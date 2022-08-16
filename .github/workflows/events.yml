@@ -72,6 +72,10 @@ on:
   watch:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name'
+        required: true
   workflow_run:
     workflows: [Submodule Update]
     types:
@@ -114,3 +118,8 @@ jobs:
     - name: ENV
       run: |
         env
+    - name: Inputs
+      env:
+        INPUTS_CONTEXT: ${{ toJson(inputs) }}
+      run: |
+        echo "${INPUTS_CONTEXT}"

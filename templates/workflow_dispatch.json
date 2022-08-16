@@ -1,0 +1,7 @@
+{
+    "inputs": null,
+    "ref": "$(git symbolic-ref HEAD 2>/dev/null || git name-rev --name-only HEAD)",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON},
+    "workflow": "${WORKFLOWS_PATH}/${WORKFLOW_YAML}"
+}
