@@ -415,7 +415,8 @@ function create_event_json() {
                     label_event_envs
                 fi
                 if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
-                    WORKFLOWS_FILES=($(ls "${WORKFLOWS_PATH}"))
+                    WORKFLOWS_FILES=()
+                    while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
                     WORKFLOWS_FILES_REGEXP=$(IFS=\|; echo "${WORKFLOWS_FILES[*]}")
                     WORKFLOW_YAML=$(act workflow_dispatch --list | grep "${ACT_JOB:-workflow_dispatch}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
                 fi
@@ -423,7 +424,7 @@ function create_event_json() {
                 BEFORE=$(git rev-parse HEAD^)
                 HEAD_OWNER="${OWNER}"
                 HEAD_REPO="${REPO}"
-                HEAD_USER="$(git log -1 --pretty=format:%an)"
+                HEAD_USER="$(git log -1 --pretty=format:%cn)"
             fi
         fi
 

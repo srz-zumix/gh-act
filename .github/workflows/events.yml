@@ -119,5 +119,7 @@ jobs:
       run: |
         env
     - name: Inputs
+      env:
+        INPUTS_CONTEXT: ${{ toJson(inputs) }}
       run: |
-        echo "${{ github.inputs.name || 'no inputs'}}"
+        echo "${INPUTS_CONTEXT}"
