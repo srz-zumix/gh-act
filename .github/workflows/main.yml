@@ -9,6 +9,16 @@ on:
   pull_request_review_comment:
   pull_request_target:
   push:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name'
+        required: true
+  workflow_run:
+    workflows: [shellcheck]
+    types:
+       - requested
+       - completed
 
 jobs:
   test:
