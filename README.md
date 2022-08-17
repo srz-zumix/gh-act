@@ -37,6 +37,7 @@ Supported Events
 * issue_comment
 * issues
 * label
+* public
 * pull_request
 * pull_request_review
 * pull_request_target
