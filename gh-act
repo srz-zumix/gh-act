@@ -516,7 +516,6 @@ if [ ! -f "${EVENT_PATH}" ]; then
     fi
 
     create_event_json "${EVENT_PATH}"
-    # cat "${EVENT_PATH}"
 fi
 
 act "$@" "${ACT_OPTIONS[@]}"

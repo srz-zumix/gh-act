@@ -77,7 +77,7 @@ on:
         description: 'Name'
         required: true
   workflow_run:
-    workflows: [shellcheck]
+    workflows: [Lint]
     types:
       - requested
       - completed
