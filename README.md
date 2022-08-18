@@ -34,6 +34,7 @@ Supported Events
 
 * create
 * delete
+* gollum
 * issue_comment
 * issues
 * label
