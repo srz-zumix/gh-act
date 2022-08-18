@@ -1,0 +1,14 @@
+{
+    "pages": [
+        {
+          "action": "created",
+          "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/wiki/Home",
+          "page_name": "Home",
+          "sha": "$(git ls-remote https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}.wiki.git HEAD 2>/dev/null | grep -o -E '^[0-9A-Za-z]*' || echo ${HEAD})",
+          "summary": null,
+          "title": "Home"
+        }
+    ],
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+  }
