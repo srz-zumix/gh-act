@@ -1,0 +1,17 @@
+{
+    "build": {
+      "commit": "${HEAD}",
+      "created_at": "${REPO_UPDATED_AT}",
+      "duration": 67359,
+      "error": {
+        "message": null
+      },
+      "pusher": ${HEAD_USER_JSON},
+      "status": "built",
+      "updated_at": "${REPO_UPDATED_AT}",
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pages/builds/${PAGE_BUILD_ID:-0}"
+    },
+    "id": ${PAGE_BUILD_ID:-0},
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
