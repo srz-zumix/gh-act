@@ -424,6 +424,114 @@ LABEL_URL="{{$label.url}}"
 }
 
 
+function discussion_env() {
+    ACT_ENV="${TEMPFILE_DIR}/.discussion.env"
+    # shellcheck disable=SC2016
+    gh api graphql -F owner="$1" -F repo="$2" -F query='
+query($owner: String!, $repo: String!) {
+    repository(owner: $owner, name: $repo) {
+        discussions(first: 1) {
+            nodes {
+                activeLockReason
+                answerChosenAt
+                answerChosenBy { login }
+                author { login }
+                authorAssociation
+                body
+                category {
+                    createdAt
+                    description
+                    emoji
+                    id
+                    isAnswerable
+                    name
+                    slug
+                    repository { id }
+                    updatedAt
+                }
+                comments { totalCount }
+                createdAt
+                databaseId
+                id
+                locked
+                number
+                reactionGroups {
+                    content
+                    reactors { totalCount }
+                }
+                title
+                updatedAt
+                url
+            }
+        }
+    }
+}
+' --template '
+{{$disscussion := index .data.repository.discussions.nodes 0 }}
+DISCUSSION_ACTIVE_LOCK_REASON="{{ $disscussion.activeLockReason }}"
+DISCUSSION_ANSWER_CHOSEN_AT="{{ $disscussion.answerChosenAt }}"
+DISCUSSION_ANSWER_CHOSEN_BY="{{ $disscussion.answerChosenBy }}"
+DISCUSSION_AUTHOR="{{ $disscussion.author.login }}"
+DISCUSSION_AUTHOR_ASSOCIATION="{{ $disscussion.authorAssociation }}"
+DISCUSSION_BODY="{{ $disscussion.body | js }}"
+DISCUSSION_CATEGORY_CREATED_AT="{{ $disscussion.category.createdAt }}"
+DISCUSSION_CATEGORY_DESCRIPTION="{{ $disscussion.category.description | js }}"
+DISCUSSION_CATEGORY_EMOJI="{{ $disscussion.category.emoji }}"
+DISCUSSION_CATEGORY_IS_ANSWERABLE="{{ $disscussion.category.isAnswerable }}"
+DISCUSSION_CATEGORY_NAME="{{ $disscussion.category.name }}"
+DISCUSSION_CATEGORY_NODE_ID="{{ $disscussion.category.id }}"
+DISCUSSION_CATEGORY_REPOSITORY_ID="{{ $disscussion.category.repository.id }}"
+DISCUSSION_CATEGORY_SLUG="{{ $disscussion.category.slug }}"
+DISCUSSION_CATEGORY_UPDATED_AT="{{ $disscussion.category.updatedAt }}"
+DISCUSSION_COMMENTS_TOTAL_COUNT="{{ $disscussion.comments.totalCount }}"
+DISCUSSION_CREATED_AT="{{ $disscussion.createdAt }}"
+DISCUSSION_HTML_URL="{{ $disscussion.url }}"
+DISCUSSION_LOCKED="{{ $disscussion.locked }}"
+DISCUSSION_NODE_ID="{{ $disscussion.id }}"
+DISCUSSION_NUMBER="{{ $disscussion.number }}"
+DISCUSSION_TITLE="{{ $disscussion.title | js }}"
+DISCUSSION_UPDATED_AT="{{ $disscussion.updatedAt }}"
+{{range $index, $element := $disscussion.reactionGroups}}DISCUSSION_REACTION_{{$element.content}}_COUNT={{println $element.reactors.totalCount}}{{end}}
+DISCUSSION_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $disscussion.reactionGroups}}+{{$element.reactors.totalCount}}{{end}}))
+' | filter_env > "${ACT_ENV}"
+        . "${ACT_ENV}"
+}
+
+function evnet_env() {
+    if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
+        pull_request_event_envs
+        return
+    fi
+    if [[ "${EVENT_NAME}" =~ ^issue.* ]]; then
+        issue_event_envs
+        return
+    fi
+
+    if [ "${EVENT_NAME}" == "push" ]; then
+        COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
+        COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+    fi
+    if [ "${EVENT_NAME}" == "label" ]; then
+        label_event_envs
+    fi
+    if [ "${EVENT_NAME}" == "discussion" ]; then
+        discussion_env "${OWNER}" "${REPO}"
+        DISCUSSION_AUTHOR_JSON=$(user_json "${DISCUSSION_AUTHOR}")
+    fi
+    if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
+        WORKFLOWS_FILES=()
+        while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
+        WORKFLOWS_FILES_REGEXP=$(IFS=\|; echo "${WORKFLOWS_FILES[*]}")
+        WORKFLOW_YAML=$(act workflow_dispatch --list | grep "${ACT_JOB:-workflow_dispatch}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
+    fi
+
+    HEAD=$(git rev-parse HEAD)
+    BEFORE=$(git rev-parse HEAD^)
+    HEAD_OWNER="${OWNER}"
+    HEAD_REPO="${REPO}"
+    HEAD_USER="$(git log -1 --pretty=format:%an)"
+}
+
 function create_event_json() {
     EVENT_FILE_PATH="$1"
     if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
@@ -432,32 +540,7 @@ function create_event_json() {
         OWNER=$(gh repo view --json owner --jq .owner.login)
         REPO=$(gh repo view --json name --jq .name)
 
-        if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
-            pull_request_event_envs
-        else
-            if [[ "${EVENT_NAME}" =~ ^issue.* ]]; then
-                issue_event_envs
-            else
-                if [ "${EVENT_NAME}" == "push" ]; then
-                    COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
-                    COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
-                fi
-                if [ "${EVENT_NAME}" == "label" ]; then
-                    label_event_envs
-                fi
-                if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
-                    WORKFLOWS_FILES=()
-                    while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
-                    WORKFLOWS_FILES_REGEXP=$(IFS=\|; echo "${WORKFLOWS_FILES[*]}")
-                    WORKFLOW_YAML=$(act workflow_dispatch --list | grep "${ACT_JOB:-workflow_dispatch}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
-                fi
-                HEAD=$(git rev-parse HEAD)
-                BEFORE=$(git rev-parse HEAD^)
-                HEAD_OWNER="${OWNER}"
-                HEAD_REPO="${REPO}"
-                HEAD_USER="$(git log -1 --pretty=format:%an)"
-            fi
-        fi
+        evnet_env
 
         # head
         repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"

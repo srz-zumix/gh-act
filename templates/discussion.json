@@ -1,0 +1,50 @@
+{
+    "action": "created",
+    "discussion": {
+      "active_lock_reason": "${DISCUSSION_ACTIVE_LOCK_REASON}",
+      "answer_chosen_at": "${DISCUSSION_ANSWER_CHOSEN_AT}",
+      "answer_chosen_by": "${DISCUSSION_ANSWER_CHOSEN_BY}",
+      "answer_html_url": "${DISCUSSION_HTML_URL}",
+      "author_association": "${DISCUSSION_AUTHOR_ASSOCIATION}",
+      "body": "${DISCUSSION_BODY}",
+      "category": {
+        "created_at": "${DISCUSSION_CATEGORY_CREATED_AT}",
+        "description": "${DISCUSSION_CATEGORY_DESCRIPTION}",
+        "emoji": "${DISCUSSION_CATEGORY_EMOJI}",
+        "id": 0,
+        "is_answerable": ${DISCUSSION_CATEGORY_IS_ANSWERABLE},
+        "name": "${DISCUSSION_CATEGORY_NAME}",
+        "node_id": "${DISCUSSION_CATEGORY_NODE_ID}",
+        "repository_id": "${DISCUSSION_CATEGORY_REPOSITORY_ID}",
+        "slug": "${DISCUSSION_CATEGORY_SLUG}",
+        "updated_at": "${DISCUSSION_CATEGORY_UPDATED_AT}"
+      },
+      "comments": ${DISCUSSION_COMMENTS_TOTAL_COUNT},
+      "created_at": "${DISCUSSION_CREATED_AT}",
+      "html_url": "${DISCUSSION_HTML_URL}",
+      "id": 0,
+      "locked": ${DISCUSSION_LOCKED},
+      "node_id": "${DISCUSSION_NODE_ID}",
+      "number": ${DISCUSSION_NUMBER},
+      "reactions": {
+        "+1": ${DISCUSSION_REACTION_THUMBS_UP_COUNT:-0},
+        "-1": ${DISCUSSION_REACTION_THUMBS_DOWN_COUNT:-0},
+        "confused": ${DISCUSSION_REACTION_CONFUSED_COUNT:-0},
+        "eyes": ${DISCUSSION_REACTION_EYES_COUNT:-0},
+        "heart": ${DISCUSSION_REACTION_HEART_COUNT:-0},
+        "hooray": ${DISCUSSION_REACTION_HOORAY_COUNT:-0},
+        "laugh": ${DISCUSSION_REACTION_LAUGH_COUNT:-0},
+        "rocket": ${DISCUSSION_REACTION_ROCKET_COUNT:-0},
+        "total_count": ${DISCUSSION_REACTION_TOTAL_COUNT},
+        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/discussions/${DISCUSSION_NUMBER}/reactions"
+      },
+      "repository_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}",
+      "state": "open",
+      "timeline_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/discussions/${DISCUSSION_NUMBER}/timeline",
+      "title": "${DISCUSSION_TITLE}",
+      "updated_at": "${DISCUSSION_UPDATED_AT}",
+      "user": ${DISCUSSION_AUTHOR_JSON}
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+  }
