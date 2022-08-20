@@ -1,0 +1,32 @@
+{
+    "action": "created",
+    "comment": {
+        "author_association": "${DISCUSSION_COMMENT_AUTHOR_ASSOCIATION}",
+        "body": "${DISCUSSION_COMMENT_BODY}",
+        "child_comment_count": ${DISCUSSION_COMMENT_CHILD_COMMENT_COUNT},
+        "created_at": "${DISCUSSION_COMMENT_CREATED_AT}",
+        "discussion_id": ${DISCUSSION_COMMENT_DISCUSSION_ID},
+        "html_url": "${DISCUSSION_COMMENT_HTML_URL}",
+        "id": ${DISCUSSION_COMMENT_ID},
+        "node_id": "${DISCUSSION_COMMENT_NODE_ID}",
+        "parent_id": 0,
+        "reactions": {
+            "+1": ${DISCUSSION_COMMENT_REACTION_THUMBS_UP_COUNT:-0},
+            "-1": ${DISCUSSION_COMMENT_REACTION_THUMBS_DOWN_COUNT:-0},
+            "confused": ${DISCUSSION_COMMENT_REACTION_CONFUSED_COUNT:-0},
+            "eyes": ${DISCUSSION_COMMENT_REACTION_EYES_COUNT:-0},
+            "heart": ${DISCUSSION_COMMENT_REACTION_HEART_COUNT:-0},
+            "hooray": ${DISCUSSION_COMMENT_REACTION_HOORAY_COUNT:-0},
+            "laugh": ${DISCUSSION_COMMENT_REACTION_LAUGH_COUNT:-0},
+            "rocket": ${DISCUSSION_COMMENT_REACTION_ROCKET_COUNT:-0},
+            "total_count": ${DISCUSSION_COMMENT_REACTION_TOTAL_COUNT},
+            "url": "s://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/comments/${DISCUSSION_COMMENT_ID}/reactions"
+        },
+        "repository_url": "${OWNER}/${REPO}",
+        "updated_at": "${DISCUSSION_COMMENT_UPDATED_AT}",
+        "user": ${DISCUSSION_COMMENT_AUTHOR_JSON}
+    },
+    "discussion": ${DISCUSSION_JSON},
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
