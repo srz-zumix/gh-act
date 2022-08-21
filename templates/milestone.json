@@ -7,7 +7,7 @@
       "creator": ${MILESTONE_CREATOR_AUTHOR_JSON},
       "description": "${MILESTONE_DESCRIPTION}",
       "due_on": "${MILESTONE_DUE_ON}",
-      "html_url": "https://github.com/srz-zumix/gh-act/milestone/2",
+      "html_url": "${MILESTONE_HTML_URL}",
       "id": ${MILESTONE_ID},
       "labels_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/milestones/${MILESTONE_NUMBER}/labels",
       "node_id": "${MILESTONE_NODE_ID}",
@@ -16,7 +16,7 @@
       "state": "${MILESTONE_STATE}",
       "title": "${MILESTONE_TITLE}",
       "updated_at": "${MILESTONE_UPDATED_AT}",
-      "url": "https://api.github.com/repos/srz-zumix/gh-act/milestones/2"
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/milestones/${MILESTONE_NUMBER}"
     },
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
