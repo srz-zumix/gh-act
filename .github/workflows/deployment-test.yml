@@ -1,0 +1,10 @@
+name: deployment test
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: gh-act-env
+    steps:
+    - run: echo hello
