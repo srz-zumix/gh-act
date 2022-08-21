@@ -1,0 +1,5 @@
+{
+    "action": "started",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}

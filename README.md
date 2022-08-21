@@ -34,19 +34,21 @@ Supported Events
 
 * create
 * delete
-* discussion:
-* discussion_comment:
+* discussion
+* discussion_comment
 * gollum
 * issue_comment
 * issues
 * label
 * milestone
+* page_build
 * public
 * pull_request
 * pull_request_review
 * pull_request_target
 * push
 * schedule
+* watch
 * workflow_dispatch
 
 ### GITHUB_TOKEN
