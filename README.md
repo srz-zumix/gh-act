@@ -34,10 +34,13 @@ Supported Events
 
 * create
 * delete
+* discussion:
+* discussion_comment:
 * gollum
 * issue_comment
 * issues
 * label
+* milestone
 * public
 * pull_request
 * pull_request_review

@@ -1,0 +1,23 @@
+{
+    "action": "created",
+    "milestone": {
+      "closed_at": "${MILESTONE_CLOSED_AT}",
+      "closed_issues": ${MILESTONE_CLOSED_ISSUES},
+      "created_at": "${MILESTONE_CREATED_AT}",
+      "creator": ${MILESTONE_CREATOR_AUTHOR_JSON},
+      "description": "${MILESTONE_DESCRIPTION}",
+      "due_on": "${MILESTONE_DUE_ON}",
+      "html_url": "https://github.com/srz-zumix/gh-act/milestone/2",
+      "id": ${MILESTONE_ID},
+      "labels_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/milestones/${MILESTONE_NUMBER}/labels",
+      "node_id": "${MILESTONE_NODE_ID}",
+      "number": ${MILESTONE_NUMBER},
+      "open_issues": ${MILESTONE_OPEN_ISSUES},
+      "state": "${MILESTONE_STATE}",
+      "title": "${MILESTONE_TITLE}",
+      "updated_at": "${MILESTONE_UPDATED_AT}",
+      "url": "https://api.github.com/repos/srz-zumix/gh-act/milestones/2"
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+  }

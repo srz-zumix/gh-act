@@ -2,8 +2,13 @@ name: gh act tests
 on:
   create:
   # delete:
+  discussion:
+  discussion_comment:
+  gollum:
   issue_comment:
   issues:
+  label:
+  milestone:
   public:
   pull_request:
   pull_request_review:
