@@ -752,6 +752,11 @@ function create_event_json() {
     fi
 }
 
+function hosts_yaml_token() {
+    GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "$1" | grep -e oauth_token | cut -d: -f2 | xargs echo)
+    ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+}
+
 declare -a ACT_OPTIONS
 if "${AUTO_GITHUB_TOKEN}"; then
     if [ -n "${GITHUB_TOKEN:-}" ]; then
@@ -760,9 +765,16 @@ if "${AUTO_GITHUB_TOKEN}"; then
         if [ -n "${GH_TOKEN:-}" ]; then
             ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
         else
-            if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
-                GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "${HOME}/.config/gh/hosts.yml" | grep -e oauth_token | cut -d: -f2 | xargs echo)
-                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+            if [ -f "${GH_CONFIG_DIR}/hosts.yml" ]; then
+                hosts_yaml_token "${GH_CONFIG_DIR}/hosts.yml"
+            else
+                if [ -f "${XDG_CONFIG_HOME}/gh/hosts.yml" ]; then
+                    hosts_yaml_token "${XDG_CONFIG_HOME}/gh/hosts.yml"
+                else
+                    if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
+                        hosts_yaml_token "${HOME}/.config/gh/hosts.yml"
+                    fi
+                fi
             fi
         fi
     fi
