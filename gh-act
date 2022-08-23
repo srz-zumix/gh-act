@@ -752,37 +752,42 @@ function create_event_json() {
     fi
 }
 
-function hosts_yaml_token() {
+function parse_hosts_yaml_token() {
     GITHUB_TOKEN=$(grep -A3 -e "${GITHUB_HOSTNAME}" < "$1" | grep -e oauth_token | cut -d: -f2 | xargs echo)
     ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
 }
 
-declare -a ACT_OPTIONS
-if "${AUTO_GITHUB_TOKEN}"; then
-    if [ -n "${GITHUB_TOKEN:-}" ]; then
-        ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
-    else
-        if [ -n "${GH_TOKEN:-}" ]; then
-            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
-        else
-            if [ -f "${GH_CONFIG_DIR}/hosts.yml" ]; then
-                hosts_yaml_token "${GH_CONFIG_DIR}/hosts.yml"
-            else
-                if [ -f "${XDG_CONFIG_HOME}/gh/hosts.yml" ]; then
-                    hosts_yaml_token "${XDG_CONFIG_HOME}/gh/hosts.yml"
-                else
-                    if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
-                        hosts_yaml_token "${HOME}/.config/gh/hosts.yml"
-                    fi
-                fi
-            fi
+function hosts_yaml_token() {
+    if [[ -n "${GH_CONFIG_DIR+x}" ]]; then
+        if [ -f "${GH_CONFIG_DIR}/hosts.yml" ]; then
+            parse_hosts_yaml_token "${GH_CONFIG_DIR}/hosts.yml"
+            return
         fi
     fi
-fi
+    if [[ -n "${XDG_CONFIG_HOME+x}" ]]; then
+        if [ -f "${XDG_CONFIG_HOME}/gh/hosts.yml" ]; then
+            parse_hosts_yaml_token "${XDG_CONFIG_HOME}/gh/hosts.yml"
+            return
+        fi
+    fi
+    if [[ -n "${AppData+x}" ]]; then
+        if [ -f "${AppData}/GitHub CLI/hosts.yml" ]; then
+            parse_hosts_yaml_token "${AppData}/GitHub CLI/hosts.yml"
+            return
+        fi
+    fi
+    if [ -f "${HOME}/.config/gh/hosts.yml" ]; then
+        parse_hosts_yaml_token "${HOME}/.config/gh/hosts.yml"
+        return
+    fi
+}
+
+declare -a ACT_OPTIONS
+hosts_yaml_token
 
 if [ ! -f "${EVENT_PATH}" ]; then
     TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
-    # trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
+    trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
 
     if [ -z "${EVENT_PATH}" ]; then
         EVENT_PATH="${TEMPFILE_DIR}/event.json"
