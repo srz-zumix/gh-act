@@ -783,7 +783,17 @@ function hosts_yaml_token() {
 }
 
 declare -a ACT_OPTIONS
-hosts_yaml_token
+if "${AUTO_GITHUB_TOKEN}"; then
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+        ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+    else
+        if [ -n "${GH_TOKEN:-}" ]; then
+            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
+        else
+            hosts_yaml_token
+        fi
+    fi
+fi
 
 if [ ! -f "${EVENT_PATH}" ]; then
     TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
