@@ -1,5 +1,6 @@
 name: gh act tests
 on:
+  branch_protection_rule:
   create:
   # delete:
   discussion:

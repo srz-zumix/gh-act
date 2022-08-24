@@ -394,6 +394,62 @@ function issue_event_envs() {
 }
 
 
+function branch_protection_rule_env() {
+    ACT_ENV="${TEMPFILE_DIR}/.branch_protection_rule.env"
+    # shellcheck disable=SC2016
+    gh api graphql -F owner="$1" -F repo="$2" -F query='
+query($owner: String!, $repo: String!) {
+    repository(owner: $owner, name: $repo) {
+        branchProtectionRules(first: 1) {
+            nodes {
+                allowsDeletions
+                blocksCreations
+                bypassForcePushAllowances(first: 1) { totalCount }
+                creator { login }
+                databaseId
+                dismissesStaleReviews
+                isAdminEnforced
+                pattern
+                repository { databaseId }
+                requiredApprovingReviewCount
+                requiredStatusChecks { context }
+                requiresApprovingReviews
+                requiresCodeOwnerReviews
+                requiresCommitSignatures
+                requiresConversationResolution
+                requiresLinearHistory
+                requiresStatusChecks
+                requiresStrictStatusChecks
+            }
+        }
+    }
+}
+' --template '
+{{$rule := index .data.repository.branchProtectionRules.nodes 0 }}
+#BRANCH_PROTECTION_RULE_="{{ $rule.blocksCreations }}"
+BRANCH_PROTECTION_RULE_ALLOW_DELETIONS_ENFORCEMENT_LEVEL="{{if $rule.allowsDeletions}}on{{else}}off{{end}}"
+BRANCH_PROTECTION_RULE_CREATE_PROTECTED="{{ $rule.blocksCreations }}"
+BRANCH_PROTECTION_RULE_CREATOR="{{ $rule.creator.login }}"
+BRANCH_PROTECTION_RULE_ID="{{ printf "%.F" $rule.databaseId }}"
+BRANCH_PROTECTION_RULE_DISMISS_STALE_REVIEWS_ON_PUSH="{{ $rule.dismissesStaleReviews }}"
+BRANCH_PROTECTION_RULE_IS_ADMIN_ENFORCED="{{ $rule.isAdminEnforced }}"
+BRANCH_PROTECTION_RULE_PATTERN="{{ $rule.pattern }}"
+BRANCH_PROTECTION_RULE_REPOSITORY_ID="{{ printf "%.F" $rule.repository.databaseId }}"
+BRANCH_PROTECTION_RULE_REQUIRED_APPROVING_REVIEW_COUNT="{{ $rule.requiredApprovingReviewCount }}"
+BRANCH_PROTECTION_RULE_REQUIRED_STATUS_CHECKS='\''[{{range $index, $element := $rule.requiredStatusChecks}}{{ if $index }},{{end}}"{{ $element.context }}"{{end}}]'\''
+BRANCH_PROTECTION_RULE_REQUIRE_CODE_OWNER_REVIEW="{{ $rule.requiresCodeOwnerReviews }}"
+BRANCH_PROTECTION_RULE_SIGNATURE_REQUIREMENT_ENFORCEMENT_LEVEL="{{if $rule.requiresCommitSignatures}}on{{else}}off{{end}}"
+BRANCH_PROTECTION_RULE_REQUIRED_CONVERSATION_RESOLUTION_LEVEL="{{if $rule.requiresConversationResolution}}on{{else}}off{{end}}"
+BRANCH_PROTECTION_RULE_REQUIRED_STATUS_CHECKS_ENFORCEMENT_LEVEL="{{if $rule.requiresStatusChecks}}admins{{else}}non_admins{{end}}"
+BRANCH_PROTECTION_RULE_STRICT_REQUIRED_STATUS_CHECKS_POLICY="{{ $rule.requiresStrictStatusChecks }}"
+BRANCH_PROTECTION_RULE_LINEAR_HISTORY_REQUIREMENT_ENFORCEMENT_LEVEL="{{if $rule.requiresLinearHistory}}on{{else}}off{{end}}"
+#BRANCH_PROTECTION_RULE_="{{if $rule.requiresLinearHistory}}on{{else}}off{{end}}"
+#BRANCH_PROTECTION_RULE_="{{ $rule.activeLockReason }}"
+' | filter_env > "${ACT_ENV}"
+        . "${ACT_ENV}"
+}
+
+
 function label_event_envs() {
     LABEL_COUNT=$(gh label list --json name --jq length)
     if [ "${LABEL_COUNT}" == "0" ]; then
@@ -695,6 +751,10 @@ function evnet_env() {
     if [ "${EVENT_NAME}" == "label" ]; then
         label_event_envs
     fi
+    if [ "${EVENT_NAME}" == "branch_protection_rule" ]; then
+        branch_protection_rule_env "${OWNER}" "${REPO}"
+    fi
+    
     if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
         WORKFLOWS_FILES=()
         while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
