@@ -48,6 +48,7 @@ Supported Events
 * pull_request_review
 * pull_request_target
 * push
+* repository_dispatch
 * schedule
 * watch
 * workflow_dispatch

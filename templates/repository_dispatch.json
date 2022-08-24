@@ -1,0 +1,7 @@
+{
+    "action": "${GHACT_ACTION:-test}",
+    "branch": "${HEAD_BRANCH}",
+    "client_payload": ${GHACT_CLIENT_PAYLOAD:-null},
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
