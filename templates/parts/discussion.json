@@ -20,7 +20,7 @@
     "comments": ${DISCUSSION_COMMENTS_TOTAL_COUNT},
     "created_at": "${DISCUSSION_CREATED_AT}",
     "html_url": "${DISCUSSION_HTML_URL}",
-    "id": 0,
+    "id": ${DISCUSSION_ID},
     "locked": ${DISCUSSION_LOCKED},
     "node_id": "${DISCUSSION_NODE_ID}",
     "number": ${DISCUSSION_NUMBER},

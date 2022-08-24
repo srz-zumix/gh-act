@@ -522,6 +522,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
 }
 ' --template '
 {{$disscussion := .data.repository.discussion }}
+DISCUSSION_ID="{{ printf "%.F" $disscussion.databaseId }}"
 DISCUSSION_ACTIVE_LOCK_REASON="{{ $disscussion.activeLockReason }}"
 DISCUSSION_ANSWER_CHOSEN_AT="{{ $disscussion.answerChosenAt }}"
 DISCUSSION_ANSWER_CHOSEN_BY="{{ $disscussion.answerChosenBy }}"
@@ -564,7 +565,8 @@ query($owner: String!, $repo: String!, $number: Int!) {
                     author { login }
                     authorAssociation
                     body
-                    discussion { id }
+                    databaseId
+                    discussion { databaseId }
                     id
                     reactionGroups {
                         content
@@ -581,13 +583,12 @@ query($owner: String!, $repo: String!, $number: Int!) {
 ' --template '
 {{$disscussion := .data.repository.discussion }}
 {{$comment := index $disscussion.comments.nodes 0 }}
-DISCUSSION_COMMENT_ID=0
+DISCUSSION_COMMENT_ID="{{ printf "%.F" $comment.databaseId }}"
 DISCUSSION_COMMENT_AUTHOR="{{ $comment.author.login }}"
 DISCUSSION_COMMENT_AUTHOR_ASSOCIATION="{{ $comment.authorAssociation }}"
 DISCUSSION_COMMENT_BODY="{{ $comment.body | js }}"
 DISCUSSION_COMMENT_CREATED_AT="{{ $comment.createdAt }}"
-# DISCUSSION_COMMENT_DISCUSSION_ID="{{ $comment.discussion.id }}"
-DISCUSSION_COMMENT_DISCUSSION_ID=0
+DISCUSSION_COMMENT_DISCUSSION_ID="{{ printf "%.F" $comment.discussion.databaseId }}"
 DISCUSSION_COMMENT_HTML_URL="{{ $comment.url }}"
 DISCUSSION_COMMENT_NODE_ID="{{ $comment.id }}"
 DISCUSSION_COMMENT_CHILD_COMMENT_COUNT="{{ $comment.replies.totalCount }}"
