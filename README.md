@@ -32,6 +32,7 @@ Please check [test workflow][](Diff step) for the difference between the generat
 
 Supported Events
 
+* branch_protection_rule
 * create
 * delete
 * discussion

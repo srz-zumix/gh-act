@@ -22,9 +22,7 @@
         "required_approving_review_count": ${BRANCH_PROTECTION_RULE_REQUIRED_APPROVING_REVIEW_COUNT},
         "required_conversation_resolution_level": "${BRANCH_PROTECTION_RULE_REQUIRED_CONVERSATION_RESOLUTION_LEVEL}",
         "required_deployments_enforcement_level": "off",
-        "required_status_checks": [
-          ${BRANCH_PROTECTION_RULE_REQUIRED_STATUS_CHECKS}
-        ],
+        "required_status_checks": ${BRANCH_PROTECTION_RULE_REQUIRED_STATUS_CHECKS},
         "required_status_checks_enforcement_level": "${BRANCH_PROTECTION_RULE_REQUIRED_STATUS_CHECKS_ENFORCEMENT_LEVEL}",
         "signature_requirement_enforcement_level": "${BRANCH_PROTECTION_RULE_SIGNATURE_REQUIREMENT_ENFORCEMENT_LEVEL}",
         "strict_required_status_checks_policy": ${BRANCH_PROTECTION_RULE_STRICT_REQUIRED_STATUS_CHECKS_POLICY},
