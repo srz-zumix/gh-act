@@ -17,6 +17,8 @@ on:
   pull_request_review_comment:
   pull_request_target:
   push:
+  repository_dispatch:
+    types: [on-demand-test]
   watch:
   workflow_dispatch:
     inputs:

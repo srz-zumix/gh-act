@@ -764,6 +764,8 @@ function evnet_env() {
     fi
 
     HEAD=$(git rev-parse HEAD)
+    HEAD_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git name-rev --name-only HEAD)
+    HEAD_REF="refs/heads/${HEAD_BRANCH}"
     BEFORE=$(git rev-parse HEAD^)
     HEAD_OWNER="${OWNER}"
     HEAD_REPO="${REPO}"
