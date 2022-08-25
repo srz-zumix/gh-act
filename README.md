@@ -59,6 +59,7 @@ Supported Events
 
 | name                       | description                                                                            | default                |
 |:---------------------------|:---------------------------------------------------------------------------------------|:-----------------------|
+| GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
 | GHACT_INPUTS               | workflow_dispatch inputs json string                                                   | null                   |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
@@ -73,7 +74,7 @@ Supported Events
 gh-act passes following token as GITHUB_TOKEN secret to act.
 
 * GITHUB_TOKEN
-* GH_TOKEN
+* GH_TOKEN / GH_ENTERPRISE_TOKEN
 * \<gh-config-dir\>/hosts.yml token
 
 Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.

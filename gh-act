@@ -850,10 +850,14 @@ if "${AUTO_GITHUB_TOKEN}"; then
     if [ -n "${GITHUB_TOKEN:-}" ]; then
         ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
     else
-        if [ -n "${GH_TOKEN:-}" ]; then
+        if [ "${GITHUB_HOSTNAME}" == "github.com" ] && [ -n "${GH_TOKEN:-}" ]; then
             ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
         else
-            hosts_yaml_token
+            if [ "${GITHUB_HOSTNAME}" != "github.com" ] && [ -n "${GH_ENTERPRISE_TOKEN:-}" ]; then
+                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_ENTERPRISE_TOKEN}")
+            else
+                hosts_yaml_token
+            fi
         fi
     fi
 fi
