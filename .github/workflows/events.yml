@@ -64,9 +64,9 @@ on:
       - auto_merge_enabled
       - auto_merge_disabled
   registry_package:
-    types: [on-demand-test]
   release:
   repository_dispatch:
+    types: [on-demand-test]
   schedule:
     - cron: '0 0 * * 0'
   status:
