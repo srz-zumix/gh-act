@@ -1,6 +1,6 @@
 {
     "pusher_type": "user",
-    "ref": "$(git symbolic-ref --short HEAD 2>/dev/null || git name-rev --name-only HEAD)",
+    "ref": "${HEAD_BRANCH}",
     "ref_type": "branch",
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}

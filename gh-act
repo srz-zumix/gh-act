@@ -313,11 +313,11 @@ REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
 
 function pull_request_event_envs() {
     # configurable vars
-    # PULL_REQUEST_SPEC
-    # PULL_REQUEST_NUMBER
-    PULL_REQUEST_SPEC="${PULL_REQUEST_SPEC:-}"
-    if [ -n "${PULL_REQUEST_NUMBER:-}" ]; then
-        PULL_REQUEST_SPEC="${PULL_REQUEST_NUMBER}"
+    # GHACT_PULL_REQUEST_SPEC
+    # GHACT_PULL_REQUEST_NUMBER
+    PULL_REQUEST_SPEC="${GHACT_PULL_REQUEST_SPEC:-}"
+    if [ -n "${GHACT_PULL_REQUEST_NUMBER:-}" ]; then
+        PULL_REQUEST_SPEC="${GHACT_PULL_REQUEST_NUMBER}"
     fi
 
     pr_env "${PULL_REQUEST_SPEC}"
@@ -352,14 +352,14 @@ function pull_request_event_envs() {
 
 function issue_event_envs() {
     # configurable vars
-    # ISSUE_NUMBER
-    if [ -z "${ISSUE_NUMBER:-}" ]; then
-        ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
+    # GHACT_ISSUE_NUMBER
+    if [ -z "${GHACT_ISSUE_NUMBER:-}" ]; then
+        GHACT_ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
     fi
 
-    issue_env "${ISSUE_NUMBER}"
+    issue_env "${GHACT_ISSUE_NUMBER}"
 
-    ISSUE_LABELS=$(gh issue view "${ISSUE_NUMBER}" --json labels)
+    ISSUE_LABELS=$(gh issue view "${GHACT_ISSUE_NUMBER}" --json labels)
     ISSUE_LABELS=${ISSUE_LABELS#{}
     ISSUE_LABELS=${ISSUE_LABELS%\}}
 
@@ -384,7 +384,7 @@ function issue_event_envs() {
             ISSUE_COMMENT_CREATED_AT="${ISSUE_CREATED_AT}"
             ISSUE_COMMENT_UPDATED_AT="${ISSUE_UPDATED_AT}"
         else
-            issue_comment_env "${ISSUE_NUMBER}"
+            issue_comment_env "${GHACT_ISSUE_NUMBER}"
         fi
         ISSUE_COMMENT_USER_JSON=$(user_json "${ISSUE_COMMENT_AUTHOR}")
     fi
@@ -400,7 +400,7 @@ function branch_protection_rule_env() {
     gh api graphql -F owner="$1" -F repo="$2" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
-        branchProtectionRules(first: 1) {
+        branchProtectionRules(last: 1) {
             nodes {
                 allowsDeletions
                 blocksCreations
@@ -560,7 +560,7 @@ function discussion_comment_env {
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         discussion(number: $number) {
-            comments(first: 1) {
+            comments(last: 1) {
                 nodes {
                     author { login }
                     authorAssociation
@@ -602,14 +602,14 @@ DISCUSSION_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment
 
 function discussion_event_envs() {
     # configurable vars
-    # DISCUSSION_NUMBER
-    if [ -z "${DISCUSSION_NUMBER:-}" ]; then
+    # GHACT_DISCUSSION_NUMBER
+    if [ -z "${GHACT_DISCUSSION_NUMBER:-}" ]; then
         # shellcheck disable=SC2016
-        DISCUSSION_NUMBER=$(
+        GHACT_DISCUSSION_NUMBER=$(
             gh api graphql -F owner="${OWNER}" -F repo="${REPO}" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
-        discussions(first: 1) {
+        discussions(last: 1) {
             nodes { number }
         }
     }
@@ -617,7 +617,7 @@ query($owner: String!, $repo: String!) {
         )
     fi
 
-    discussion_env "${OWNER}" "${REPO}" "${DISCUSSION_NUMBER}"
+    discussion_env "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
     DISCUSSION_AUTHOR_JSON=$(user_json "${DISCUSSION_AUTHOR}")
 
     if [[ "${EVENT_NAME}" =~ .*comment.* ]]; then
@@ -633,7 +633,7 @@ query($owner: String!, $repo: String!) {
             DISCUSSION_COMMENT_REPLAY_TO_ID="0"
             DISCUSSION_COMMENT_UPDATED_AT="${DISCUSSION_UPDATED_AT}"
         else
-            discussion_comment_env "${OWNER}" "${REPO}" "${DISCUSSION_NUMBER}"
+            discussion_comment_env "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
         fi
         DISCUSSION_COMMENT_AUTHOR_JSON=$(user_json "${DISCUSSION_COMMENT_AUTHOR}")
     fi
@@ -644,14 +644,14 @@ query($owner: String!, $repo: String!) {
 
 function milestone_env() {
     # configurable vars
-    # MILESTONE_NUMBER
-    if [ -z "${MILESTONE_NUMBER:-}" ]; then
+    # GHACT_MILESTONE_NUMBER
+    if [ -z "${GHACT_MILESTONE_NUMBER:-}" ]; then
         # shellcheck disable=SC2016
-        MILESTONE_NUMBER=$(
+        GHACT_MILESTONE_NUMBER=$(
             gh api graphql -F owner="$1" -F repo="$2" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
-        milestones(first: 1) {
+        milestones(last: 1) {
             nodes { number }
         }
     }
@@ -661,7 +661,7 @@ query($owner: String!, $repo: String!) {
 
     ACT_ENV="${TEMPFILE_DIR}/.milestone.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="${MILESTONE_NUMBER}" -F query='
+    gh api graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         milestone(number: $number) {
@@ -700,7 +700,7 @@ MILESTONE_HTML_URL="{{ $milestone.url }}"
 ' | filter_env > "${ACT_ENV}"
 
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="${MILESTONE_NUMBER}" -F query='
+    gh api graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         milestone(number: $number) {
@@ -802,7 +802,7 @@ function create_event_json() {
             fi
         fi
         if [[ "${EVENT_NAME}" =~ ^issue.* ]]; then
-            ISSUE_JSON=$(issue_json "${ISSUE_NUMBER}")
+            ISSUE_JSON=$(issue_json "${GHACT_ISSUE_NUMBER}")
         fi
         if [[ "${EVENT_NAME}" =~ ^discussion.* ]]; then
             DISCUSSION_JSON=$(parts_json discussion)
