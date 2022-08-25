@@ -72,6 +72,13 @@ on:
   status:
   watch:
   workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
+    secrets:
+      envPAT:
+        required: true
   workflow_dispatch:
     inputs:
       name:
