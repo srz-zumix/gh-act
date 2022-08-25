@@ -1,6 +1,6 @@
 {
-    "inputs": null,
-    "ref": "$(git symbolic-ref HEAD 2>/dev/null || git name-rev --name-only HEAD)",
+    "inputs": ${GHACT_INPUTS:-null},
+    "ref": "${HEAD_REF}",
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON},
     "workflow": "${WORKFLOWS_PATH}/${WORKFLOW_YAML}"

@@ -14,7 +14,7 @@
         "email": "$(git config --get user.email)",
         "name": "$(git config --get user.name)"
     },
-    "ref": "$(git symbolic-ref HEAD)",
+    "ref": "${HEAD_REF}",
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
 }
