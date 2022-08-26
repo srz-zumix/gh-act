@@ -5,7 +5,7 @@ on:
 
 jobs:
   reusable_workflow_job:
-    uses: srz-zumix/gh-act/.github/workflows/events.yml@.
+    uses: srz-zumix/gh-act/.github/workflows/events.yml@${{ github.ref }}
     with:
       username: ${{ github.actor }}
     secrets:
