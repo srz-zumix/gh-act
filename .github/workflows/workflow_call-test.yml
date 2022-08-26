@@ -8,6 +8,4 @@ jobs:
     uses: srz-zumix/gh-act/.github/workflows/events.yml@main
     with:
       username: ${{ github.actor }}
-    secrets:
-      - inherit
-      - envPAT: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit

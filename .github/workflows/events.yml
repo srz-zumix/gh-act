@@ -78,7 +78,9 @@ on:
         required: true
         type: string
     secrets:
-      envPAT:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
         required: true
   workflow_dispatch:
     inputs:
