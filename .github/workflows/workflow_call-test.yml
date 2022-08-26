@@ -7,7 +7,7 @@ jobs:
   reusable_workflow_job:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/events.yml@.
+      - uses: srz-zumix/gh-act/.github/workflows/events.yml@.
         with:
           username: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
