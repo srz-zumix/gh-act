@@ -74,6 +74,7 @@ on:
   workflow_call:
     inputs:
       username:
+        description: 'Name'
         required: true
         type: string
     secrets:

@@ -5,9 +5,8 @@ on:
 
 jobs:
   reusable_workflow_job:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: srz-zumix/gh-act/.github/workflows/events.yml@.
-        with:
-          username: ${{ github.actor }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+    uses: srz-zumix/gh-act/.github/workflows/events.yml@.
+      with:
+        username: ${{ github.actor }}
+      secrets:
+        envPAT: ${{ secrets.GITHUB_TOKEN }}
