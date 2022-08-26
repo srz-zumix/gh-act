@@ -1,0 +1,12 @@
+name: workflow call test
+on: 
+  # pull_request:
+  workflow_dispatch:
+
+jobs:
+  reusable_workflow_job:
+    uses: srz-zumix/gh-act/.github/workflows/events.yml@main
+    with:
+      username: ${{ github.actor }}
+    secrets:
+      envPAT: ${{ secrets.GITHUB_TOKEN }}
