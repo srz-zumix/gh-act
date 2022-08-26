@@ -9,4 +9,5 @@ jobs:
     with:
       username: ${{ github.actor }}
     secrets:
-      envPAT: ${{ secrets.GITHUB_TOKEN }}
+      - inherit
+      - envPAT: ${{ secrets.GITHUB_TOKEN }}
