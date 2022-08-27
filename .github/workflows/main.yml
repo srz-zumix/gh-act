@@ -2,6 +2,7 @@ name: gh act tests
 on:
   branch_protection_rule:
   create:
+  check_run:
   # delete:
   discussion:
   discussion_comment:
