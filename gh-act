@@ -732,6 +732,11 @@ function check_envs() {
     CHECK_RUN_ID=0
 }
 
+function commit_env() {
+    COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
+    COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+}
+
 
 function evnet_env() {
     if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
@@ -751,9 +756,8 @@ function evnet_env() {
         return
     fi
 
-    if [ "${EVENT_NAME}" == "push" ]; then
-        COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
-        COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
+    if [ "${EVENT_NAME}" == "push" ] || [ "${EVENT_NAME}" == "check_suite" ]; then
+        commit_env
     fi
     if [ "${EVENT_NAME}" == "label" ]; then
         label_event_envs
