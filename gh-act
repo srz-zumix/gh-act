@@ -727,7 +727,7 @@ function milestone_event_envs() {
 }
 
 function check_envs() {
-    CHECK_APP_JSON=$(cat ${SCRIPT_DIR}/templates/app/circleci.json)
+    CHECK_APP_JSON=$(cat "${SCRIPT_DIR}/templates/app/circleci.json")
     CHECK_SUITE_ID=0
     CHECK_RUN_ID=0
 }
