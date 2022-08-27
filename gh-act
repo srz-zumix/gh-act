@@ -726,6 +726,12 @@ function milestone_event_envs() {
     HEAD_USER="${MILESTONE_CREATOR_AUTHOR}"
 }
 
+function check_envs() {
+    CHECK_APP_JSON=$(cat "${SCRIPT_DIR}/templates/app/circleci.json")
+    CHECK_SUITE_ID=0
+    CHECK_RUN_ID=0
+}
+
 
 function evnet_env() {
     if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
@@ -755,7 +761,11 @@ function evnet_env() {
     if [ "${EVENT_NAME}" == "branch_protection_rule" ]; then
         branch_protection_rule_env "${OWNER}" "${REPO}"
     fi
+    if [[ "${EVENT_NAME}" =~ ^check.* ]]; then
+        check_envs
+    fi
     
+
     if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
         WORKFLOWS_FILES=()
         while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
@@ -844,6 +854,9 @@ function hosts_yaml_token() {
         return
     fi
 }
+
+DATE_NOW=$(date +"%Y-%m-%dT%H:%M:%S%z")
+DATE_UTC_NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 declare -a ACT_OPTIONS
 if "${AUTO_GITHUB_TOKEN}"; then

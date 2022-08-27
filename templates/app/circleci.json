@@ -1,0 +1,40 @@
+{
+    "created_at": "2018-09-24T21:20:05Z",
+    "description": "See the status of your CircleCI workflows under the Pull Request Checks tab in the GitHub UI. With checks enabled, users will now be able to go to the Checks tab in GitHub to view the full hierarchy and status of CircleCI builds.\r\n\r\n*Note* - You cannot enable GitHub Checks for CircleCI from the GitHub UI, you must log into CircleCI and enable checks for your organization. You must have admin privileges for your organization to enable checks.",
+    "events": [
+      "check_run",
+      "check_suite"
+    ],
+    "external_url": "https://circleci.com",
+    "html_url": "https://github.com/apps/circleci-checks",
+    "id": 18001,
+    "name": "CircleCI Checks",
+    "node_id": "MDM6QXBwMTgwMDE=",
+    "owner": {
+      "avatar_url": "https://avatars.githubusercontent.com/u/1231870?v=4",
+      "events_url": "https://api.github.com/users/circleci/events{/privacy}",
+      "followers_url": "https://api.github.com/users/circleci/followers",
+      "following_url": "https://api.github.com/users/circleci/following{/other_user}",
+      "gists_url": "https://api.github.com/users/circleci/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/circleci",
+      "id": 1231870,
+      "login": "circleci",
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjEyMzE4NzA=",
+      "organizations_url": "https://api.github.com/users/circleci/orgs",
+      "received_events_url": "https://api.github.com/users/circleci/received_events",
+      "repos_url": "https://api.github.com/users/circleci/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/circleci/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/circleci/subscriptions",
+      "type": "Organization",
+      "url": "https://api.github.com/users/circleci"
+    },
+    "permissions": {
+      "checks": "write",
+      "metadata": "read",
+      "single_file": "read"
+    },
+    "slug": "circleci-checks",
+    "updated_at": "2018-10-17T15:49:07Z"
+}

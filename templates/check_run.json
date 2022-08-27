@@ -1,0 +1,43 @@
+{
+    "action": "completed",
+    "check_run": {
+      "app": ${CHECK_APP_JSON},
+      "check_suite": {
+        "after": "${HEAD}",
+        "app": ${CHECK_APP_JSON},
+        "before": "${BEFORE}",
+        "conclusion": "success",
+        "created_at": "${DATE_UTC_NOW}",
+        "head_branch": "${HEAD_BRANCH}",
+        "head_sha": "${HEAD}",
+        "id": ${CHECK_SUITE_ID},
+        "node_id": "",
+        "pull_requests": [],
+        "status": "completed",
+        "updated_at": "${DATE_UTC_NOW}",
+        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-suites/${CHECK_SUITE_ID}"
+      },
+      "completed_at": "${DATE_UTC_NOW}",
+      "conclusion": "success",
+      "details_url": "",
+      "external_id": "",
+      "head_sha": "${HEAD}",
+      "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/runs/${CHECK_RUN_ID}",
+      "id": ${CHECK_RUN_ID},
+      "name": "gh-act-checks-workflow",
+      "node_id": "",
+      "output": {
+        "annotations_count": 0,
+        "annotations_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-runs/${CHECK_RUN_ID}/annotations",
+        "summary": "* gh-act checks - Success",
+        "text": null,
+        "title": "Workflow: gh-act-checks-workflow"
+      },
+      "pull_requests": [],
+      "started_at": "${DATE_UTC_NOW}",
+      "status": "completed",
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-runs/${CHECK_RUN_ID}"
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
