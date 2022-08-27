@@ -35,6 +35,8 @@ Supported Events
 | Event                  | Configurable environment variables |
 |:-----------------------|:-----------------------------------|
 | branch_protection_rule |
+| check_run              |
+| check_suite            |
 | create                 |
 | delete                 |
 | discussion             | GHACT_DISCUSSION_NUMBER            |

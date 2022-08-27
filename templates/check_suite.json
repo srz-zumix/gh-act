@@ -1,0 +1,25 @@
+{
+    "action": "completed",
+    "check_suite": {
+        "after": "${HEAD}",
+        "app": ${CHECK_APP_JSON},
+        "before": "${BEFORE}",
+        "check_runs_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-suites/${CHECK_SUITE_ID}/check-runs",
+        "conclusion": "success",
+        "created_at": "${DATE_UTC_NOW}",
+        "head_branch": "${HEAD_BRANCH}",
+        "head_commit": ${COMMITS},
+        "head_sha": "${HEAD}",
+        "id": ${CHECK_SUITE_ID},
+        "latest_check_runs_count": 1,
+        "node_id": "",
+        "pull_requests": [],
+        "rerequestable": true,
+        "runs_rerequestable": true,
+        "status": "completed",
+        "updated_at": "${DATE_UTC_NOW}",
+        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-suites/${CHECK_SUITE_ID}"
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}

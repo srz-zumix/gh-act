@@ -3,6 +3,7 @@ on:
   branch_protection_rule:
   create:
   check_run:
+  check_suite:
   # delete:
   discussion:
   discussion_comment:
