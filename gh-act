@@ -854,7 +854,7 @@ function commit_detail_json() {
         while IFS='' read -r line; do REMOTE_LIST+=("$line"); done < <(git remote)
         TARGET_BRANCH="${TARGET_REMOTE_BRANCH##* }"
         for remote in "${REMOTE_LIST[@]}"; do
-            TARGET_BRANCH="${TARGET_BRANCH#${remote}/}"
+            TARGET_BRANCH="${TARGET_BRANCH#"${remote}/"}"
         done
         remote_commit_detail_json "$1" "$2" "${TARGET_BRANCH}"
     else
