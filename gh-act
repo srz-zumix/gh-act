@@ -737,6 +737,86 @@ function commit_env() {
     COMMITS=$(git log -1 --pretty=format:"{%n \"author\": {%n  \"email\": \"%ae\",%n  \"name\":\"%an\",%n  \"username\":\"%an\"%n },%n \"committer\":{%n  \"email\":\"%ce\",%n  \"name\":\"%cn\",%n  \"username\":\"%cn\"%n },%n \"distinct\":true,%n \"id\":\"%H\",%n \"message\":\"${COMMIT_MESSAGE}\",%n \"timestamp\":\"%cI\",%n \"tree_id\":\"%T\",%n \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"%n}")
 }
 
+function remote_commit_detail_json() {
+    # shellcheck disable=SC2016
+    gh api graphql -F owner="$1" -F repo="$2" -F ref="$3" -F query='
+query($owner: String!, $repo: String!, $ref: String!) {
+  repository(owner: $owner, name: $repo) { 
+    ref(qualifiedName: $ref) {
+      target {
+        ... on Commit {
+          author {
+            date
+            email
+            name
+          }
+          comments { totalCount }
+          committer {
+            date
+            email
+            name
+	        }
+          message
+          signature {
+            isValid
+            payload
+            signature
+            state
+          }
+          tree {
+            commitUrl
+            oid
+          }
+          url
+        }
+      }
+    }
+  }
+}
+' --template '
+{{$commit := .data.repository.ref.target }}
+{
+    "author": {
+        "date": "{{ $commit.author.date }}",
+        "email": "{{ $commit.author.email }}",
+        "name": "{{ $commit.author.name }}"
+    },
+    "comment_count": {{ $commit.comments.totalCount }},
+    "committer": {
+        "date": "{{ $commit.committer.date }}",
+        "email": "{{ $commit.committer.email }}",
+        "name": "{{ $commit.committer.name }}"
+    },
+    "message": "{{ $commit.message | js }}",
+    "tree": {
+        "sha": "{{ $commit.tree.oid }}",
+        "url": "{{ $commit.tree.commitUrl }}"
+    },
+    "url": "{{ $commit.comments.url }}",
+    "verification": {
+        "payload": "{{ $commit.signature.payload | js }}",
+        "reason": "{{ $commit.signature.state }}",
+        "signature": "{{ $commit.signature.signature | js }}",
+        "verified": {{ $commit.signature.isValid }}
+    }
+}
+'
+}
+
+function commit_detail_json() {
+    TARGET_REMOTE_BRANCH=$(git branch --remote --points-at "$3" | grep -v ' ->' | head -1)
+    REMOTE_LIST=($(git remote))
+    TARGET_BRANCH="${TARGET_REMOTE_BRANCH##* }"
+    for remote in "${REMOTE_LIST[@]}"; do
+        TARGET_BRANCH=${TARGET_BRANCH#${remote}/}
+    done
+    if [ -n "${TARGET_BRANCH}" ]; then
+        remote_commit_detail_json "$1" "$2" "${TARGET_BRANCH}"
+    else
+        :
+    fi
+}
+
 
 function evnet_env() {
     if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
@@ -768,7 +848,6 @@ function evnet_env() {
     if [[ "${EVENT_NAME}" =~ ^check.* ]]; then
         check_envs
     fi
-    
 
     if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
         WORKFLOWS_FILES=()
@@ -784,6 +863,10 @@ function evnet_env() {
     HEAD_OWNER="${OWNER}"
     HEAD_REPO="${REPO}"
     HEAD_USER="$(git log -1 --pretty=format:%an)"
+
+    if [ "${EVENT_NAME}" == "status" ]; then
+        COMMIT_DETAIL_JSON=$(commit_detail_json "${OWNER}" "${REPO}" "${HEAD}")
+    fi
 }
 
 function create_event_json() {

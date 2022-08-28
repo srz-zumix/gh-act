@@ -21,6 +21,7 @@ on:
   push:
   repository_dispatch:
     types: [on-demand-test]
+  status:
   watch:
   workflow_dispatch:
     inputs:

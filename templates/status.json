@@ -1,0 +1,37 @@
+{
+    "avatar_url": "https://avatars.githubusercontent.com/oa/4808?v=4",
+    "branches": [
+      {
+        "commit": {
+          "sha": "${HEAD}",
+          "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${HEAD}"
+        },
+        "name": "%{HEAD_BRANCH}",
+        "protected": true
+      }
+    ],
+    "commit": {
+      "author": ${HEAD_USER_JSON},
+      "comments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${HEAD}/comments",
+      "commit": ${COMMIT_DETAIL_JSON},
+      "committer": ${HEAD_USER_JSON},
+      "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/${HEAD}",
+      "node_id": "",
+      "parents": [
+        {
+          "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/${BEFORE}",
+          "sha": "${BEFORE}",
+          "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${BEFORE}"
+        }
+      ],
+      "sha": "${HEAD}",
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${HEAD}"
+    },
+    "context": "gh-act check",
+    "created_at": "${DATE_NOW}",
+    "description": "gh-act check",
+    "id": 18952275308,
+    "name": "${OWNER}/${REPO}",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
