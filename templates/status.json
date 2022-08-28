@@ -30,7 +30,7 @@
     "context": "gh-act check",
     "created_at": "${DATE_NOW}",
     "description": "gh-act check",
-    "id": 18952275308,
+    "id": 0,
     "name": "${OWNER}/${REPO}",
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
