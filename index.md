@@ -1,37 +1,87 @@
-## Welcome to GitHub Pages
+# gh-act
 
-You can use the [editor on GitHub](https://github.com/srz-zumix/gh-act/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+gh-act generates and configures event.json for [act][]
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Installation
 
-### Markdown
+> gh extension install srz-zumix/gh-act
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Usage
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```sh
+$ gh act pull_request
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+Create event.json in a temporary file, add it to the options of act and execute
 
-### Jekyll Themes
+```sh
+$ gh act pull_request -e pull_request.json
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/srz-zumix/gh-act/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+gh-act does nothing if exist pull_request.json file.  
+If pull_request.json is not exist, gh-act will generate it in the specified file.
 
-### Support or Contact
+Please check [test workflow][](Diff step) for the difference between the generated event.json and the actual event
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[act]:https://github.com/nektos/act
+[test workflow]:https://github.com/srz-zumix/gh-act/actions/workflows/main.yml
+
+## Features
+
+### Events
+
+Supported Events
+
+| Event                  | Configurable environment variables |
+|:-----------------------|:-----------------------------------|
+| branch_protection_rule |
+| check_run              |
+| check_suite            |
+| create                 |
+| delete                 |
+| discussion             | GHACT_DISCUSSION_NUMBER            |
+| discussion_comment     | GHACT_DISCUSSION_NUMBER            |
+| gollum                 |
+| issue_comment          | GHACT_ISSUE_NUMBER                 |
+| issues                 | GHACT_ISSUE_NUMBER                 |
+| label                  |
+| milestone              | GHACT_MILESTONE_NUMBER             |
+| page_build             |
+| public                 |
+| pull_request           | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| pull_request_review    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| pull_request_target    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| push                   |
+| repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
+| schedule               | GHACT_SCHEDULE_CRON                |
+| status                 |
+| watch                  |
+| workflow_dispatch      | GHACT_INPUTS                       |
+
+### Environment Variables
+
+| name                       | description                                                                            | default                |
+|:---------------------------|:---------------------------------------------------------------------------------------|:-----------------------|
+| GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
+| GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
+| GHACT_INPUTS               | workflow_dispatch inputs json string                                                   | null                   |
+| GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
+| GHACT_ISSUE_NUMBER         | specify issue number (https://github.com/{owner}/{repo}/issues/{__number__})           | last issue number      |
+| GHACT_MILESTONE_NUMBER     | specify milestone number (https://github.com/{owner}/{repo}/milestone/{__number__})    | last milestone number  |
+| GHACT_PULL_REQUEST_NUMBER  | specify pull request number (https://github.com/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
+| GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           | |
+| GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
+
+### GITHUB_TOKEN
+
+gh-act passes following token as GITHUB_TOKEN secret to act.
+
+* GITHUB_TOKEN
+* GH_TOKEN / GH_ENTERPRISE_TOKEN
+* \<gh-config-dir\>/hosts.yml token
+
+Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
+
+> GHACT_AUTO_GITHUB_TOKEN=false gh act ...
+
+[cron string]:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
