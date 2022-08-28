@@ -9,6 +9,7 @@ on:
   deployment_status:
   discussion:
   discussion_comment:
+  dynamic:
   fork:
   gollum:
   issue_comment:
