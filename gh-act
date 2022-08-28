@@ -810,13 +810,15 @@ query($owner: String!, $repo: String!, $ref: String!) {
         "sha": "{{ $commit.tree.oid }}",
         "url": "{{ $commit.tree.commitUrl }}"
     },
-    "url": "{{ $commit.comments.url }}",
-    "verification": {
+    "url": "{{ $commit.comments.url }}"
+    {{ if $commit.signature }}
+    , "verification": {
         "payload": "{{ $commit.signature.payload | js }}",
         "reason": "{{ $commit.signature.state }}",
         "signature": "{{ $commit.signature.signature | js }}",
         "verified": {{ $commit.signature.isValid }}
     }
+    {{ end }}
 }
 '
 }
@@ -848,10 +850,11 @@ function local_commit_detail_json() {
 function commit_detail_json() {
     TARGET_REMOTE_BRANCH=$(git branch --remote --points-at "$3" | grep -v ' ->' | head -1)
     if [ -n "${TARGET_REMOTE_BRANCH}" ]; then
-        REMOTE_LIST=($(git remote))
+        REMOTE_LIST=()
+        while IFS='' read -r line; do REMOTE_LIST+=("$line"); done < <(git remote)
         TARGET_BRANCH="${TARGET_REMOTE_BRANCH##* }"
         for remote in "${REMOTE_LIST[@]}"; do
-            TARGET_BRANCH=${TARGET_BRANCH#${remote}/}
+            TARGET_BRANCH="${TARGET_BRANCH#${remote}/}"
         done
         remote_commit_detail_json "$1" "$2" "${TARGET_BRANCH}"
     else
