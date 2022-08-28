@@ -1,5 +1,5 @@
 {
-    "action": "created",
+    "action": "${GHACT_ACTION:-created}",
     "milestone": {
       "closed_at": "${MILESTONE_CLOSED_AT}",
       "closed_issues": ${MILESTONE_CLOSED_ISSUES},

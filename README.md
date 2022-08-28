@@ -54,6 +54,7 @@ Supported Events
 | push                   |
 | repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
 | schedule               | GHACT_SCHEDULE_CRON                |
+| status                 |
 | watch                  |
 | workflow_dispatch      | GHACT_INPUTS                       |
 
