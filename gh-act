@@ -97,7 +97,7 @@ function parts_json {
 
 }
 
-function filter_env {
+function filter_envs {
     sed -e '/^$/d' \
         -e 's/<no value>/null/g' \
         -e "s/\\\\'/'/g" \
@@ -167,7 +167,7 @@ function repo_json {
     parts_json repo
 }
 
-function pr_env {
+function pr_envs {
     ACT_ENV="${TEMPFILE_DIR}/.pr.env"
     # shellcheck disable=SC2016,SC2086
     gh pr view ${1:-} --json \
@@ -198,11 +198,11 @@ PR_STATE="{{.state}}"
 PR_TITLE="{{.title | js}}"
 PR_UPDATED_AT="{{.updatedAt}}"
 PR_URL="{{.url}}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
-function pr_review_env {
+function pr_review_envs {
     # FIXME: PR_REVIEW_ID
     ACT_ENV="${TEMPFILE_DIR}/.pr_review.env"
     # shellcheck disable=SC2016,SC2086
@@ -218,11 +218,11 @@ PR_REVIEW_BODY="{{$last_review.body | js}}"
 PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
 PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
 PR_REVIEW_STATE="{{$last_review.state}}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
-function issue_env {
+function issue_envs {
     ACT_ENV="${TEMPFILE_DIR}/.issue.env"
     # shellcheck disable=SC2016
     gh issue view "$1" --json \
@@ -242,11 +242,11 @@ ISSUE_UPDATED_AT="{{.updatedAt}}"
 ISSUE_URL="{{.url}}"
 {{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
 ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
-function issue_comment_env {
+function issue_comment_envs {
     ACT_ENV="${TEMPFILE_DIR}/.issue.comment.env"
     # shellcheck disable=SC2016
     gh issue view "$1" --json \
@@ -261,11 +261,11 @@ ISSUE_COMMENT_CREATED_AT="{{$comment.createdAt}}"
 ISSUE_COMMENT_UPDATED_AT="{{$comment.createdAt}}"
 {{range $index, $element := $comment.reactionGroups}}ISSUE_COMMENT_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
 ISSUE_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment.reactionGroups}}+{{$element.users.totalCount}}{{end}}))
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
     . "${ACT_ENV}"
 }
 
-function repo_env {
+function repo_envs {
     REPOSITORY="$1"
     PREFIX="$2"
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
@@ -304,7 +304,7 @@ REPO_STARGAZER_COUNT="{{.stargazerCount}}"
 REPO_UPDATED_AT="{{.updatedAt}}"
 REPO_URL="{{.url}}"
 REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
     . "${ACT_ENV}"
     sed -e "s/^/${PREFIX}_/g" < "${ACT_ENV}" > "${ACT_ENV}.${PREFIX}"
     . "${ACT_ENV}.${PREFIX}"
@@ -320,7 +320,7 @@ function pull_request_event_envs() {
         PULL_REQUEST_SPEC="${GHACT_PULL_REQUEST_NUMBER}"
     fi
 
-    pr_env "${PULL_REQUEST_SPEC}"
+    pr_envs "${PULL_REQUEST_SPEC}"
     # shellcheck disable=SC2086
     HEAD=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -1)
     # shellcheck disable=SC2086
@@ -329,7 +329,7 @@ function pull_request_event_envs() {
     BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
 
     # base
-    repo_env "${OWNER}/${REPO}" "BASE"
+    repo_envs "${OWNER}/${REPO}" "BASE"
     BASE_USER_JSON=$(user_json "${OWNER}")
     BASE_REPO_JSON=$(repo_json "${OWNER}" "${REPO}" "${BASE_USER_JSON}")
     BASE_SHA=$(gh api --hostname "${GITHUB_HOSTNAME}" --method GET -H "Accept: application/vnd.github.v3+json" "/repos/${OWNER}/${REPO}/git/refs/heads/${BASE_REF}" --jq .object.sha)
@@ -343,7 +343,7 @@ function pull_request_event_envs() {
             PR_REVIEW_SUBMITTED_AT="${PR_UPDATED_AT}"
             PR_REVIEW_STATE="COMMENTED"
         else
-            pr_review_env "${PULL_REQUEST_SPEC}"
+            pr_review_envs "${PULL_REQUEST_SPEC}"
         fi
         PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
     fi
@@ -357,7 +357,7 @@ function issue_event_envs() {
         GHACT_ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
     fi
 
-    issue_env "${GHACT_ISSUE_NUMBER}"
+    issue_envs "${GHACT_ISSUE_NUMBER}"
 
     ISSUE_LABELS=$(gh issue view "${GHACT_ISSUE_NUMBER}" --json labels)
     ISSUE_LABELS=${ISSUE_LABELS#{}
@@ -384,7 +384,7 @@ function issue_event_envs() {
             ISSUE_COMMENT_CREATED_AT="${ISSUE_CREATED_AT}"
             ISSUE_COMMENT_UPDATED_AT="${ISSUE_UPDATED_AT}"
         else
-            issue_comment_env "${GHACT_ISSUE_NUMBER}"
+            issue_comment_envs "${GHACT_ISSUE_NUMBER}"
         fi
         ISSUE_COMMENT_USER_JSON=$(user_json "${ISSUE_COMMENT_AUTHOR}")
     fi
@@ -394,7 +394,7 @@ function issue_event_envs() {
 }
 
 
-function branch_protection_rule_env() {
+function branch_protection_rule_envs() {
     ACT_ENV="${TEMPFILE_DIR}/.branch_protection_rule.env"
     # shellcheck disable=SC2016
     gh api graphql -F owner="$1" -F repo="$2" -F query='
@@ -445,7 +445,7 @@ BRANCH_PROTECTION_RULE_STRICT_REQUIRED_STATUS_CHECKS_POLICY="{{ $rule.requiresSt
 BRANCH_PROTECTION_RULE_LINEAR_HISTORY_REQUIREMENT_ENFORCEMENT_LEVEL="{{if $rule.requiresLinearHistory}}on{{else}}off{{end}}"
 #BRANCH_PROTECTION_RULE_="{{if $rule.requiresLinearHistory}}on{{else}}off{{end}}"
 #BRANCH_PROTECTION_RULE_="{{ $rule.activeLockReason }}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
         . "${ACT_ENV}"
 }
 
@@ -474,13 +474,13 @@ LABEL_NODE_ID="{{$label.id}}"
 LABEL_IS_DEFAULT="{{$label.isDefault}}"
 LABEL_NAME="{{$label.name}}"
 LABEL_URL="{{$label.url}}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
         . "${ACT_ENV}"
     fi
 }
 
 
-function discussion_env() {
+function discussion_envs() {
     ACT_ENV="${TEMPFILE_DIR}/.discussion.env"
     # shellcheck disable=SC2016
     gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
@@ -548,12 +548,12 @@ DISCUSSION_TITLE="{{ $disscussion.title | js }}"
 DISCUSSION_UPDATED_AT="{{ $disscussion.updatedAt }}"
 {{range $index, $element := $disscussion.reactionGroups}}DISCUSSION_REACTION_{{$element.content}}_COUNT={{println $element.reactors.totalCount}}{{end}}
 DISCUSSION_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $disscussion.reactionGroups}}+{{$element.reactors.totalCount}}{{end}}))
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
         . "${ACT_ENV}"
 }
 
 
-function discussion_comment_env {
+function discussion_comment_envs {
     ACT_ENV="${TEMPFILE_DIR}/.discussion.comment.env"
     # shellcheck disable=SC2016
     gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
@@ -595,7 +595,7 @@ DISCUSSION_COMMENT_CHILD_COMMENT_COUNT="{{ $comment.replies.totalCount }}"
 DISCUSSION_COMMENT_UPDATED_AT="{{ $comment.updatedAt }}"
 {{range $index, $element := $comment.reactionGroups}}DISCUSSION_COMMENT_REACTION_{{$element.content}}_COUNT={{println $element.reactors.totalCount}}{{end}}
 DISCUSSION_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment.reactionGroups}}+{{$element.reactors.totalCount}}{{end}}))
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
         . "${ACT_ENV}"
 }
 
@@ -617,7 +617,7 @@ query($owner: String!, $repo: String!) {
         )
     fi
 
-    discussion_env "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
+    discussion_envs "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
     DISCUSSION_AUTHOR_JSON=$(user_json "${DISCUSSION_AUTHOR}")
 
     if [[ "${EVENT_NAME}" =~ .*comment.* ]]; then
@@ -633,7 +633,7 @@ query($owner: String!, $repo: String!) {
             DISCUSSION_COMMENT_REPLAY_TO_ID="0"
             DISCUSSION_COMMENT_UPDATED_AT="${DISCUSSION_UPDATED_AT}"
         else
-            discussion_comment_env "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
+            discussion_comment_envs "${OWNER}" "${REPO}" "${GHACT_DISCUSSION_NUMBER}"
         fi
         DISCUSSION_COMMENT_AUTHOR_JSON=$(user_json "${DISCUSSION_COMMENT_AUTHOR}")
     fi
@@ -642,7 +642,7 @@ query($owner: String!, $repo: String!) {
     HEAD_USER="${DISCUSSION_AUTHOR}"
 }
 
-function milestone_env() {
+function milestone_envs() {
     # configurable vars
     # GHACT_MILESTONE_NUMBER
     if [ -z "${GHACT_MILESTONE_NUMBER:-}" ]; then
@@ -697,7 +697,7 @@ MILESTONE_STATE="{{ $milestone.state }}"
 MILESTONE_TITLE="{{ $milestone.title }}"
 MILESTONE_UPDATED_AT="{{ $milestone.locked }}"
 MILESTONE_HTML_URL="{{ $milestone.url }}"
-' | filter_env > "${ACT_ENV}"
+' | filter_envs > "${ACT_ENV}"
 
     # shellcheck disable=SC2016
     gh api graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
@@ -713,12 +713,12 @@ query($owner: String!, $repo: String!, $number: Int!) {
 ' --template '
 {{$milestone := .data.repository.milestone }}
 MILESTONE_OPEN_ISSUES="{{ $milestone.issues.totalCount }}"
-' | filter_env >> "${ACT_ENV}"
+' | filter_envs >> "${ACT_ENV}"
         . "${ACT_ENV}"
 }
 
 function milestone_event_envs() {
-    milestone_env "${OWNER}" "${REPO}"
+    milestone_envs "${OWNER}" "${REPO}"
     MILESTONE_CREATOR_AUTHOR_JSON=$(user_json "${MILESTONE_CREATOR_AUTHOR}")
 
     HEAD_OWNER="${OWNER}"
@@ -732,7 +732,23 @@ function check_envs() {
     CHECK_RUN_ID=0
 }
 
-function commit_env() {
+function package_envs() {
+    JQ_FILTER="[.[] | select(.repository.name == \"$2\")][0]"
+    if [ -n "${GHACT_PACKAGE_NAME:-}" ]; then
+        JQ_FILTER=".[] | select(.name == \"${GHACT_PACKAGE_NAME}\")"
+    fi
+    if is_valid_user "${1}"; then
+        REGISTRY_PACKAGE_JSON=$(gh api --hostname "${GITHUB_HOSTNAME}" \
+            -H "Accept: application/vnd.github+json" \
+            "/users/$1/packages?package_type=${GHACT_PACKAGE_TYPE:-container}" --jq "${JQ_FILTER}")
+    else
+        REGISTRY_PACKAGE_JSON=$(gh api --hostname "${GITHUB_HOSTNAME}" \
+            -H "Accept: application/vnd.github+json" \
+            "/orgs/$1/packages?package_type=${GHACT_PACKAGE_TYPE:-container}" --jq "${JQ_FILTER}")
+    fi
+}
+
+function commit_envs() {
     COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
     LOG_FORMAT="{
   \"author\": {
@@ -863,7 +879,7 @@ function commit_detail_json() {
 }
 
 
-function evnet_env() {
+function evnet_envs() {
     if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
         pull_request_event_envs
         return
@@ -882,16 +898,19 @@ function evnet_env() {
     fi
 
     if [ "${EVENT_NAME}" == "push" ] || [ "${EVENT_NAME}" == "check_suite" ]; then
-        commit_env
+        commit_envs
     fi
     if [ "${EVENT_NAME}" == "label" ]; then
         label_event_envs
     fi
     if [ "${EVENT_NAME}" == "branch_protection_rule" ]; then
-        branch_protection_rule_env "${OWNER}" "${REPO}"
+        branch_protection_rule_envs "${OWNER}" "${REPO}"
     fi
     if [[ "${EVENT_NAME}" =~ ^check.* ]]; then
         check_envs
+    fi
+    if [ "${EVENT_NAME}" == "registry_package" ]; then
+        package_envs "${OWNER}" "${REPO}"
     fi
 
     if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
@@ -922,10 +941,10 @@ function create_event_json() {
         OWNER=$(gh repo view --json owner --jq .owner.login)
         REPO=$(gh repo view --json name --jq .name)
 
-        evnet_env
+        evnet_envs
 
         # head
-        repo_env "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
+        repo_envs "${HEAD_OWNER}/${HEAD_REPO}" "HEAD"
 
         HEAD_OWNER_JSON=$(user_json "${HEAD_OWNER}")
         HEAD_USER_JSON=$(user_json "${HEAD_USER}")

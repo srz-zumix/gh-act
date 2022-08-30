@@ -52,6 +52,7 @@ Supported Events
 | pull_request_review    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
 | pull_request_target    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
 | push                   |
+| registry_package       | GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE             |
 | repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
 | schedule               | GHACT_SCHEDULE_CRON                |
 | status                 |
@@ -68,6 +69,8 @@ Supported Events
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
 | GHACT_ISSUE_NUMBER         | specify issue number (https://github.com/{owner}/{repo}/issues/{__number__})           | last issue number      |
 | GHACT_MILESTONE_NUMBER     | specify milestone number (https://github.com/{owner}/{repo}/milestone/{__number__})    | last milestone number  |
+| GHACT_PACKAGE_NAME         | specify package name                                                                   | first package name     |
+| GHACT_PACKAGE_TYPE         | specify package type ([supported package_type][])                                      | container              |
 | GHACT_PULL_REQUEST_NUMBER  | specify pull request number (https://github.com/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
 | GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           | |
 | GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
@@ -85,3 +88,4 @@ Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
 > GHACT_AUTO_GITHUB_TOKEN=false gh act ...
 
 [cron string]:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
+[supported package_type]:https://docs.github.com/ja/rest/packages#list-packages-for-an-organization

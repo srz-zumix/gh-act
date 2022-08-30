@@ -1,0 +1,6 @@
+{
+    "action": "${GHACT_ACTION:-published}",
+    "registry_package": ${REGISTRY_PACKAGE_JSON},
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}
