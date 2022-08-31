@@ -24,6 +24,7 @@ parse_params() {
     AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
     ACT_JOB=
     WORKFLOWS_PATH=.github/workflows
+    CREATE_EVENT_JSON=${GHACT_CREATE_EVENT_JSON:-true}
 
     while :; do
         case "${1-}" in
@@ -66,6 +67,10 @@ parse_params() {
             ;;
         --version )
             echo "gh-act version ${GH_ACT_VERSION}"
+            CREATE_EVENT_JSON=false
+            ;;
+        -g| --graph| -h| --help| -l| --list)
+            CREATE_EVENT_JSON=false
             ;;
         -?*) ;;
         ?*)
@@ -1026,16 +1031,18 @@ if "${AUTO_GITHUB_TOKEN}"; then
     fi
 fi
 
-if [ ! -f "${EVENT_PATH}" ]; then
-    TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
-    trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
+if "${CREATE_EVENT_JSON}"; then
+    if [ ! -f "${EVENT_PATH}" ]; then
+        TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+        trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
 
-    if [ -z "${EVENT_PATH}" ]; then
-        EVENT_PATH="${TEMPFILE_DIR}/event.json"
-        ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
+        if [ -z "${EVENT_PATH}" ]; then
+            EVENT_PATH="${TEMPFILE_DIR}/event.json"
+            ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
+        fi
+
+        create_event_json "${EVENT_PATH}"
     fi
-
-    create_event_json "${EVENT_PATH}"
 fi
 
 act "$@" "${ACT_OPTIONS[@]}"
