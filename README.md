@@ -1,6 +1,6 @@
 # gh-act
 
-gh-act generates and configures event.json for [act][]
+gh-act generates and configures event.json for [nektos/act][]
 
 ## Installation
 
@@ -23,9 +23,6 @@ If pull_request.json is not exist, gh-act will generate it in the specified file
 
 Please check [test workflow][](Diff step) for the difference between the generated event.json and the actual event
 
-[act]:https://github.com/nektos/act
-[test workflow]:https://github.com/srz-zumix/gh-act/actions/workflows/main.yml
-
 ## Features
 
 ### Events
@@ -34,29 +31,29 @@ Supported Events
 
 | Event                  | Configurable environment variables |
 |:-----------------------|:-----------------------------------|
-| branch_protection_rule |
-| check_run              |
-| check_suite            |
-| create                 |
-| delete                 |
+| branch_protection_rule |                                    |
+| check_run              |                                    |
+| check_suite            |                                    |
+| create                 |                                    |
+| delete                 |                                    |
 | discussion             | GHACT_DISCUSSION_NUMBER            |
 | discussion_comment     | GHACT_DISCUSSION_NUMBER            |
-| gollum                 |
+| gollum                 |                                    |
 | issue_comment          | GHACT_ISSUE_NUMBER                 |
 | issues                 | GHACT_ISSUE_NUMBER                 |
-| label                  |
+| label                  |                                    |
 | milestone              | GHACT_MILESTONE_NUMBER             |
-| page_build             |
-| public                 |
+| page_build             |                                    |
+| public                 |                                    |
 | pull_request           | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
 | pull_request_review    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
 | pull_request_target    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| push                   |
+| push                   |                                    |
 | registry_package       | GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE             |
 | repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
 | schedule               | GHACT_SCHEDULE_CRON                |
-| status                 |
-| watch                  |
+| status                 |                                    |
+| watch                  |                                    |
 | workflow_dispatch      | GHACT_INPUTS                       |
 
 ### Environment Variables
@@ -72,7 +69,7 @@ Supported Events
 | GHACT_PACKAGE_NAME         | specify package name                                                                   | first package name     |
 | GHACT_PACKAGE_TYPE         | specify package type ([supported package_type][])                                      | container              |
 | GHACT_PULL_REQUEST_NUMBER  | specify pull request number (https://github.com/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
-| GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           | |
+| GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           |                        |
 | GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
 
 ### GITHUB_TOKEN
@@ -87,5 +84,8 @@ Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
 
 > GHACT_AUTO_GITHUB_TOKEN=false gh act ...
 
+[act]:https://github.com/nektos/act
+[nektos/act]:https://github.com/nektos/act
+[test workflow]:https://github.com/srz-zumix/gh-act/actions/workflows/main.yml
 [cron string]:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
 [supported package_type]:https://docs.github.com/ja/rest/packages#list-packages-for-an-organization
