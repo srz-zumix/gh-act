@@ -27,8 +27,9 @@ on:
   watch:
   workflow_dispatch:
     inputs:
-      name:
-        description: 'Name'
+      event:
+        description: 'event name'
+        default: 'workflow_dispatch'
         required: true
   workflow_run:
     workflows: [Lint]
@@ -41,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ACT_EVENT_NAME: ${{ inputs.event || github.event_name }}
     steps:
     - uses: actions/checkout@v3
       with:
@@ -73,11 +75,12 @@ jobs:
         echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
     - name: Create act event.json
       run: |
-        gh act "${{ github.event_name }}" -e gh_act_event_raw.json -j noop
+        gh act "${ACT_EVENT_NAME}" -e gh_act_event_raw.json -j noop
         jq . < gh_act_event_raw.json > gh_act_event.json
     - name: Diff
       run: |
         diff github_event.json gh_act_event.json || :
+      if: github.event_name == env.ACT_EVENT_NAME 
 
   noop:
     runs-on: ubuntu-latest
