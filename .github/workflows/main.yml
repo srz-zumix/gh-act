@@ -28,7 +28,8 @@ on:
   workflow_dispatch:
     inputs:
       event:
-        description: 'workflow_dispatch'
+        description: 'event name'
+        default: 'workflow_dispatch'
         required: true
   workflow_run:
     workflows: [Lint]
