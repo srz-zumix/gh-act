@@ -753,6 +753,49 @@ function package_envs() {
     fi
 }
 
+function release_envs() {
+    # configurable vars
+    # GHACT_RELEASE_NAME
+    if [ -z "${GHACT_RELEASE_NAME:-}" ]; then
+        # shellcheck disable=SC2016
+        GHACT_RELEASE_NAME=$(gh release list -L 1 --exclude-drafts | grep -o "^\S*")
+    fi
+
+    ACT_ENV="${TEMPFILE_DIR}/.release.env"
+    # shellcheck disable=SC2016
+    gh release view "${GHACT_RELEASE_NAME}" --json \
+        apiUrl,author,body,createdAt,id,isDraft,isPrerelease,name,publishedAt,tagName,tarballUrl,targetCommitish,uploadUrl,url,zipballUrl \
+        --template '
+RELEASE_URL="{{.apiUrl}}"
+RELEASE_AUTHOR="{{.author}}"
+RELEASE_BODY="{{.body | js}}"
+RELEASE_CREATED_AT="{{.createdAt}}"
+RELEASE_ID=0
+RELEASE_NODEID="{{.id}}"
+RELEASE_DRAFT="{{.isDraft}}"
+RELEASE_PRERELEASE="{{.isPrerelease}}"
+RELEASE_NAME="{{.name}}"
+RELEASE_PUBLISHED_AT="{{.publishedAt}}"
+RELEASE_TAG_NAME="{{.tagName}}"
+RELEASE_TARBALL_URL="{{.tarballUrl}}"
+RELEASE_TARGET_COMMITISH="{{.targetCommitish}}"
+RELEASE_UPLOAD_URL="{{.uploadUrl}}"
+RELEASE_HTML_URL="{{.url}}"
+RELEASE_ZIPBALL_URL="{{.zipballUrl}}"
+' | filter_envs > "${ACT_ENV}"
+    . "${ACT_ENV}"
+
+RELEASE_ASSETS=$(gh release view "${GHACT_RELEASE_NAME}" --json assets --jq .assets)
+}
+
+function release_event_envs() {
+    release_envs
+
+    HEAD_OWNER="${OWNER}"
+    HEAD_REPO="${REPO}"
+    HEAD_USER="${RELEASE_AUTHOR}"
+}
+
 function commit_envs() {
     COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
     LOG_FORMAT="{
@@ -899,6 +942,10 @@ function evnet_envs() {
     fi
     if [ "${EVENT_NAME}" == "milestone" ]; then
         milestone_event_envs
+        return
+    fi
+    if [ "${EVENT_NAME}" == "release" ]; then
+        release_event_envs
         return
     fi
 

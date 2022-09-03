@@ -1,0 +1,26 @@
+{
+    "action": "released",
+    "release": {
+        "assets": ${RELEASE_ASSETS},
+        "assets_url": "https://api.github.com/repos/srz-zumix/gh-act/releases/74297012/assets",
+        "author": ${HEAD_USER_JSON},
+        "body": "${RELEASE_BODY}",
+        "created_at": "${RELEASE_CREATED_AT}",
+        "draft": ${RELEASE_DRAFT},
+        "html_url": "${RELEASE_HTML_URL}",
+        "id": ${RELEASE_ID},
+        "mentions_count": 1,
+        "name": "${RELEASE_NAME}",
+        "node_id": "${RELEASE_NODEID}",
+        "prerelease": ${RELEASE_PRERELEASE},
+        "published_at": "${RELEASE_PUBLISHED_AT}",
+        "tag_name": "${RELEASE_TAG_NAME}",
+        "tarball_url": "${RELEASE_TARBALL_URL}",
+        "target_commitish": "${RELEASE_TARGET_COMMITISH}",
+        "upload_url": "${RELEASE_UPLOAD_URL}",
+        "url": "${RELEASE_URL}",
+        "zipball_url": "${RELEASE_ZIPBALL_URL}"
+    },
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}
+}

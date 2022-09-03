@@ -50,6 +50,7 @@ Supported Events
 | pull_request_target    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
 | push                   |                                    |
 | registry_package       | GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE             |
+| release                | GHACT_RELEASE_NAME                 |
 | repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
 | schedule               | GHACT_SCHEDULE_CRON                |
 | status                 |                                    |
@@ -70,6 +71,7 @@ Supported Events
 | GHACT_PACKAGE_TYPE         | specify package type ([supported package_type][])                                      | container              |
 | GHACT_PULL_REQUEST_NUMBER  | specify pull request number (https://github.com/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
 | GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           |                        |
+| GHACT_RELEASE_NAME         | specify release name                                                                   | gh release list -L 1 --exclude-drafts |
 | GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
 
 ### GITHUB_TOKEN
