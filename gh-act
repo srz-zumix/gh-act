@@ -754,7 +754,7 @@ function package_envs() {
 }
 
 function commit_envs() {
-    COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\\\n/g' | tr -d '\n' | sed -e 's/\\\\n$//g')
+    COMMIT_MESSAGE=$(git log -1 --pretty=format:"%B%-" | sed -e 's/$/\\n/g' | sed -e 's/\r/\\r/g' | tr -d '\n' | sed -e 's/\\n$//g')
     LOG_FORMAT="{
   \"author\": {
       \"email\": \"%ae\",
