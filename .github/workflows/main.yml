@@ -21,6 +21,7 @@ on:
   pull_request_target:
   push:
   registry_package:
+  release:
   repository_dispatch:
     types: [on-demand-test]
   status:
