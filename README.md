@@ -32,10 +32,10 @@ Supported Events
 | Event                  | Configurable environment variables |
 |:-----------------------|:-----------------------------------|
 | branch_protection_rule |                                    |
-| check_run              |                                    |
-| check_suite            |                                    |
-| create                 |                                    |
-| delete                 |                                    |
+| check_run              | GHACT_BRANCH                       |
+| check_suite            | GHACT_BRANCH                       |
+| create                 | GHACT_BRANCH                       |
+| delete                 | GHACT_BRANCH                       |
 | discussion             | GHACT_DISCUSSION_NUMBER            |
 | discussion_comment     | GHACT_DISCUSSION_NUMBER            |
 | gollum                 |                                    |
@@ -45,15 +45,15 @@ Supported Events
 | milestone              | GHACT_MILESTONE_NUMBER             |
 | page_build             |                                    |
 | public                 |                                    |
-| pull_request           | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| pull_request_review    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| pull_request_target    | GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| push                   |                                    |
-| registry_package       | GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE             |
+| pull_request           | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| pull_request_review    | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| pull_request_target    | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
+| push                   | GHACT_BRANCH                       |
+| registry_package       | GHACT_BRANCH,GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE |
 | release                | GHACT_RELEASE_NAME                 |
 | repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
 | schedule               | GHACT_SCHEDULE_CRON                |
-| status                 |                                    |
+| status                 | GHACT_BRANCH                       |
 | watch                  |                                    |
 | workflow_dispatch      | GHACT_INPUTS                       |
 
@@ -62,14 +62,15 @@ Supported Events
 | name                       | description                                                                            | default                |
 |:---------------------------|:---------------------------------------------------------------------------------------|:-----------------------|
 | GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
+| GHACT_BRANCH               | specify branch name                                                                    | current branch         |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
 | GHACT_INPUTS               | workflow_dispatch inputs json string                                                   | null                   |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
-| GHACT_ISSUE_NUMBER         | specify issue number (https://github.com/{owner}/{repo}/issues/{__number__})           | last issue number      |
-| GHACT_MILESTONE_NUMBER     | specify milestone number (https://github.com/{owner}/{repo}/milestone/{__number__})    | last milestone number  |
+| GHACT_ISSUE_NUMBER         | specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})           | last issue number      |
+| GHACT_MILESTONE_NUMBER     | specify milestone number ({github_host}/{owner}/{repo}/milestone/{__number__})    | last milestone number  |
 | GHACT_PACKAGE_NAME         | specify package name                                                                   | first package name     |
 | GHACT_PACKAGE_TYPE         | specify package type ([supported package_type][])                                      | container              |
-| GHACT_PULL_REQUEST_NUMBER  | specify pull request number (https://github.com/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
+| GHACT_PULL_REQUEST_NUMBER  | specify pull request number ({github_host}/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
 | GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           |                        |
 | GHACT_RELEASE_NAME         | specify release name                                                                   | gh release list -L 1 --exclude-drafts |
 | GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
