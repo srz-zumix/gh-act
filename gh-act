@@ -930,6 +930,10 @@ function commit_detail_json() {
     fi
 }
 
+function get_branch_or_tag_name() {
+    git symbolic-ref --short "$1" 2>/dev/null || git name-rev --name-only --no-undefined --tags "$1" 2>/dev/null || git name-rev --name-only "$1"
+}
+
 
 function evnet_envs() {
     if [[ "${EVENT_NAME}" =~ ^pull_request.* ]]; then
@@ -977,8 +981,8 @@ function evnet_envs() {
     fi
 
     HEAD_BRANCH="${GHACT_BRANCH:-}"
-    if [ -z "${GHACT_BRANCH}" ]; then
-        HEAD_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git name-rev --name-only HEAD)
+    if [ -z "${HEAD_BRANCH}" ]; then
+        HEAD_BRANCH=$(get_branch_or_tag_name HEAD)
     fi
     HEAD=$(git rev-parse ${HEAD_BRANCH})
     HEAD_REF=$(git rev-parse --symbolic-full-name "${HEAD_BRANCH}")
