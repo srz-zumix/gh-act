@@ -6,7 +6,7 @@
           "sha": "${HEAD}",
           "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${HEAD}"
         },
-        "name": "%{HEAD_BRANCH}",
+        "name": "${HEAD_BRANCH}",
         "protected": true
       }
     ],
