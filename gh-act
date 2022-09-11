@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-GH_ACT_VERSION=0.1
+GH_ACT_VERSION=0.2
 
 msg() {
     echo >&2 -e "${1-}"
@@ -172,104 +172,6 @@ function repo_json {
     parts_json repo
 }
 
-function pr_envs {
-    ACT_ENV="${TEMPFILE_DIR}/.pr.env"
-    # shellcheck disable=SC2016,SC2086
-    gh pr view ${1:-} --json \
-        additions,baseRefName,body,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,title,updatedAt,url \
-        --template '
-PR_ADDITIONS="{{.additions}}"
-BASE_REF="{{.baseRefName}}"
-PR_BODY="{{.body | js}}"
-PR_CLOSED_AT="{{.closedAt}}"
-PR_COMMENTS="{{ len .comments}}"
-PR_COMMITS="{{ len .commits}}"
-PR_CREATED_AT="{{.createdAt}}"
-PR_DELETIONS="{{.deletions}}"
-PR_CHANGED_FILES="{{ len .files}}"
-HEAD_REF="{{.headRefName}}"
-HEAD_OWNER="{{.headRepositoryOwner.login}}"
-HEAD_REPO="{{.headRepository.name}}"
-PR_IS_DRAFT="{{.isDraft}}"
-PR_NODE_ID="{{.id}}"
-PR_MAINTAINER_CAN_MODIFY="{{.maintainerCanModify}}"
-PR_MERGED_AT="{{.mergedAt}}"
-PR_MERGED_BY="{{.mergedBy}}"
-PR_MILESTONE="{{.milestone}}"
-PR_NUMBER="{{.number}}"
-PR_POTENTIAL_MERGE_COMMIT="{{.potentialMergeCommit.oid}}"
-PR_REVIEWS="{{ len .reviews}}"
-PR_STATE="{{.state}}"
-PR_TITLE="{{.title | js}}"
-PR_UPDATED_AT="{{.updatedAt}}"
-PR_URL="{{.url}}"
-' | filter_envs > "${ACT_ENV}"
-    . "${ACT_ENV}"
-}
-
-function pr_review_envs {
-    # FIXME: PR_REVIEW_ID
-    ACT_ENV="${TEMPFILE_DIR}/.pr_review.env"
-    # shellcheck disable=SC2016,SC2086
-    gh pr view ${1:-} --json \
-        reviews \
-        --template '
-{{$last := 0}}
-{{range $index, $element := .reviews}}{{$last = $index}}{{end}}
-{{$last_review := index .reviews $last}}
-PR_REVIEW_ID=0
-PR_REVIEW_USER="{{$last_review.author.login}}"
-PR_REVIEW_BODY="{{$last_review.body | js}}"
-PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
-PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
-PR_REVIEW_STATE="{{$last_review.state}}"
-' | filter_envs > "${ACT_ENV}"
-    . "${ACT_ENV}"
-}
-
-function issue_envs {
-    ACT_ENV="${TEMPFILE_DIR}/.issue.env"
-    # shellcheck disable=SC2016
-    gh issue view "$1" --json \
-        author,assignees,body,closedAt,comments,createdAt,id,reactionGroups,state,title,updatedAt,url \
-        --template '
-ISSUE_AUTHOR="{{.author.login}}"
-ISSUE_ASSIGNEE="{{if (len .assignees)}}{{(index .assignees 0).login}}{{end}}"
-ISSUE_ASSIGNEES="{{range $index, $element := .assignees}}{{$element.login -}} {{end}}"
-ISSUE_BODY="{{.body | js}}"
-ISSUE_CLOSED_AT="{{if .closedAt}}{{.closedAt}}{{else}}null{{end}}"
-ISSUE_COMMENTS="{{ len .comments}}"
-ISSUE_CREATED_AT="{{.createdAt}}"
-ISSUE_NODE_ID="{{.id}}"
-ISSUE_STATE="{{.state}}"
-ISSUE_TITLE="{{.title}}"
-ISSUE_UPDATED_AT="{{.updatedAt}}"
-ISSUE_URL="{{.url}}"
-{{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
-ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
-' | filter_envs > "${ACT_ENV}"
-    . "${ACT_ENV}"
-}
-
-function issue_comment_envs {
-    ACT_ENV="${TEMPFILE_DIR}/.issue.comment.env"
-    # shellcheck disable=SC2016
-    gh issue view "$1" --json \
-        comments \
-        --template '
-{{$comment := index .comments 0}}
-ISSUE_COMMENT_ID=0
-ISSUE_COMMENT_AUTHOR="{{$comment.author.login}}"
-ISSUE_COMMENT_AUTHOR_ASSOCIATION="{{$comment.authorAssociation}}"
-ISSUE_COMMENT_BODY="{{$comment.body | js}}"
-ISSUE_COMMENT_CREATED_AT="{{$comment.createdAt}}"
-ISSUE_COMMENT_UPDATED_AT="{{$comment.createdAt}}"
-{{range $index, $element := $comment.reactionGroups}}ISSUE_COMMENT_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
-ISSUE_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment.reactionGroups}}+{{$element.users.totalCount}}{{end}}))
-' | filter_envs > "${ACT_ENV}"
-    . "${ACT_ENV}"
-}
-
 function repo_envs {
     REPOSITORY="$1"
     PREFIX="$2"
@@ -315,6 +217,87 @@ REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
     . "${ACT_ENV}.${PREFIX}"
 }
 
+function pr_envs {
+    ACT_ENV="${TEMPFILE_DIR}/.pull_request.env"
+    # shellcheck disable=SC2016,SC2086
+    gh pr view ${1:-} --json \
+        additions,baseRefName,body,closedAt,comments,commits,createdAt,deletions,files,headRefName,headRepositoryOwner,headRepository,id,isDraft,maintainerCanModify,mergedAt,mergedBy,milestone,number,reviews,state,title,updatedAt,url \
+        --template '
+PR_ADDITIONS="{{.additions}}"
+BASE_REF="{{.baseRefName}}"
+PR_BODY="{{.body | js}}"
+PR_CLOSED_AT="{{.closedAt}}"
+PR_COMMENTS="{{ len .comments}}"
+PR_COMMITS="{{ len .commits}}"
+PR_CREATED_AT="{{.createdAt}}"
+PR_DELETIONS="{{.deletions}}"
+PR_CHANGED_FILES="{{ len .files}}"
+HEAD_REF="{{.headRefName}}"
+HEAD_OWNER="{{.headRepositoryOwner.login}}"
+HEAD_REPO="{{.headRepository.name}}"
+PR_IS_DRAFT="{{.isDraft}}"
+PR_NODE_ID="{{.id}}"
+PR_MAINTAINER_CAN_MODIFY="{{.maintainerCanModify}}"
+PR_MERGED_AT="{{.mergedAt}}"
+PR_MERGED_BY="{{.mergedBy}}"
+PR_MILESTONE="{{.milestone}}"
+PR_NUMBER="{{.number}}"
+PR_POTENTIAL_MERGE_COMMIT="{{.potentialMergeCommit.oid}}"
+PR_REVIEWS="{{ len .reviews}}"
+PR_STATE="{{.state}}"
+PR_TITLE="{{.title | js}}"
+PR_UPDATED_AT="{{.updatedAt}}"
+PR_URL="{{.url}}"
+' | filter_envs > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
+
+function pr_review_envs {
+    # FIXME: PR_REVIEW_ID
+    ACT_ENV="${TEMPFILE_DIR}/.pull_request_review.env"
+    # shellcheck disable=SC2016,SC2086
+    gh pr view ${1:-} --json \
+        reviews \
+        --template '
+{{$last := 0}}
+{{range $index, $element := .reviews}}{{$last = $index}}{{end}}
+{{$last_review := index .reviews $last}}
+PR_REVIEW_ID=0
+PR_REVIEW_USER="{{$last_review.author.login}}"
+PR_REVIEW_BODY="{{$last_review.body | js}}"
+PR_REVIEW_AUTHOR_ASSOCIATION="{{$last_review.authorAssociation}}"
+PR_REVIEW_SUBMITTED_AT="{{$last_review.submittedAt}}"
+PR_REVIEW_STATE="{{$last_review.state}}"
+' | filter_envs > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
+
+function pr_review_comment_envs() {
+    ACT_ENV="${TEMPFILE_DIR}/.pull_request_review_comment.env"
+    # shellcheck disable=SC2016
+    gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
+query($owner: String!, $repo: String!, $number: Int!) {
+    repository(owner: $owner, name: $repo) {
+        pullRequest(number: $number) {
+            reviews(first: 1) {
+                nodes {
+                    comments(first: 1) {
+                        nodes {
+                            body
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+' --template '
+{{$review := index .data.repository.pullRequest.reviews 0 }}
+{{$comment := index $review.comments 0 }}
+PR_REVIEW_COMMENT_BODY_URL="{{$comment.body}}"
+' | filter_envs > "${ACT_ENV}"
+        . "${ACT_ENV}"
+}
 
 function pull_request_event_envs() {
     # configurable vars
@@ -355,8 +338,54 @@ function pull_request_event_envs() {
         fi
         PR_REVIEW_USER_JSON=$(user_json "${PR_REVIEW_USER}")
     fi
+    if [[ "${EVENT_NAME}" =~ .*comment.* ]]; then
+        pr_review_comment_envs "${OWNER}" "${REPO}" "${PR_NUMBER}"
+    fi
 }
 
+
+function issue_envs {
+    ACT_ENV="${TEMPFILE_DIR}/.issue.env"
+    # shellcheck disable=SC2016
+    gh issue view "$1" --json \
+        author,assignees,body,closedAt,comments,createdAt,id,reactionGroups,state,title,updatedAt,url \
+        --template '
+ISSUE_AUTHOR="{{.author.login}}"
+ISSUE_ASSIGNEE="{{if (len .assignees)}}{{(index .assignees 0).login}}{{end}}"
+ISSUE_ASSIGNEES="{{range $index, $element := .assignees}}{{$element.login -}} {{end}}"
+ISSUE_BODY="{{.body | js}}"
+ISSUE_CLOSED_AT="{{if .closedAt}}{{.closedAt}}{{else}}null{{end}}"
+ISSUE_COMMENTS="{{ len .comments}}"
+ISSUE_CREATED_AT="{{.createdAt}}"
+ISSUE_NODE_ID="{{.id}}"
+ISSUE_STATE="{{.state}}"
+ISSUE_TITLE="{{.title}}"
+ISSUE_UPDATED_AT="{{.updatedAt}}"
+ISSUE_URL="{{.url}}"
+{{range $index, $element := .reactionGroups}}ISSUE_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
+ISSUE_REACTION_TOTAL_COUNT=$((0{{range $index, $element := .reactionGroups}}+{{$element.users.totalCount}}{{end}}))
+' | filter_envs > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
+
+function issue_comment_envs {
+    ACT_ENV="${TEMPFILE_DIR}/.issue.comment.env"
+    # shellcheck disable=SC2016
+    gh issue view "$1" --json \
+        comments \
+        --template '
+{{$comment := index .comments 0}}
+ISSUE_COMMENT_ID=0
+ISSUE_COMMENT_AUTHOR="{{$comment.author.login}}"
+ISSUE_COMMENT_AUTHOR_ASSOCIATION="{{$comment.authorAssociation}}"
+ISSUE_COMMENT_BODY="{{$comment.body | js}}"
+ISSUE_COMMENT_CREATED_AT="{{$comment.createdAt}}"
+ISSUE_COMMENT_UPDATED_AT="{{$comment.createdAt}}"
+{{range $index, $element := $comment.reactionGroups}}ISSUE_COMMENT_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
+ISSUE_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment.reactionGroups}}+{{$element.users.totalCount}}{{end}}))
+' | filter_envs > "${ACT_ENV}"
+    . "${ACT_ENV}"
+}
 
 function issue_event_envs() {
     # configurable vars
