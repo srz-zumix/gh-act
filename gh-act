@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-GH_ACT_VERSION=0.2
+GH_ACT_VERSION=0.1
 
 msg() {
     echo >&2 -e "${1-}"
@@ -283,7 +283,25 @@ query($owner: String!, $repo: String!, $number: Int!) {
                 nodes {
                     comments(first: 1) {
                         nodes {
+                            author { login }
+                            authorAssociation
                             body
+                            commit { oid }
+                            createdAt
+                            databaseId
+                            diffHunk
+                            id
+                            originalCommit { oid }
+                            originalPosition
+                            path
+                            position
+                            pullRequestReview { databaseId }
+                            reactionGroups { 
+                                content
+                                users { totalCount }
+                            }
+                            updatedAt
+                            url
                         }
                     }
                 }
@@ -292,11 +310,28 @@ query($owner: String!, $repo: String!, $number: Int!) {
     }
 }
 ' --template '
-{{$review := index .data.repository.pullRequest.reviews 0 }}
-{{$comment := index $review.comments 0 }}
-PR_REVIEW_COMMENT_BODY_URL="{{$comment.body}}"
+{{ $review := index .data.repository.pullRequest.reviews.nodes 0 }}
+{{ $comment := index $review.comments.nodes 0 }}
+PR_REVIEW_COMMENT_AUTHOR="{{ $comment.author.login }}"
+PR_REVIEW_COMMENT_AUTHOR_ASSOCIATION="{{ $comment.authorAssociation }}"
+PR_REVIEW_COMMENT_BODY="{{ $comment.body | js }}"
+PR_REVIEW_COMMENT_COMMIT_ID="{{ $comment.commit.oid }}"
+PR_REVIEW_COMMENT_CREATED_AT="{{ $comment.createdAt }}"
+PR_REVIEW_COMMENT_ID="{{ printf "%.F" $comment.databaseId }}"
+PR_REVIEW_COMMENT_DIFF_HUNK="{{ $comment.diffHunk | js }}"
+PR_REVIEW_COMMENT_NODE_ID="{{ $comment.id }}"
+PR_REVIEW_COMMENT_ORIGINAL_COMMIT_ID="{{ $comment.originalCommit.oid }}"
+PR_REVIEW_COMMENT_ORIGINAL_POSITION="{{ $comment.originalPosition }}"
+PR_REVIEW_COMMENT_PATH="{{ $comment.path }}"
+PR_REVIEW_COMMENT_PULL_REQUEST_REVIEW_ID="{{ printf "%.F" $comment.pullRequestReview.databaseId }}"
+PR_REVIEW_COMMENT_POSITION="{{ $comment.position }}"
+PR_REVIEW_COMMENT_UPDATED_AT="{{ $comment.updatedAt }}"
+PR_REVIEW_COMMENT_URL="{{ $comment.url }}"
+{{range $index, $element := $comment.reactionGroups}}PR_REVIEW_COMMENT_REACTION_{{$element.content}}_COUNT={{println $element.users.totalCount}}{{end}}
+PR_REVIEW_COMMENT_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $comment.reactionGroups}}+{{$element.users.totalCount}}{{end}}))
 ' | filter_envs > "${ACT_ENV}"
         . "${ACT_ENV}"
+    PR_REVIEW_COMMENT_AUTHOR_JSON=$(user_json "${PR_REVIEW_COMMENT_AUTHOR}")
 }
 
 function pull_request_event_envs() {

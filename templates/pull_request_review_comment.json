@@ -3,50 +3,50 @@
     "comment": {
       "_links": {
         "html": {
-          "href": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#discussion_r944355616"
+          "href": "${PR_REVIEW_COMMENT_URL}"
         },
         "pull_request": {
           "href": "${PR_URL}"
         },
         "self": {
-          "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/944355616"
+          "href": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/${PR_REVIEW_COMMENT_ID}"
         }
       },
-      "author_association": "OWNER",
-      "body": "gh-act pull_request review comment",
-      "commit_id": "${HEAD}",
-      "created_at": "${PR_UPDATED_AT}",
-      "diff_hunk": "",
-      "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/pull/${PR_NUMBER}#discussion_r944355616",
-      "id": 0,
-      "line": 1,
-      "node_id": "",
-      "original_commit_id": "${HEAD}",
-      "original_line": 1,
-      "original_position": 1,
+      "author_association": "${PR_REVIEW_COMMENT_AUTHOR_ASSOCIATION}",
+      "body": "${PR_REVIEW_COMMENT_BODY}",
+      "commit_id": "${PR_REVIEW_COMMENT_COMMIT_ID}",
+      "created_at": "${PR_REVIEW_COMMENT_CREATED_AT}",
+      "diff_hunk": "${PR_REVIEW_COMMENT_DIFF_HUNK}",
+      "html_url": "${PR_REVIEW_COMMENT_URL}",
+      "id": ${PR_REVIEW_COMMENT_ID},
+      "line": ${PR_REVIEW_COMMENT_POSITION},
+      "node_id": "${PR_REVIEW_COMMENT_NODE_ID}",
+      "original_commit_id": "${PR_REVIEW_COMMENT_ORIGINAL_COMMIT_ID}",
+      "original_line": ${PR_REVIEW_COMMENT_ORIGINAL_POSITION},
+      "original_position": ${PR_REVIEW_COMMENT_ORIGINAL_POSITION},
       "original_start_line": null,
-      "path": ".github/workflows/main.yml",
-      "position": 1,
-      "pull_request_review_id": 0,
+      "path": "${PR_REVIEW_COMMENT_PATH}",
+      "position": ${PR_REVIEW_COMMENT_POSITION},
+      "pull_request_review_id": ${PR_REVIEW_COMMENT_PULL_REQUEST_REVIEW_ID},
       "pull_request_url": "${PR_URL}",
       "reactions": {
-        "+1": 0,
-        "-1": 0,
-        "confused": 0,
-        "eyes": 0,
-        "heart": 0,
-        "hooray": 0,
-        "laugh": 0,
-        "rocket": 0,
-        "total_count": 0,
-        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/944355616/reactions"
+        "+1": ${PR_REVIEW_COMMENT_THUMBS_UP_COUNT:-0},
+        "-1": ${PR_REVIEW_COMMENT_THUMBS_DOWN_COUNT:-0},
+        "confused": ${PR_REVIEW_COMMENT_CONFUSED_COUNT:-0},
+        "eyes": ${PR_REVIEW_COMMENT_EYES_COUNT:-0},
+        "heart": ${PR_REVIEW_COMMENT_HEART_COUNT:-0},
+        "hooray": ${PR_REVIEW_COMMENT_HOORAY_COUNT:-0},
+        "laugh": ${PR_REVIEW_COMMENT_LAUGH_COUNT:-0},
+        "rocket": ${PR_REVIEW_COMMENT_ROCKET_COUNT:-0},
+        "total_count": ${PR_REVIEW_COMMENT_REACTION_TOTAL_COUNT},
+        "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/${PR_REVIEW_COMMENT_ID}/reactions"
       },
       "side": "RIGHT",
       "start_line": null,
       "start_side": null,
-      "updated_at": "${PR_UPDATED_AT}",
-      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/944355616",
-      "user": ${HEAD_USER_JSON}
+      "updated_at": "${PR_REVIEW_COMMENT_UPDATED_AT}",
+      "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/comments/${PR_REVIEW_COMMENT_ID}",
+      "user": ${PR_REVIEW_COMMENT_AUTHOR_JSON}
     },
     "pull_request": ${PULL_REQUEST_JSON},
     "repository": ${BASE_REPO_JSON},
