@@ -42,7 +42,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GHCR_PAT }}
       ACT_EVENT_NAME: ${{ inputs.event || github.event_name }}
     steps:
     - uses: actions/checkout@v3
