@@ -38,11 +38,13 @@ on:
        - requested
        - completed
 
+permissions: write-all
+
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GHCR_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ACT_EVENT_NAME: ${{ inputs.event || github.event_name }}
     steps:
     - uses: actions/checkout@v3
