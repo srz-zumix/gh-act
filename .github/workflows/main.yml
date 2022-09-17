@@ -38,6 +38,7 @@ on:
        - requested
        - completed
 
+# https://github.com/srz-zumix/gh-act/issues/57
 permissions: write-all
 
 jobs:
