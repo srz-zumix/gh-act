@@ -131,6 +131,9 @@ jobs:
     - name: ENV
       run: |
         env
+    - name: ENV (GITHUB_)
+      run: |
+        env | grep GITHUB_ | sort
     - name: Inputs
       env:
         INPUTS_CONTEXT: ${{ toJson(inputs) }}
