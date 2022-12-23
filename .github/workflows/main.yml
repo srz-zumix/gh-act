@@ -85,6 +85,9 @@ jobs:
       run: |
         diff github_event.json gh_act_event.json || :
       if: github.event_name == env.ACT_EVENT_NAME 
+    - name: Docker ps
+      run: |
+        docker ps
 
   noop:
     runs-on: ubuntu-latest

@@ -1133,38 +1133,75 @@ function hosts_yaml_token() {
     fi
 }
 
-DATE_NOW=$(date +"%Y-%m-%dT%H:%M:%S%z")
-DATE_UTC_NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+function stop_act_container() {
+    # stop job containers
+    # echo stop act containers..
+    # FIXME: split job_name and workflow name with include whitespace
+    # act "$@" "${ACT_OPTIONS[@]}" --list --dryrun | tail -n +2 \
+    #     | grep "${ACT_JOB:- }" \
+    #     | awk '$1 ~ /^[0-9]+$/ {printf "act-%s-%s\n", $4, $3}' \
+    #     | sed -e 's/ /-/g' \
+    #     | xargs -I{} docker stop {}
+    true
+}
 
-declare -a ACT_OPTIONS
-if "${AUTO_GITHUB_TOKEN}"; then
-    if [ -n "${GITHUB_TOKEN:-}" ]; then
-        ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
-    else
-        if [ "${GITHUB_HOSTNAME}" == "github.com" ] && [ -n "${GH_TOKEN:-}" ]; then
-            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
+function rm_act_container() {
+    echo stop act containers..
+    docker ps | grep -o "\sact-.*$" | xargs -I{} docker stop {} && \
+    echo rm act containers.. && \
+    docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {} || true
+}
+
+function act_int_action() {
+    true
+}
+function act_post_action() {
+    true
+}
+
+function main() {
+
+    # trap act_int_action INT
+    
+    DATE_NOW=$(date +"%Y-%m-%dT%H:%M:%S%z")
+    DATE_UTC_NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    declare -a ACT_OPTIONS
+    if "${AUTO_GITHUB_TOKEN}"; then
+        if [ -n "${GITHUB_TOKEN:-}" ]; then
+            ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
         else
-            if [ "${GITHUB_HOSTNAME}" != "github.com" ] && [ -n "${GH_ENTERPRISE_TOKEN:-}" ]; then
-                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_ENTERPRISE_TOKEN}")
+            if [ "${GITHUB_HOSTNAME}" == "github.com" ] && [ -n "${GH_TOKEN:-}" ]; then
+                ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_TOKEN}")
             else
-                hosts_yaml_token
+                if [ "${GITHUB_HOSTNAME}" != "github.com" ] && [ -n "${GH_ENTERPRISE_TOKEN:-}" ]; then
+                    ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_ENTERPRISE_TOKEN}")
+                else
+                    hosts_yaml_token
+                fi
             fi
         fi
     fi
-fi
 
-if "${CREATE_EVENT_JSON}"; then
-    if [ ! -f "${EVENT_PATH}" ]; then
-        TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
-        trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
+    if "${CREATE_EVENT_JSON}"; then
+        if [ ! -f "${EVENT_PATH}" ]; then
+            TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+            trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
 
-        if [ -z "${EVENT_PATH}" ]; then
-            EVENT_PATH="${TEMPFILE_DIR}/event.json"
-            ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
+            if [ -z "${EVENT_PATH}" ]; then
+                EVENT_PATH="${TEMPFILE_DIR}/event.json"
+                ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
+            fi
+
+            create_event_json "${EVENT_PATH}"
         fi
-
-        create_event_json "${EVENT_PATH}"
     fi
-fi
 
-act "$@" "${ACT_OPTIONS[@]}"
+    act "$@" "${ACT_OPTIONS[@]}" && act_post_action
+}
+
+if [ "${EVENT_NAME}" == "prune" ]; then
+    rm_act_container
+else
+    main
+fi
