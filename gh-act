@@ -1237,5 +1237,5 @@ function main() {
 if [ "${EVENT_NAME}" == "prune" ]; then
     rm_act_container
 else
-    main
+    main "$@"
 fi
