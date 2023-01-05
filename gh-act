@@ -23,8 +23,34 @@ parse_params() {
     GITHUB_HOSTNAME='github.com'
     AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
     ACT_JOB=
+    ACT_DRYRUN=false
     WORKFLOWS_PATH=.github/workflows
     CREATE_EVENT_JSON=${GHACT_CREATE_EVENT_JSON:-true}
+
+    # make act_value_opts
+    #
+    # -a| --actor ) shift ;;
+    # --artifact-server-path ) shift ;;
+    # --artifact-server-port ) shift ;;
+    # --container-architecture ) shift ;;
+    # --container-cap-add ) shift ;;
+    # --container-cap-drop ) shift ;;
+    # --container-daemon-socket ) shift ;;
+    # --defaultbranch ) shift ;;
+    # -C| --directory ) shift ;;
+    # --env ) shift ;;
+    # --env-file ) shift ;;
+    # -e| --eventpath ) shift ;;
+    # --github-instance ) shift ;;
+    # -j| --job ) shift ;;
+    # -P| --platform ) shift ;;
+    # --remote-name ) shift ;;
+    # --replace-ghe-action-token-with-github-com ) shift ;;
+    # --replace-ghe-action-with-github-com ) shift ;;
+    # -s| --secret ) shift ;;
+    # --secret-file ) shift ;;
+    # --userns ) shift ;;
+    # -W| --workflows ) shift ;;
 
     while :; do
         case "${1-}" in
@@ -64,6 +90,9 @@ parse_params() {
         -W| --workflows )
             WORKFLOWS_PATH="${2-}"
             shift
+            ;;
+        -n| --dryrun )
+            ACT_DRYRUN=true
             ;;
         --version )
             echo "gh-act version ${GH_ACT_VERSION}"
@@ -1146,10 +1175,15 @@ function stop_act_container() {
 }
 
 function rm_act_container() {
-    echo stop act containers..
-    docker ps | grep -o "\sact-.*$" | xargs -I{} docker stop {} && \
-    echo rm act containers.. && \
-    docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {} || true
+    if "${ACT_DRYRUN}"; then
+        echo "(dryrun) rm act containers.."
+        docker ps -a | grep -o "\sact-.*$"
+    else
+        echo stop act containers..
+        docker ps | grep -o "\sact-.*$" | xargs -I{} docker stop {} && \
+        echo rm act containers.. && \
+        docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {} || true
+    fi
 }
 
 function act_int_action() {
