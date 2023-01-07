@@ -1182,7 +1182,7 @@ function rm_act_container() {
         echo stop act containers..
         docker ps | grep -o "\sact-.*$" | xargs -I{} docker stop {} && \
         echo rm act containers.. && \
-        docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {} || true
+        docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {}
     fi
 }
 
@@ -1235,7 +1235,7 @@ function main() {
 }
 
 if [ "${EVENT_NAME}" == "prune" ]; then
-    rm_act_container
+    rm_act_container || true
 else
     main "$@"
 fi
