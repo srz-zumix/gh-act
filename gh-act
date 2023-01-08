@@ -24,6 +24,7 @@ parse_params() {
     AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
     ACT_JOB=
     ACT_DRYRUN=false
+    ACT_ARTIFACT_SERVER_PATH=
     WORKFLOWS_PATH=.github/workflows
     CREATE_EVENT_JSON=${GHACT_CREATE_EVENT_JSON:-true}
 
@@ -55,7 +56,9 @@ parse_params() {
     while :; do
         case "${1-}" in
         -a| --actor ) shift ;;
-        --artifact-server-path ) shift ;;
+        --artifact-server-path )
+            ACT_ARTIFACT_SERVER_PATH="${2-}"
+            shift ;;
         --artifact-server-port ) shift ;;
         --container-architecture ) shift ;;
         --container-cap-add ) shift ;;
@@ -1193,6 +1196,14 @@ function act_post_action() {
     true
 }
 
+TEMPFILE_DIR=
+function tempdir() {
+    if [ -z "${TEMPFILE_DIR}" ] || [ ! -d "${TEMPFILE_DIR}" ]; then
+        TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+        trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
+    fi
+}
+
 function main() {
 
     # trap act_int_action INT
@@ -1219,9 +1230,7 @@ function main() {
 
     if "${CREATE_EVENT_JSON}"; then
         if [ ! -f "${EVENT_PATH}" ]; then
-            TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
-            trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
-
+           tempdir
             if [ -z "${EVENT_PATH}" ]; then
                 EVENT_PATH="${TEMPFILE_DIR}/event.json"
                 ACT_OPTIONS+=(--eventpath "${EVENT_PATH}")
@@ -1229,6 +1238,13 @@ function main() {
 
             create_event_json "${EVENT_PATH}"
         fi
+    fi
+
+    if [ -z "${ACT_ARTIFACT_SERVER_PATH}" ]; then
+        tempdir
+        TEMP_ARTIFACT_DIR="${TEMPFILE_DIR}/artifact"
+        mkdir -p "${TEMP_ARTIFACT_DIR}"
+        ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
     fi
 
     act "$@" "${ACT_OPTIONS[@]}" && act_post_action
