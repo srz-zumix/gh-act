@@ -1231,7 +1231,8 @@ function main() {
         fi
     fi
 
-    act "$@" "${ACT_OPTIONS[@]}" && act_post_action
+    DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}') \
+        act "$@" "${ACT_OPTIONS[@]}" && act_post_action
 }
 
 if [ "${EVENT_NAME}" == "prune" ]; then
