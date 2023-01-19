@@ -18,7 +18,7 @@
     "contents_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/contents/{+path}",
     "contributors_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/contributors",
     "created_at": "${REPO_CREATED_AT}",
-    "default_branch": "${REPO_DEFAULT_BRANCH_REF}",
+    "default_branch": "${ACT_DEFAULT_BRANCH}",
     "delete_branch_on_merge": ${REPO_DELETE_BRANCH_ON_MERGE},
     "deployments_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/deployments",
     "description": "${REPO_DESCRIPTION}",
