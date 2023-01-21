@@ -139,3 +139,10 @@ jobs:
         INPUTS_CONTEXT: ${{ toJson(inputs) }}
       run: |
         echo "${INPUTS_CONTEXT}"
+    - name: Variables
+      env:
+        VARS_CONTEXT: ${{ toJson(vars) }}
+        TEST_JSON: ${{ vars.TEST_JSON }}
+      run: |
+        echo "${VARS_CONTEXT}"
+
