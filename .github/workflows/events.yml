@@ -144,6 +144,5 @@ jobs:
         VARS_CONTEXT: ${{ toJson(vars) }}
         TEST_JSON: ${{ vars.TEST_JSON }}
       run: |
-        echo -n "${TEST_JSON}" > test.json
-        cat test.json
+        echo "${VARS_CONTEXT}"
 
