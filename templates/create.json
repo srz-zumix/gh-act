@@ -1,6 +1,6 @@
 {
     "description": "${HEAD_REPO_DESCRIPTION}",
-    "master_branch": "${HEAD_REPO_DEFAULT_BRANCH_REF}",
+    "master_branch": "${ACT_DEFAULT_BRANCH}",
     "pusher_type": "user",
     "ref": "${HEAD_BRANCH}",
     "ref_type": "branch",

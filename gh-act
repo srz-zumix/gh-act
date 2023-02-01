@@ -25,6 +25,7 @@ parse_params() {
     ACT_JOB=
     ACT_DRYRUN=false
     ACT_ARTIFACT_SERVER_PATH=
+    ACT_DEFAULT_BRANCH=
     WORKFLOWS_PATH=.github/workflows
     CREATE_EVENT_JSON=${GHACT_CREATE_EVENT_JSON:-true}
 
@@ -64,7 +65,9 @@ parse_params() {
         --container-cap-add ) shift ;;
         --container-cap-drop ) shift ;;
         --container-daemon-socket ) shift ;;
-        --defaultbranch ) shift ;;
+        --defaultbranch )
+            ACT_DEFAULT_BRANCH="${2-}"
+            shift ;;
         -C| --directory ) shift ;;
         --env ) shift ;;
         --env-file ) shift ;;
@@ -1245,6 +1248,11 @@ function main() {
         TEMP_ARTIFACT_DIR="${TEMPFILE_DIR}/artifact"
         mkdir -p "${TEMP_ARTIFACT_DIR}"
         ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
+    fi
+
+    if [ -z "${ACT_DEFAULT_BRANCH}" ]; then
+        ACT_DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
+        ACT_OPTIONS+=(--defaultbranch "${ACT_DEFAULT_BRANCH}")
     fi
 
     act "$@" "${ACT_OPTIONS[@]}" && act_post_action
