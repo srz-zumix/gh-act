@@ -1184,11 +1184,15 @@ function rm_act_container() {
     if "${ACT_DRYRUN}"; then
         echo "(dryrun) rm act containers.."
         docker ps -a | grep -o "\sact-.*$"
+        echo "(dryrun) rm act volume.."
+        docker volume ls | grep -o "\sact-.*$"
     else
         echo stop act containers..
         docker ps | grep -o "\sact-.*$" | xargs -I{} docker stop {} && \
         echo rm act containers.. && \
         docker ps -a | grep -o "\sact-.*$" | xargs -I{} docker container rm {}
+        echo rm act volume.. && \
+        docker volume ls | grep -o "\sact-.*$" | xargs -I{} docker volume rm {}
     fi
 }
 
