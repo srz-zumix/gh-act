@@ -5,6 +5,11 @@ install: ## install gh extention
 	gh extension remove act || :
 	gh extension install .
 
+
+install-released:
+	gh extension remove act || :
+	gh extension install srz-zumix/gh-act
+
 act_value_opts:
 	@act --help | grep -o -e "-.*\s*string\w*\s" | sed -e "s/,/|/g" -e "s/string.*/) shift ;;/g"
 
