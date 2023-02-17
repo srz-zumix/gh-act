@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-GH_ACT_VERSION=0.2
+GH_ACT_VERSION=0.3
 
 msg() {
     echo >&2 -e "${1-}"
@@ -1235,6 +1235,11 @@ function main() {
         fi
     fi
 
+    if [ -z "${ACT_DEFAULT_BRANCH}" ]; then
+        ACT_DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
+        ACT_OPTIONS+=(--defaultbranch "${ACT_DEFAULT_BRANCH}")
+    fi
+
     if "${CREATE_EVENT_JSON}"; then
         if [ ! -f "${EVENT_PATH}" ]; then
            tempdir
@@ -1252,11 +1257,6 @@ function main() {
         TEMP_ARTIFACT_DIR="${TEMPFILE_DIR}/artifact"
         mkdir -p "${TEMP_ARTIFACT_DIR}"
         ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
-    fi
-
-    if [ -z "${ACT_DEFAULT_BRANCH}" ]; then
-        ACT_DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
-        ACT_OPTIONS+=(--defaultbranch "${ACT_DEFAULT_BRANCH}")
     fi
 
     act "$@" "${ACT_OPTIONS[@]}" && act_post_action
