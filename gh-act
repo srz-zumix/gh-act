@@ -212,7 +212,7 @@ function repo_envs {
     PREFIX="$2"
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
     # shellcheck disable=SC2016
-    gh repo view "${REPOSITORY}" --json \
+    gh repo view "${GITHUB_HOSTNAME}/${REPOSITORY}" --json \
         createdAt,defaultBranchRef,deleteBranchOnMerge,description,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,repositoryTopics,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
         --template '
 REPO_CREATED_AT="{{.createdAt}}"
@@ -230,8 +230,8 @@ REPO_IS_FORK="{{.isFork}}"
 REPO_IS_PRIVATE="{{.isPrivate}}"
 REPO_ISSUES_TOTAL_COUNT="{{.issues.totalCount}}"
 REPO_IS_TEMPLATE="{{.isTemplate}}"
-REPO_LICENSE_INFO_KEY="{{.licenseInfo.key}}"
-REPO_LICENSE_INFO_NAME="{{.licenseInfo.name}}"
+REPO_LICENSE_INFO_KEY="{{if .licenseInfo}}{{.licenseInfo.key}}{{else}}null{{end}}"
+REPO_LICENSE_INFO_NAME="{{if .licenseInfo}}{{.licenseInfo.name}}{{else}}null{{end}}"
 REPO_MERGE_COMMIT_ALLOWED="{{.mergeCommitAllowed}}"
 REPO_MIRROR_URL="{{if .mirrorUrl}}{{.mirrorUrl}}{{else}}null{{end}}"
 REPO_NODE_ID="{{.id}}"
