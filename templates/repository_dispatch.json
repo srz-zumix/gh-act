@@ -1,5 +1,5 @@
 {
-    "action": "${GHACT_ACTION:-test}",
+    "action": "${GHACT_ACTION:-}",
     "branch": "${HEAD_BRANCH}",
     "client_payload": ${GHACT_CLIENT_PAYLOAD:-null},
     "repository": ${HEAD_REPO_JSON},

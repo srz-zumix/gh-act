@@ -17,6 +17,7 @@ clean:
 	rm -rf gh-act.* *.json
 
 repository_dispatch:
-	curl -X POST -H "Accept: application/vnd.github+json" -H "Authorization: token ${GH_TOKEN}" \
-		https://api.github.com/repos/srz-zumix/gh-act/dispatches \
-		-d '{"event_type":"on-demand-test","client_payload":{"unit":false,"integration":true}}'
+	jq -n '{"event_type":"on-demand-test","client_payload":{"unit":false,"integration":true}}' | \
+		gh api -H "Accept: application/vnd.github+json" \
+			/repos/srz-zumix/gh-act/dispatches \
+			--input -
