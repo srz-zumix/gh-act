@@ -1,5 +1,5 @@
 {
-  "action": "created",
+  "action": "${GHACT_ACTION:-created}",
   "comment": {
     "author_association": "${ISSUE_COMMENT_AUTHOR_ASSOCIATION}",
     "body": "${ISSUE_COMMENT_BODY}",

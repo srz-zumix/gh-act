@@ -1,6 +1,6 @@
 {
-    "action": "created",
+    "action": "${GHACT_ACTION:-created}",
     "discussion": ${DISCUSSION_JSON},
     "repository": ${HEAD_REPO_JSON},
     "sender": ${HEAD_USER_JSON}
-  }
+}

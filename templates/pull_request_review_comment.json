@@ -1,5 +1,5 @@
 {
-    "action": "created",
+    "action": "${GHACT_ACTION:-created}",
     "comment": {
       "_links": {
         "html": {

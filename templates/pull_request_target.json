@@ -1,5 +1,5 @@
 {
-    "action": "synchronize",
+    "action": "${GHACT_ACTION:-synchronize}",
     "after": "${HEAD}",
     "before": "${BEFORE}",
     "number": ${PR_NUMBER},

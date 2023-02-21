@@ -1,5 +1,5 @@
 {
-  "action": "opened",
+  "action": "${GHACT_ACTION:-opened}",
   "issue": ${ISSUE_JSON},
   "repository": ${HEAD_REPO_JSON},
   "sender": ${HEAD_USER_JSON}

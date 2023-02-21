@@ -1,5 +1,5 @@
 {
-  "action": "submitted",
+  "action": "${GHACT_ACTION:-submitted}",
   "pull_request": ${PULL_REQUEST_JSON},
   "repository": ${BASE_REPO_JSON},
   "review": {

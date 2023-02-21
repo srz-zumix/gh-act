@@ -1,5 +1,5 @@
 {
-    "action": "created",
+    "action": "${GHACT_ACTION;-created}",
     "repository": ${HEAD_REPO_JSON},
     "rule": {
         "admin_enforced": ${BRANCH_PROTECTION_RULE_IS_ADMIN_ENFORCED},
