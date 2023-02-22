@@ -29,38 +29,39 @@ Please check [test workflow][](Diff step) for the difference between the generat
 
 Supported Events
 
-| Event                  | Configurable environment variables |
-|:-----------------------|:-----------------------------------|
-| branch_protection_rule |                                    |
-| check_run              | GHACT_BRANCH                       |
-| check_suite            | GHACT_BRANCH                       |
-| create                 | GHACT_BRANCH                       |
-| delete                 | GHACT_BRANCH                       |
-| discussion             | GHACT_DISCUSSION_NUMBER            |
-| discussion_comment     | GHACT_DISCUSSION_NUMBER            |
-| gollum                 |                                    |
-| issue_comment          | GHACT_ISSUE_NUMBER                 |
-| issues                 | GHACT_ISSUE_NUMBER                 |
-| label                  |                                    |
-| milestone              | GHACT_MILESTONE_NUMBER             |
-| page_build             |                                    |
-| public                 |                                    |
-| pull_request           | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| pull_request_review    | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| pull_request_target    | GHACT_BRANCH,GHACT_PULL_REQUEST_SPEC,GHACT_PULL_REQUEST_NUMBER |
-| push                   | GHACT_BRANCH                       |
-| registry_package       | GHACT_BRANCH,GHACT_PACKAGE_TYPE,GHACT_PACKAGE_TYPE |
-| release                | GHACT_RELEASE_NAME                 |
-| repository_dispatch    | GHACT_CLIENT_PAYLOAD               |
-| schedule               | GHACT_SCHEDULE_CRON                |
-| status                 | GHACT_BRANCH                       |
-| watch                  |                                    |
-| workflow_dispatch      | GHACT_INPUTS                       |
+| Event                  | Configurable environment variables (prefix: GHACT_) | default action |
+|:-----------------------|:-----------------------------------|-----------------|
+| branch_protection_rule | ACTION                             | created         |
+| check_run              | ACTION,BRANCH                      | completed       |
+| check_suite            | ACTION,BRANCH                      | completed       |
+| create                 | BRANCH                             |                 |
+| delete                 | BRANCH                             |                 |
+| discussion             | ACTION,DISCUSSION_NUMBER           | created         |
+| discussion_comment     | ACTION,DISCUSSION_NUMBER           | created         |
+| gollum                 | ACTION                             | created         |
+| issue_comment          | ACTION,ISSUE_NUMBER                | created         |
+| issues                 | ACTION,ISSUE_NUMBER                | opened          |
+| label                  | ACTION                             | created         |
+| milestone              | ACTION,MILESTONE_NUMBER            | created         |
+| page_build             |                                    |                 |
+| public                 |                                    |                 |
+| pull_request           | ACTION,BRANCH,PULL_REQUEST_SPEC,PULL_REQUEST_NUMBER | synchronize |
+| pull_request_review    | ACTION,BRANCH,PULL_REQUEST_SPEC,PULL_REQUEST_NUMBER | submiited   |
+| pull_request_target    | ACTION,BRANCH,PULL_REQUEST_SPEC,PULL_REQUEST_NUMBER | synchronize |
+| push                   | BRANCH                             |                 |
+| registry_package       | ACTION,BRANCH,PACKAGE_TYPE,PACKAGE_TYPE | published  |
+| release                | ACTION,RELEASE_NAME                | released        |
+| repository_dispatch    | ACTION,CLIENT_PAYLOAD              | (empty)         |
+| schedule               | SCHEDULE_CRON                      |                 |
+| status                 | BRANCH                             |                 |
+| watch                  | ACTION                             | started         |
+| workflow_dispatch      | INPUTS                             |                 |
 
 ### Environment Variables
 
 | name                       | description                                                                            | default                |
 |:---------------------------|:---------------------------------------------------------------------------------------|:-----------------------|
+| GHACT_ACTION               | specify action name                                                                    | (per [events](#Events))|
 | GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
 | GHACT_BRANCH               | specify branch name                                                                    | current branch         |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |

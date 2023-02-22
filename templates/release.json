@@ -1,5 +1,5 @@
 {
-    "action": "released",
+    "action": "${GHACT_ACTION:-released}",
     "release": {
         "assets": ${RELEASE_ASSETS},
         "assets_url": "https://api.github.com/repos/srz-zumix/gh-act/releases/74297012/assets",

@@ -1,5 +1,5 @@
 {
-    "action": "completed",
+    "action": "${GHACT_ACTION:-completed}",
     "check_suite": {
         "after": "${HEAD}",
         "app": ${CHECK_APP_JSON},

@@ -1,5 +1,5 @@
 {
-    "action": "created",
+    "action": "${GHACT_ACTION:-created}",
     "label": {
       "color": "${LABEL_COLOR}",
       "default": ${LABEL_IS_DEFAULT},
