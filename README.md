@@ -65,13 +65,14 @@ Supported Events
 | GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
 | GHACT_BRANCH               | specify branch name                                                                    | current branch         |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
+| GHACT_CREATE_EVENT_JSON    | if you specify false, gh act will not generate event json                              | true                   |
+| GHACT_DISCUSSION_NUMBER    | specify issue number ({github_host}/{owner}/{repo}/discussions/{__number__})           | null                   |
 | GHACT_INPUTS               | workflow_dispatch inputs json string                                                   | null                   |
-| GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
-| GHACT_ISSUE_NUMBER         | specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})           | last issue number      |
-| GHACT_MILESTONE_NUMBER     | specify milestone number ({github_host}/{owner}/{repo}/milestone/{__number__})    | last milestone number  |
+| GHACT_ISSUE_NUMBER         | specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})                | last issue number      |
+| GHACT_MILESTONE_NUMBER     | specify milestone number ({github_host}/{owner}/{repo}/milestone/{__number__})         | last milestone number  |
 | GHACT_PACKAGE_NAME         | specify package name                                                                   | first package name     |
 | GHACT_PACKAGE_TYPE         | specify package type ([supported package_type][])                                      | container              |
-| GHACT_PULL_REQUEST_NUMBER  | specify pull request number ({github_host}/{owner}/{repo}/pull/{__number__})      | gh pr view --json number --jq .number |
+| GHACT_PULL_REQUEST_NUMBER  | specify pull request number ({github_host}/{owner}/{repo}/pull/{__number__})           | gh pr view --json number --jq .number |
 | GHACT_PULL_REQUEST_SPEC    | specify gh pr view __[\<number\> \| \<url\> \| \<branch\>]__                           |                        |
 | GHACT_RELEASE_NAME         | specify release name                                                                   | gh release list -L 1 --exclude-drafts |
 | GHACT_SCHEDULE_CRON        | specify [cron string][]                                                                | 0 0 * * *              |
