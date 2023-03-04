@@ -21,3 +21,6 @@ repository_dispatch:
 		gh api -H "Accept: application/vnd.github+json" \
 			/repos/srz-zumix/gh-act/dispatches \
 			--input -
+
+ghact_envs:
+	grep -o GHACT_[A-Z][A-Z_]* -r . --no-filename | sort | uniq
