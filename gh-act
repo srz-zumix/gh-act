@@ -464,11 +464,29 @@ function issue_event_envs() {
         GHACT_ISSUE_NUMBER=$(gh issue list --json number --jq .[].number | head -1)
     fi
 
-    issue_envs "${GHACT_ISSUE_NUMBER}"
+    if [ -z "${GHACT_ISSUE_NUMBER}" ]; then
+        ISSUE_AUTHOR=""
+        ISSUE_ASSIGNEE=""
+        ISSUE_ASSIGNEES=""
+        ISSUE_BODY="gh act dummy issue body"
+        ISSUE_CLOSED_AT="null"
+        ISSUE_COMMENTS="0"
+        ISSUE_CREATED_AT="null"
+        ISSUE_NODE_ID="0"
+        ISSUE_STATE="open"
+        ISSUE_TITLE="gh act dummy issue"
+        ISSUE_UPDATED_AT="null"
+        ISSUE_URL=""
+        ISSUE_REACTION_TOTAL_COUNT="0"
+        ISSUE_LABELS="\"labels\" : []"
+        GHACT_ISSUE_NUMBER="0"
+    else
+        issue_envs "${GHACT_ISSUE_NUMBER}"
 
-    ISSUE_LABELS=$(gh issue view "${GHACT_ISSUE_NUMBER}" --json labels)
-    ISSUE_LABELS=${ISSUE_LABELS#{}
-    ISSUE_LABELS=${ISSUE_LABELS%\}}
+        ISSUE_LABELS=$(gh issue view "${GHACT_ISSUE_NUMBER}" --json labels)
+        ISSUE_LABELS=${ISSUE_LABELS#{}
+        ISSUE_LABELS=${ISSUE_LABELS%\}}
+    fi
 
     if [ -n "${ISSUE_ASSIGNEE}" ]; then
         ASSIGNEE_USER_JSON=$(user_json "${ISSUE_ASSIGNEE}")
@@ -1212,6 +1230,9 @@ function tempdir() {
 }
 
 function main() {
+    if [ -n "${GHACT_DEBUG:-}" ]; then
+        set -x
+    fi
 
     # trap act_int_action INT
     
