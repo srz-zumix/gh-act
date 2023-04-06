@@ -310,7 +310,7 @@ PR_REVIEW_STATE="{{$last_review.state}}"
 function pr_review_comment_envs() {
     ACT_ENV="${TEMPFILE_DIR}/.pull_request_review_comment.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         pullRequest(number: $number) {
@@ -522,7 +522,7 @@ function issue_event_envs() {
 function branch_protection_rule_envs() {
     ACT_ENV="${TEMPFILE_DIR}/.branch_protection_rule.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
         branchProtectionRules(last: 1) {
@@ -608,7 +608,7 @@ LABEL_URL="{{$label.url}}"
 function discussion_envs() {
     ACT_ENV="${TEMPFILE_DIR}/.discussion.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         discussion(number: $number) {
@@ -681,7 +681,7 @@ DISCUSSION_REACTION_TOTAL_COUNT=$((0{{range $index, $element := $disscussion.rea
 function discussion_comment_envs {
     ACT_ENV="${TEMPFILE_DIR}/.discussion.comment.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F number="$3" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         discussion(number: $number) {
@@ -731,7 +731,7 @@ function discussion_event_envs() {
     if [ -z "${GHACT_DISCUSSION_NUMBER:-}" ]; then
         # shellcheck disable=SC2016
         GHACT_DISCUSSION_NUMBER=$(
-            gh api graphql -F owner="${OWNER}" -F repo="${REPO}" -F query='
+            gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="${OWNER}" -F repo="${REPO}" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
         discussions(last: 1) {
@@ -773,7 +773,7 @@ function milestone_envs() {
     if [ -z "${GHACT_MILESTONE_NUMBER:-}" ]; then
         # shellcheck disable=SC2016
         GHACT_MILESTONE_NUMBER=$(
-            gh api graphql -F owner="$1" -F repo="$2" -F query='
+            gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F query='
 query($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
         milestones(last: 1) {
@@ -786,7 +786,7 @@ query($owner: String!, $repo: String!) {
 
     ACT_ENV="${TEMPFILE_DIR}/.milestone.env"
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         milestone(number: $number) {
@@ -825,7 +825,7 @@ MILESTONE_HTML_URL="{{ $milestone.url }}"
 ' | filter_envs > "${ACT_ENV}"
 
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F number="${GHACT_MILESTONE_NUMBER}" -F query='
 query($owner: String!, $repo: String!, $number: Int!) {
     repository(owner: $owner, name: $repo) {
         milestone(number: $number) {
@@ -941,7 +941,7 @@ function commit_envs() {
 
 function remote_commit_detail_json() {
     # shellcheck disable=SC2016
-    gh api graphql -F owner="$1" -F repo="$2" -F ref="$3" -F query='
+    gh api --hostname "${GITHUB_HOSTNAME}" graphql -F owner="$1" -F repo="$2" -F ref="$3" -F query='
 query($owner: String!, $repo: String!, $ref: String!) {
   repository(owner: $owner, name: $repo) { 
     ref(qualifiedName: $ref) {
