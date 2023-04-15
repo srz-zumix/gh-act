@@ -113,6 +113,12 @@ jobs:
       agent1:
         image: ubuntu:latest
     steps:
+    - name: $github - for debug logging
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo "${GITHUB_CONTEXT}"
+      if: false
     - name: $github
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
