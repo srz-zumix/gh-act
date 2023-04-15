@@ -151,4 +151,6 @@ jobs:
         TEST_JSON: ${{ vars.TEST_JSON }}
       run: |
         echo "${VARS_CONTEXT}"
-
+    - name: fail
+      run: exit 1
+      if: github.event_name == 'workflow_call'
