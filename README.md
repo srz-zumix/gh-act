@@ -4,18 +4,20 @@ gh-act generates and configures event.json for [nektos/act][]
 
 ## Installation
 
-> gh extension install srz-zumix/gh-act
+```sh
+gh extension install srz-zumix/gh-act
+```
 
 ## Usage
 
 ```sh
-$ gh act pull_request
+gh act pull_request
 ```
 
 Create event.json in a temporary file, add it to the options of act and execute
 
 ```sh
-$ gh act pull_request -e pull_request.json
+gh act pull_request -e pull_request.json
 ```
 
 gh-act does nothing if exist pull_request.json file.  
