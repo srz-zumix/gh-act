@@ -1250,7 +1250,12 @@ function main() {
                 if [ "${GITHUB_HOSTNAME}" != "github.com" ] && [ -n "${GH_ENTERPRISE_TOKEN:-}" ]; then
                     ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GH_ENTERPRISE_TOKEN}")
                 else
-                    hosts_yaml_token
+                    GITHUB_TOKEN=$(gh auth token --hostname "${GITHUB_HOSTNAME}")
+                    if [ -n "${GITHUB_TOKEN:-}" ]; then
+                        ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
+                    else
+                        hosts_yaml_token
+                    fi
                 fi
             fi
         fi

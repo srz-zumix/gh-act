@@ -85,6 +85,7 @@ gh-act passes following token as GITHUB_TOKEN secret to act.
 
 * GITHUB_TOKEN
 * GH_TOKEN / GH_ENTERPRISE_TOKEN
+* gh auth token
 * \<gh-config-dir\>/hosts.yml token
 
 Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
