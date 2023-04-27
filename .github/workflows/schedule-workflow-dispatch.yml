@@ -1,0 +1,14 @@
+name: schedule workflow_dispatch trigger
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - run: |
+        gh workflow run main.yml -f event=workflow_dispatch
