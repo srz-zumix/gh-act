@@ -1,3 +1,5 @@
 {
-    "schedule": "${GHACT_SCHEDULE_CRON:-0 0 * * *}"
+    "repository": ${HEAD_REPO_JSON},
+    "schedule": "${GHACT_SCHEDULE_CRON:-0 0 * * *}",
+    "workflow": "${WORKFLOWS_PATH}/${WORKFLOW_YAML}"
 }

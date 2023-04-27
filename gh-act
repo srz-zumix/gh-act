@@ -1090,11 +1090,11 @@ function evnet_envs() {
         package_envs "${OWNER}" "${REPO}"
     fi
 
-    if [ "${EVENT_NAME}" == "workflow_dispatch" ]; then
+    if [ "${EVENT_NAME}" == "workflow_dispatch" ] || [ "${EVENT_NAME}" == "schedule" ]; then
         WORKFLOWS_FILES=()
         while IFS='' read -r line; do WORKFLOWS_FILES+=("$line"); done < <(ls "${WORKFLOWS_PATH}")
         WORKFLOWS_FILES_REGEXP=$(IFS=\|; echo "${WORKFLOWS_FILES[*]}")
-        WORKFLOW_YAML=$(act workflow_dispatch --list | grep "${ACT_JOB:-workflow_dispatch}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
+        WORKFLOW_YAML=$(act "${EVENT_NAME}" --list | grep "${ACT_JOB:-"${EVENT_NAME}"}" | grep -oE "(${WORKFLOWS_FILES_REGEXP})" | head -1)
     fi
 
     HEAD_BRANCH="${GHACT_BRANCH:-}"
