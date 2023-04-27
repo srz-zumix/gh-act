@@ -60,6 +60,8 @@ on:
   release:
   repository_dispatch:
     types: [on-demand-test]
+  schedule:
+    - cron: '0 0 * * 0'
   status:
   watch:
   workflow_dispatch:
