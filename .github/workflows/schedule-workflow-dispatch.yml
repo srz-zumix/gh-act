@@ -11,4 +11,4 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - run: |
-          gh workflow run main.yml -f event=workflow_dispatch
+          gh workflow run -R "${{ github.repository.full_name }}" main.yml -f event=workflow_dispatch
