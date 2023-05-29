@@ -82,7 +82,7 @@
     "svn_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}",
     "tags_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/tags",
     "teams_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/teams",
-    "topics": "${REPO_REPOSITORY_TOPICS% }",
+    "topics": [${REPO_REPOSITORY_TOPICS}],
     "trees_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/git/trees{/sha}",
     "updated_at": "${REPO_UPDATED_AT}",
     "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}",

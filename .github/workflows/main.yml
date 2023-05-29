@@ -111,10 +111,8 @@ jobs:
       run: |
         make install
     - name: Dump github.event
-      env:
-        GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
       run: |
-        echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
+        jq . < "${GITHUB_EVENT_PATH}" > github_event.json
     - name: Create act event.json
       run: |
         gh act "${ACT_EVENT_NAME}" -e gh_act_event_raw.json -j noop
@@ -122,7 +120,7 @@ jobs:
     - name: Diff
       run: |
         diff github_event.json gh_act_event.json || :
-      if: github.event_name == env.ACT_EVENT_NAME 
+      if: github.event_name == env.ACT_EVENT_NAME
     - name: Docker ps
       run: |
         docker ps
