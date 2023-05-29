@@ -123,6 +123,18 @@ jobs:
       run: |
         diff github_event.json gh_act_event.json || :
       if: github.event_name == env.ACT_EVENT_NAME 
+    - name: Overwrite
+      run: |
+          cp -f gh_act_event.json "${GITHUB_EVENT_PATH}"
+    - name: Dump github.event (overwritted)
+      env:
+        GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
+      run: |
+        echo "${GITHUB_EVENT_CONTEXT}" > github_event.json
+    - name: Diff (overwritted)
+      run: |
+        diff github_event.json gh_act_event.json || :
+      if: github.event_name == env.ACT_EVENT_NAME 
     - name: Docker ps
       run: |
         docker ps
