@@ -16,6 +16,48 @@ die() {
     exit "$code"
 }
 
+function help() {
+    case "${2-}" in
+        env )
+            die "gh act envs
+
+GHACT_ACTION                specify action name
+GHACT_AUTO_GITHUB_TOKEN     flag to automatically set the GITHUB_TOKEN secret
+GHACT_BRANCH                specify branch name
+GHACT_CLIENT_PAYLOAD        repository_dispatch client_payload json string
+GHACT_CREATE_EVENT_JSON     if you specify false, gh act will not generate event json
+GHACT_DISCUSSION_NUMBER     specify issue number ({github_host}/{owner}/{repo}/discussions/{__number__})
+GHACT_INPUTS                workflow_dispatch inputs json string
+GHACT_ISSUE_NUMBER          specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})
+GHACT_MILESTONE_NUMBER      specify milestone number ({github_host}/{owner}/{repo}/milestone/{__number__})
+GHACT_PACKAGE_NAME          specify package name
+GHACT_PACKAGE_TYPE          specify package type ([supported package_type][])
+GHACT_PULL_REQUEST_NUMBER   specify pull request number ({github_host}/{owner}/{repo}/pull/{__number__})
+GHACT_PULL_REQUEST_SPEC     specify gh pr view [<number> | <url> | <branch>]
+GHACT_RELEASE_NAME          specify release name
+GHACT_SCHEDULE_CRON         specify cron string
+" 0
+        ;;
+        * )
+            msg "gh act help
+gh-act auto-generates event payload for act.
+
+gh-act sub commands
+
+prune       prune act docker container/volume
+    -n, --dryrun    dryrun mode
+
+help        show help
+    env             show gh-act envs
+
+gh-act is optionally compatible with act.
+See below for act options.
+"
+            act --help | sed "s/  act /  gh act /g"
+        ;;
+    esac    
+}
+
 parse_params() {
     # default values of variables set from params
     EVENT_NAME=
@@ -1288,8 +1330,14 @@ function main() {
     act "$@" "${ACT_OPTIONS[@]}" && act_post_action
 }
 
-if [ "${EVENT_NAME}" == "prune" ]; then
-    rm_act_container || true
-else
-    main "$@"
-fi
+case "${EVENT_NAME:-}" in
+    prune )
+        rm_act_container || true
+        ;;
+    help )
+        help "$@"
+        ;;
+    * )
+        main "$@"
+    ;;
+esac
