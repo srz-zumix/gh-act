@@ -281,7 +281,7 @@ REPO_PRIMARY_LANGUAGE="{{if .primaryLanguage}}{{.primaryLanguage.name}}{{else}}n
 REPO_PULL_REQUESTS_TOTAL_COUNT="{{.pullRequests.totalCount}}"
 REPO_PUSHED_AT="{{.pushedAt}}"
 REPO_REBASE_MERGE_ALLOWED="{{.rebaseMergeAllowed}}"
-REPO_REPOSITORY_TOPICS_='\''{{if .repositoryTopics}}{{range $index, $element := .repositoryTopics}}"{{$element.name}}", {{end -}}{{else}}{{end}}'\''
+REPO_REPOSITORY_TOPICS='\''{{if .repositoryTopics}}{{range $i, $element := .repositoryTopics}}{{ if ne $i 0 }}, {{ end }}"{{$element.name}}"{{end -}}{{else}}{{end}}'\''
 REPO_SQUASH_MERGE_ALLOWED="{{.squashMergeAllowed}}"
 REPO_SSH_URL="{{.sshUrl}}"
 REPO_STARGAZER_COUNT="{{.stargazerCount}}"
@@ -292,7 +292,6 @@ REPO_WATCHERS_TOTAL_COUNT="{{.watchers.totalCount}}"
     . "${ACT_ENV}"
     sed -e "s/^/${PREFIX}_/g" < "${ACT_ENV}" > "${ACT_ENV}.${PREFIX}"
     . "${ACT_ENV}.${PREFIX}"
-    REPO_REPOSITORY_TOPICS=${REPO_REPOSITORY_TOPICS_%, }
 }
 
 function pr_envs {
