@@ -5,7 +5,7 @@
     "commits": [
         ${COMMITS}
     ],
-    "compare": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/compare/${BEFORE}...${HEAD}",
+    "compare": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/compare/${BEFORE:0:12}...${HEAD:0:12}",
     "created": false,
     "deleted": false,
     "forced": false,
