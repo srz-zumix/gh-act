@@ -255,7 +255,7 @@ function repo_envs {
     ACT_ENV="${TEMPFILE_DIR}/.repo.env"
     # shellcheck disable=SC2016
     gh repo view "${GITHUB_HOSTNAME}/${REPOSITORY}" --json \
-        createdAt,defaultBranchRef,deleteBranchOnMerge,description,diskUsage,forkCount,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,repositoryTopics,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
+        createdAt,defaultBranchRef,deleteBranchOnMerge,description,diskUsage,forkCount,hasDiscussionsEnabled,hasIssuesEnabled,hasProjectsEnabled,hasWikiEnabled,homepageUrl,id,isArchived,isFork,isPrivate,issues,isTemplate,licenseInfo,mergeCommitAllowed,mirrorUrl,primaryLanguage,pullRequests,pushedAt,rebaseMergeAllowed,repositoryTopics,squashMergeAllowed,sshUrl,stargazerCount,updatedAt,url,watchers \
         --template '
 REPO_CREATED_AT="{{.createdAt}}"
 REPO_DEFAULT_BRANCH_REF="{{.defaultBranchRef.name}}"
@@ -263,6 +263,7 @@ REPO_DELETE_BRANCH_ON_MERGE="{{.deleteBranchOnMerge}}"
 REPO_DESCRIPTION="{{.description | js}}"
 REPO_DISK_USAGE="{{.diskUsage}}"
 REPO_FORK_COUNT="{{.forkCount}}"
+REPO_HAS_DISCUSSIONS_ENABLED="{{.hasDiscussionsEnabled}}
 REPO_HAS_ISSUES_ENABLED="{{.hasIssuesEnabled}}"
 REPO_HAS_PROJECTS_ENABLED="{{.hasProjectsEnabled}}"
 REPO_HAS_WIKI_ENABLED="{{.hasWikiEnabled}}"
