@@ -5,14 +5,14 @@
     "commits": [
         ${COMMITS}
     ],
-    "compare": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/compare/${BEFORE}...${HEAD}",
+    "compare": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/compare/${BEFORE:0:12}...${HEAD:0:12}",
     "created": false,
     "deleted": false,
     "forced": false,
     "head_commit": ${COMMITS},
     "pusher": {
-        "email": "$(git config --get user.email)",
-        "name": "$(git config --get user.name)"
+        "email": "${PUSHER_EMAIL}",
+        "name": "${PUSHER_NAME}"
     },
     "ref": "${HEAD_REF}",
     "repository": ${HEAD_REPO_JSON},

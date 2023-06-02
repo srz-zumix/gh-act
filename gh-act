@@ -980,6 +980,8 @@ function commit_envs() {
   \"url\":\"https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/commit/%H\"
 }"
     COMMITS=$(git log "${GHACT_BRANCH:-HEAD}" -1 --pretty=format:"${LOG_FORMAT}")
+    PUSHER_EMAIL=$(git log "${GHACT_BRANCH:-HEAD}" -1 --pretty=format:"%ce")
+    PUSHER_NAME=$(git log "${GHACT_BRANCH:-HEAD}" -1 --pretty=format:"%cn")
 }
 
 function remote_commit_detail_json() {
