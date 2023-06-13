@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-GH_ACT_VERSION=0.4
+GH_ACT_VERSION=0.5
 
 msg() {
     echo >&2 -e "${1-}"
