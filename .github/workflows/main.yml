@@ -128,8 +128,8 @@ jobs:
   noop:
     runs-on: ubuntu-latest
     # jobs.*.if では env 参照できない
-    # act の場合 github.ref_protected がないのでそれを利用
-    if: github.ref_protected == null
+    # actor で判断している
+    if: github.actor == 'nektos/act'
     steps:
     - uses: actions/checkout@v3
       with:
