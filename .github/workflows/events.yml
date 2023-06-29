@@ -183,3 +183,8 @@ jobs:
         echo "${{ inputs.fv != false }}"
         echo "${{ inputs.fv == 'false' }}"
         echo "${{ inputs.fv != 'false' }}"
+    - name: Boolean expression (and/or)
+      run: |
+        echo "${{ (inputs.tv && 'yes') || 'no' }}"
+        echo "${{ (inputs.tv == true && 'yes') || 'no' }}"
+        echo "${{ (inputs.tv == 'true' && 'yes') || 'no' }}"
