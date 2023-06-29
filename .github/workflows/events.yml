@@ -78,6 +78,14 @@ on:
         description: 'Name'
         required: true
         type: string
+      yes:
+        description: 'boolean flag'
+        type: boolean
+        default: true
+      no:
+        description: 'boolean flag'
+        type: boolean
+        default: false
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -88,6 +96,14 @@ on:
       name:
         description: 'Name'
         required: true
+      yes:
+        description: 'boolean flag'
+        type: boolean
+        default: true
+      no:
+        description: 'boolean flag'
+        type: boolean
+        default: false
   workflow_run:
     workflows: [Lint]
     types:
@@ -145,4 +161,25 @@ jobs:
         TEST_JSON: ${{ vars.TEST_JSON }}
       run: |
         echo "${VARS_CONTEXT}"
-
+    - name: Boolean expression (yes)
+      run: |
+        echo "${{ inputs.yes }}"
+        echo "${{ inputs.yes == true }}"
+        echo "${{ inputs.yes != true }}"
+        echo "${{ inputs.yes == 'true' }}"
+        echo "${{ inputs.yes != 'true' }}"
+        echo "${{ inputs.yes == false }}"
+        echo "${{ inputs.yes != false }}"
+        echo "${{ inputs.yes == 'false' }}"
+        echo "${{ inputs.yes != 'false' }}"
+    - name: Boolean expression (no)
+      run: |
+        echo "${{ inputs.no }}"
+        echo "${{ inputs.no == true }}"
+        echo "${{ inputs.no != true }}"
+        echo "${{ inputs.no == 'true' }}"
+        echo "${{ inputs.no != 'true' }}"
+        echo "${{ inputs.no == false }}"
+        echo "${{ inputs.no != false }}"
+        echo "${{ inputs.no == 'false' }}"
+        echo "${{ inputs.no != 'false' }}"

@@ -10,7 +10,7 @@ install: ## install gh extention
 
 install-released:
 	gh extension remove "${EXTENSION_NAME}" || :
-	gh extension install "srz-zumix/${EXTENSION_NAME}"
+	gh extension install "srz-zumix/gh-${EXTENSION_NAME}"
 
 act_value_opts:
 	@act --help | grep -o -e "-.*\s*string\w*\s" | sed -e "s/,/|/g" -e "s/string.*/) shift ;;/g"
