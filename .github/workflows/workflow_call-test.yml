@@ -1,11 +1,11 @@
 name: workflow call test
-on: 
+on:
   # pull_request:
   workflow_dispatch:
 
 jobs:
   reusable_workflow_job:
-    uses: srz-zumix/gh-act/.github/workflows/events.yml@main
+    uses: srz-zumix/gh-act/.github/workflows/events.yml@feature/boolean_expression
     with:
       username: ${{ github.actor }}
     secrets: inherit
