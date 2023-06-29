@@ -78,12 +78,12 @@ on:
         description: 'Name'
         required: true
         type: string
-      yes:
-        description: 'boolean flag'
+      tv:
+        description: 'true flag'
         type: boolean
         default: true
-      no:
-        description: 'boolean flag'
+      fv:
+        description: 'false flag'
         type: boolean
         default: false
     secrets:
@@ -96,12 +96,12 @@ on:
       name:
         description: 'Name'
         required: true
-      yes:
-        description: 'boolean flag'
+      tv:
+        description: 'true flag'
         type: boolean
         default: true
-      no:
-        description: 'boolean flag'
+      fv:
+        description: 'false flag'
         type: boolean
         default: false
   workflow_run:
@@ -163,23 +163,23 @@ jobs:
         echo "${VARS_CONTEXT}"
     - name: Boolean expression (yes)
       run: |
-        echo "${{ inputs.yes }}"
-        echo "${{ inputs.yes == true }}"
-        echo "${{ inputs.yes != true }}"
-        echo "${{ inputs.yes == 'true' }}"
-        echo "${{ inputs.yes != 'true' }}"
-        echo "${{ inputs.yes == false }}"
-        echo "${{ inputs.yes != false }}"
-        echo "${{ inputs.yes == 'false' }}"
-        echo "${{ inputs.yes != 'false' }}"
+        echo "${{ inputs.tv }}"
+        echo "${{ inputs.tv == true }}"
+        echo "${{ inputs.tv != true }}"
+        echo "${{ inputs.tv == 'true' }}"
+        echo "${{ inputs.tv != 'true' }}"
+        echo "${{ inputs.tv == false }}"
+        echo "${{ inputs.tv != false }}"
+        echo "${{ inputs.tv == 'false' }}"
+        echo "${{ inputs.tv != 'false' }}"
     - name: Boolean expression (no)
       run: |
-        echo "${{ inputs.no }}"
-        echo "${{ inputs.no == true }}"
-        echo "${{ inputs.no != true }}"
-        echo "${{ inputs.no == 'true' }}"
-        echo "${{ inputs.no != 'true' }}"
-        echo "${{ inputs.no == false }}"
-        echo "${{ inputs.no != false }}"
-        echo "${{ inputs.no == 'false' }}"
-        echo "${{ inputs.no != 'false' }}"
+        echo "${{ inputs.fv }}"
+        echo "${{ inputs.fv == true }}"
+        echo "${{ inputs.fv != true }}"
+        echo "${{ inputs.fv == 'true' }}"
+        echo "${{ inputs.fv != 'true' }}"
+        echo "${{ inputs.fv == false }}"
+        echo "${{ inputs.fv != false }}"
+        echo "${{ inputs.fv == 'false' }}"
+        echo "${{ inputs.fv != 'false' }}"
