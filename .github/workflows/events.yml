@@ -78,6 +78,14 @@ on:
         description: 'Name'
         required: true
         type: string
+      tv:
+        description: 'true flag'
+        type: boolean
+        default: true
+      fv:
+        description: 'false flag'
+        type: boolean
+        default: false
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -88,6 +96,14 @@ on:
       name:
         description: 'Name'
         required: true
+      tv:
+        description: 'true flag'
+        type: boolean
+        default: true
+      fv:
+        description: 'false flag'
+        type: boolean
+        default: false
   workflow_run:
     workflows: [Lint]
     types:
@@ -145,4 +161,30 @@ jobs:
         TEST_JSON: ${{ vars.TEST_JSON }}
       run: |
         echo "${VARS_CONTEXT}"
-
+    - name: Boolean expression (yes)
+      run: |
+        echo "${{ inputs.tv }}"
+        echo "${{ inputs.tv == true }}"
+        echo "${{ inputs.tv != true }}"
+        echo "${{ inputs.tv == 'true' }}"
+        echo "${{ inputs.tv != 'true' }}"
+        echo "${{ inputs.tv == false }}"
+        echo "${{ inputs.tv != false }}"
+        echo "${{ inputs.tv == 'false' }}"
+        echo "${{ inputs.tv != 'false' }}"
+    - name: Boolean expression (no)
+      run: |
+        echo "${{ inputs.fv }}"
+        echo "${{ inputs.fv == true }}"
+        echo "${{ inputs.fv != true }}"
+        echo "${{ inputs.fv == 'true' }}"
+        echo "${{ inputs.fv != 'true' }}"
+        echo "${{ inputs.fv == false }}"
+        echo "${{ inputs.fv != false }}"
+        echo "${{ inputs.fv == 'false' }}"
+        echo "${{ inputs.fv != 'false' }}"
+    - name: Boolean expression (and/or)
+      run: |
+        echo "${{ (inputs.tv && 'yes') || 'no' }}"
+        echo "${{ (inputs.tv == true && 'yes') || 'no' }}"
+        echo "${{ (inputs.tv == 'true' && 'yes') || 'no' }}"

@@ -1,5 +1,5 @@
 name: workflow call test
-on: 
+on:
   # pull_request:
   workflow_dispatch:
 
