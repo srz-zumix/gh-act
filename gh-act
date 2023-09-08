@@ -426,11 +426,7 @@ function pull_request_event_envs() {
 
     pr_envs "${PULL_REQUEST_SPEC}"
     # shellcheck disable=SC2086
-    HEAD=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -1)
-    # shellcheck disable=SC2086
-    HEAD_USER=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].authors[].login | tail -1)
-    # shellcheck disable=SC2086
-    BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
+    read -r HEAD HEAD_USER BEFORE <<< $(gh repo view --json commits --templte '{{ .commits[-1].oid }} {{ .commits[-1].authors[0].login }} {{ .commits[-2].oid }}')
 
     # base
     repo_envs "${OWNER}/${REPO}" "BASE"
@@ -1163,8 +1159,7 @@ function create_event_json() {
     if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
 
         # common
-        OWNER=$(gh repo view --json owner --jq .owner.login)
-        REPO=$(gh repo view --json name --jq .name)
+        read -r OWNER REPO <<< $(gh repo view --json owner,name --templte '{{ .owner.login }} {{ .name }}')
 
         evnet_envs
 
