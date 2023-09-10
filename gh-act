@@ -425,8 +425,16 @@ function pull_request_event_envs() {
     fi
 
     pr_envs "${PULL_REQUEST_SPEC}"
+
     # shellcheck disable=SC2086
-    read -r HEAD HEAD_USER BEFORE <<< $(gh repo view --json commits --templte '{{ .commits[-1].oid }} {{ .commits[-1].authors[0].login }} {{ .commits[-2].oid }}')
+    BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
+    # shellcheck disable=SC2086
+    read -r HEAD HEAD_USER <<< $(gh pr view ${PULL_REQUEST_SPEC} --json commits \
+        --template '{{- $last := 0}}
+{{- range $index, $element := .commits}}{{$last = $index}}{{end}}
+{{- $commit := index .commits $last}}
+{{- $author := index $commit.authors 0}}
+{{- $commit.oid }} {{ $author.login -}}')
 
     # base
     repo_envs "${OWNER}/${REPO}" "BASE"
@@ -1159,7 +1167,8 @@ function create_event_json() {
     if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
 
         # common
-        read -r OWNER REPO <<< $(gh repo view --json owner,name --templte '{{ .owner.login }} {{ .name }}')
+        read -r OWNER REPO \
+            <<< $(gh repo view --json owner,name --template '{{ .owner.login }} {{ .name }}')
 
         evnet_envs
 
@@ -1325,7 +1334,7 @@ function main() {
         ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
     fi
 
-    act "$@" "${ACT_OPTIONS[@]}" && act_post_action
+    # act "$@" "${ACT_OPTIONS[@]}" && act_post_action
 }
 
 case "${EVENT_NAME:-}" in
