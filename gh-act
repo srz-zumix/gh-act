@@ -437,9 +437,9 @@ function pull_request_event_envs() {
     pr_envs "${PULL_REQUEST_SPEC}"
 
     # shellcheck disable=SC2086
-    BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
+    BEFORE=$(gh pr view "${PULL_REQUEST_SPEC}" --json commits --jq .commits[].oid | tail -2 | head -1)
     # shellcheck disable=SC2016
-    read -r HEAD HEAD_USER <<< $(gh pr view ${PULL_REQUEST_SPEC} --json commits \
+    read -r HEAD HEAD_USER <<< $(gh pr view "${PULL_REQUEST_SPEC}" --json commits \
         --template '{{- $last := 0}}
 {{- range $index, $element := .commits}}{{$last = $index}}{{end}}
 {{- $commit := index .commits $last}}
