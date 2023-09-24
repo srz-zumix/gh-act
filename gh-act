@@ -231,12 +231,11 @@ function user_json_ {
 }
 
 function user_json {
-
     if [ -f "${TEMPFILE_DIR}/users/$1.json" ]; then
         cat "${TEMPFILE_DIR}/users/$1.json"
+    else
+        user_json_ "$1" | tee "${TEMPFILE_DIR}/users/$1.json"
     fi
-
-    user_json_ "$1" | tee "${TEMPFILE_DIR}/users/$1.json"
 }
 
 function issue_json {
