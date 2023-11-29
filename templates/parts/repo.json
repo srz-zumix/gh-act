@@ -75,7 +75,6 @@
     "squash_merge_commit_message": "COMMIT_MESSAGES",
     "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
     "ssh_url": "${REPO_SSH_URL}",
-    "stargazers": ${REPO_STARGAZER_COUNT},
     "stargazers_count": ${REPO_STARGAZER_COUNT},
     "stargazers_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/stargazers",
     "statuses_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/statuses/{sha}",
@@ -90,7 +89,7 @@
     "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}",
     "use_squash_pr_title_as_default": false,
     "visibility": "${VISIBILITY}",
-    "watchers": ${REPO_WATCHERS_TOTAL_COUNT},
-    "watchers_count": ${REPO_WATCHERS_TOTAL_COUNT},
+    "watchers": ${REPO_STARGAZER_COUNT},
+    "watchers_count": ${REPO_STARGAZER_COUNT},
     "web_commit_signoff_required": false
 }
