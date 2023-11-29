@@ -147,7 +147,11 @@ parse_params() {
             echo "gh-act version ${GH_ACT_VERSION}"
             CREATE_EVENT_JSON=false
             ;;
-        -g| --graph| -h| --help| -l| --list)
+        -g| --graph| -l| --list)
+            CREATE_EVENT_JSON=false
+            ;;
+        -h| --help)
+            EVENT_NAME=help
             CREATE_EVENT_JSON=false
             ;;
         -?*) ;;
