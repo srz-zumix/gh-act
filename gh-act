@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
 GH_ACT_VERSION=0.5
+declare -a ACT_OPTIONS
 TEMPFILE_DIR=
 
 msg() {
@@ -63,7 +64,8 @@ parse_params() {
     # default values of variables set from params
     EVENT_NAME=
     EVENT_PATH=
-    GITHUB_HOSTNAME='github.com'
+    GITHUB_INSTANCE=
+    GITHUB_HOSTNAME="${GH_HOST:-github.com}"
     AUTO_GITHUB_TOKEN=${GHACT_AUTO_GITHUB_TOKEN:-true}
     ACT_JOB=
     ACT_DRYRUN=false
@@ -118,7 +120,8 @@ parse_params() {
             EVENT_PATH="${2-}"
             shift ;;
         --github-instance )
-            GITHUB_HOSTNAME="${2-}"
+            GITHUB_INSTANCE="${2-}"
+            GITHUB_HOSTNAME="${GITHUB_INSTANCE}"
             shift ;;
         -j| --job )
             ACT_JOB="${2-}"
@@ -169,6 +172,9 @@ parse_params() {
         GITHUB_API="api.github.com"
     else
         GITHUB_API="${GITHUB_HOSTNAME}/api/v3"
+        if [ -z "${GITHUB_INSTANCE}" ]; then
+            ACT_OPTIONS+=(--github-instance "${GITHUB_HOSTNAME}")
+        fi
     fi
     if [ -z "${EVENT_NAME}" ]; then
         EVENT_NAME="push"
@@ -1302,7 +1308,6 @@ function main() {
     DATE_NOW=$(date +"%Y-%m-%dT%H:%M:%S%z")
     DATE_UTC_NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-    declare -a ACT_OPTIONS
     if "${AUTO_GITHUB_TOKEN}"; then
         if [ -n "${GITHUB_TOKEN:-}" ]; then
             ACT_OPTIONS+=(-s "GITHUB_TOKEN=${GITHUB_TOKEN}")
@@ -1348,7 +1353,7 @@ function main() {
         ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
     fi
 
-    # act "$@" "${ACT_OPTIONS[@]}" && act_post_action
+    act "$@" "${ACT_OPTIONS[@]}" && act_post_action
 }
 
 case "${EVENT_NAME:-}" in
