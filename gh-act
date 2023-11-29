@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
 GH_ACT_VERSION=0.5
+TEMPFILE_DIR=
 
 msg() {
     echo >&2 -e "${1-}"
@@ -202,7 +203,7 @@ function is_valid_user {
     return $?
 }
 
-function user_json {
+function user_json_ {
     # shellcheck disable=SC2016,SC2086
     USER_JSON_TEMPLATE='{
     "avatar_url": "{{.avatar_url}}",
@@ -230,6 +231,14 @@ function user_json {
     else
         gh api --hostname "${GITHUB_HOSTNAME}" -H "Accept: application/vnd.github.v3+json" \
             "/user" --template "${USER_JSON_TEMPLATE}" || :
+    fi
+}
+
+function user_json {
+    if [ -f "${TEMPFILE_DIR}/users/$1.json" ]; then
+        cat "${TEMPFILE_DIR}/users/$1.json"
+    else
+        user_json_ "$1" | tee "${TEMPFILE_DIR}/users/$1.json"
     fi
 }
 
@@ -429,12 +438,16 @@ function pull_request_event_envs() {
     fi
 
     pr_envs "${PULL_REQUEST_SPEC}"
+
     # shellcheck disable=SC2086
-    HEAD=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -1)
-    # shellcheck disable=SC2086
-    HEAD_USER=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].authors[].login | tail -1)
-    # shellcheck disable=SC2086
-    BEFORE=$(gh pr view ${PULL_REQUEST_SPEC} --json commits --jq .commits[].oid | tail -2 | head -1)
+    BEFORE=$(gh pr view "${PULL_REQUEST_SPEC}" --json commits --jq .commits[].oid | tail -2 | head -1)
+    # shellcheck disable=SC2046
+    read -r HEAD HEAD_USER <<< $(gh pr view "${PULL_REQUEST_SPEC}" --json commits \
+        --template '{{- $last := 0}}
+{{- range $index, $element := .commits}}{{$last = $index}}{{end}}
+{{- $commit := index .commits $last}}
+{{- $author := index $commit.authors 0}}
+{{- $commit.oid }} {{ $author.login -}}')
 
     # base
     repo_envs "${OWNER}/${REPO}" "BASE"
@@ -1167,8 +1180,9 @@ function create_event_json() {
     if [ -f "${SCRIPT_DIR}/templates/${EVENT_NAME}.json" ]; then
 
         # common
-        OWNER=$(gh repo view --json owner --jq .owner.login)
-        REPO=$(gh repo view --json name --jq .name)
+        # shellcheck disable=SC2046
+        read -r OWNER REPO \
+            <<< $(gh repo view --json owner,name --template '{{ .owner.login }} {{ .name }}')
 
         evnet_envs
 
@@ -1270,10 +1284,10 @@ function act_post_action() {
     true
 }
 
-TEMPFILE_DIR=
 function tempdir() {
     if [ -z "${TEMPFILE_DIR}" ] || [ ! -d "${TEMPFILE_DIR}" ]; then
         TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+        mkdir "${TEMPFILE_DIR}/users"
         trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
     fi
 }
@@ -1334,7 +1348,7 @@ function main() {
         ACT_OPTIONS+=(--artifact-server-path "${TEMP_ARTIFACT_DIR}")
     fi
 
-    act "$@" "${ACT_OPTIONS[@]}" && act_post_action
+    # act "$@" "${ACT_OPTIONS[@]}" && act_post_action
 }
 
 case "${EVENT_NAME:-}" in
