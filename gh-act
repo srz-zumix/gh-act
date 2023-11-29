@@ -149,7 +149,7 @@ parse_params() {
         -g| --graph| -l| --list)
             CREATE_EVENT_JSON=false
             ;;
-        --help| -l)
+        -h| --help)
             EVENT_NAME=help
             CREATE_EVENT_JSON=false
             ;;
