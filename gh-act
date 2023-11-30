@@ -1334,6 +1334,10 @@ function main() {
         ACT_OPTIONS+=(--defaultbranch "${ACT_DEFAULT_BRANCH}")
     fi
 
+    if [ "$(uname)" == "Darwin" ] && [ "$(uname -m)" == "arm64" ]; then
+        ACT_OPTIONS+=(--container-architecture linux/amd64)
+    fi
+    
     if "${CREATE_EVENT_JSON}"; then
         if [ ! -f "${EVENT_PATH}" ]; then
            tempdir
