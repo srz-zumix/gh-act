@@ -1,3 +1,4 @@
+name: Event Info
 on:
   # https://docs.github.com/ja/actions/using-workflows/events-that-trigger-workflows
   branch_protection_rule:
@@ -110,7 +111,9 @@ on:
       - requested
       - completed
 
-name: Event Info
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   context:
     name: Show Context
@@ -139,6 +142,9 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: |
         echo "${JOB_CONTEXT}"
+    - name: job api response
+      run: |
+        gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs | jq
     - name: $runner
       env:
         RUNNER_CONTEXT: ${{ toJson(runner) }}
