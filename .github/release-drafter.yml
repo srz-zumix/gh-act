@@ -49,5 +49,7 @@ version-resolver:
   default: patch
 template: |
   [Compare $PREVIOUS_TAG with v$RESOLVED_VERSION](https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
+
   ## Changes
+
   $CHANGES
