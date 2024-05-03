@@ -122,8 +122,8 @@ jobs:
       jenkins:
         image: jenkins/jenkins:latest
         credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME || '' }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || '' }}
         env:
           JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/casc_configs
         ports:
