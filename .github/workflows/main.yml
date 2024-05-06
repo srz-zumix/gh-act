@@ -86,7 +86,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ACT_EVENT_NAME: ${{ inputs.event || github.event_name }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ (contains(github.event_name, 'pull_request') && github.event.pull_request.head.ref) || github.ref }}
         fetch-depth: 0
@@ -131,6 +131,6 @@ jobs:
     # actor で判断している
     if: github.actor == 'nektos/act'
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ (contains(github.event_name, 'pull_request') && github.event.pull_request.head.ref) || github.ref }}
