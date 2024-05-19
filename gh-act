@@ -201,7 +201,8 @@ function filter_envs {
         -e 's/\\u003D/=/g' \
         -e 's/\\u003E/>/g' \
         -e 's/\\/\\\\/g' \
-        -e 's/\\"/\\\\\"/g'
+        -e 's/\\"/\\\\\"/g' \
+        -e 's/`/\\`/g'
 }
 
 function is_valid_user {
