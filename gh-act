@@ -191,6 +191,7 @@ function parts_json {
 }
 
 function filter_envs {
+    # shellcheck disable=SC2016
     sed -e '/^$/d' \
         -e 's/<no value>/null/g' \
         -e "s/\\\\'/'/g" \
