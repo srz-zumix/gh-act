@@ -1,0 +1,7 @@
+{
+  "diff_url": "${ISSUE_URL}.diff",
+  "html_url": "${ISSUE_URL}",
+  "merged_at": null,
+  "patch_url": "${ISSUE_URL}.patch",
+  "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/pulls/${GHACT_ISSUE_NUMBER}"
+}

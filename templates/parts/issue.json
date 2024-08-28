@@ -18,6 +18,7 @@
     "node_id": "${ISSUE_NODE_ID}",
     "number": ${ISSUE_NUMBER},
     "performed_via_github_app": null,
+    "pull_request": ${ISSSUE_PULL_REQUEST_JSON:-null},
     "reactions": {
       "+1": ${ISSUE_REACTION_THUMBS_UP_COUNT:-0},
       "-1": ${ISSUE_REACTION_THUMBS_DOWN_COUNT:-0},
