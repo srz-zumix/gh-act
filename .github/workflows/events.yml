@@ -142,9 +142,6 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       run: |
         echo "${JOB_CONTEXT}"
-    - name: Rebuilder
-      uses: srz-zumix/github-actions-rebuilder@v0
-      if: github.event_name == 'workflow_dispatch'
     - name: job api response
       run: |
         gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs | jq
