@@ -581,6 +581,11 @@ function issue_event_envs() {
         fi
         ISSUE_COMMENT_USER_JSON=$(user_json "${ISSUE_COMMENT_AUTHOR}")
     fi
+
+    if [[ "${ISSUE_URL}" =~ .*pull.* ]]; then
+        ISSSUE_PULL_REQUEST_JSON=$(parts_json issue_pull_request)
+    fi
+
     HEAD_OWNER="${OWNER}"
     HEAD_REPO="${REPO}"
     HEAD_USER="${ISSUE_AUTHOR}"
