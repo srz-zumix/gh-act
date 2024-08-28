@@ -243,10 +243,12 @@ function user_json_ {
 }
 
 function user_json {
-    if [ -f "${TEMPFILE_DIR}/users/$1.json" ]; then
-        cat "${TEMPFILE_DIR}/users/$1.json"
+    USER_JSON_FILENAME=${1////_}
+    USER_JSON_PATH="${TEMPFILE_DIR}/users/${USER_JSON_FILENAME}.json"
+    if [ -f "${USER_JSON_PATH}" ]; then
+        cat "${USER_JSON_PATH}"
     else
-        user_json_ "$1" | tee "${TEMPFILE_DIR}/users/$1.json"
+        user_json_ "$1" | tee "${USER_JSON_PATH}"
     fi
 }
 
