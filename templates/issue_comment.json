@@ -4,9 +4,9 @@
     "author_association": "${ISSUE_COMMENT_AUTHOR_ASSOCIATION}",
     "body": "${ISSUE_COMMENT_BODY}",
     "created_at": "${ISSUE_COMMENT_CREATED_AT}",
-    "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}#issuecomment-${ISSUE_COMMENT_ID}",
+    "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/issues/${GHACT_ISSUE_NUMBER}#issuecomment-${ISSUE_COMMENT_ID}",
     "id": ${ISSUE_COMMENT_ID},
-    "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}",
+    "issue_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/issues/${GHACT_ISSUE_NUMBER}",
     "node_id": "",
     "performed_via_github_app": null,
     "reactions": {

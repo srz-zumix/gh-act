@@ -191,6 +191,7 @@ function parts_json {
 }
 
 function filter_envs {
+    # shellcheck disable=SC2016
     sed -e '/^$/d' \
         -e 's/<no value>/null/g' \
         -e "s/\\\\'/'/g" \
@@ -201,7 +202,8 @@ function filter_envs {
         -e 's/\\u003D/=/g' \
         -e 's/\\u003E/>/g' \
         -e 's/\\/\\\\/g' \
-        -e 's/\\"/\\\\\"/g'
+        -e 's/\\"/\\\\\"/g' \
+        -e 's/`/\\`/g'
 }
 
 function is_valid_user {
@@ -241,10 +243,12 @@ function user_json_ {
 }
 
 function user_json {
-    if [ -f "${TEMPFILE_DIR}/users/$1.json" ]; then
-        cat "${TEMPFILE_DIR}/users/$1.json"
+    USER_JSON_FILENAME=${1////_}
+    USER_JSON_PATH="${TEMPFILE_DIR}/users/${USER_JSON_FILENAME}.json"
+    if [ -f "${USER_JSON_PATH}" ]; then
+        cat "${USER_JSON_PATH}"
     else
-        user_json_ "$1" | tee "${TEMPFILE_DIR}/users/$1.json"
+        user_json_ "$1" | tee "${USER_JSON_PATH}"
     fi
 }
 
@@ -447,7 +451,7 @@ function pull_request_event_envs() {
 
     # shellcheck disable=SC2086
     BEFORE=$(gh pr view "${PULL_REQUEST_SPEC}" --json commits --jq .commits[].oid | tail -2 | head -1)
-    # shellcheck disable=SC2046
+    # shellcheck disable=SC2016,SC2046
     read -r HEAD HEAD_USER <<< $(gh pr view "${PULL_REQUEST_SPEC}" --json commits \
         --template '{{- $last := 0}}
 {{- range $index, $element := .commits}}{{$last = $index}}{{end}}
@@ -579,6 +583,11 @@ function issue_event_envs() {
         fi
         ISSUE_COMMENT_USER_JSON=$(user_json "${ISSUE_COMMENT_AUTHOR}")
     fi
+
+    if [[ "${ISSUE_URL}" =~ .*pull.* ]]; then
+        ISSSUE_PULL_REQUEST_JSON=$(parts_json issue_pull_request)
+    fi
+
     HEAD_OWNER="${OWNER}"
     HEAD_REPO="${REPO}"
     HEAD_USER="${ISSUE_AUTHOR}"
