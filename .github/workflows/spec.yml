@@ -7,6 +7,7 @@ on:
 
 jobs:
   spec:
+    name: spec on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
