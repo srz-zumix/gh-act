@@ -20,4 +20,4 @@ jobs:
         run: apt list --installed
       - name: Packages dependencies
         if: runner.os == 'Linux'
-        run: apt-cache depends --installed
+        run: apt-cache dotty
