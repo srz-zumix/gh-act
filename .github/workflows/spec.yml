@@ -23,4 +23,6 @@ jobs:
         run: apt-cache dotty
       - name: Check
         if: runner.os == 'Linux'
-        run: apt depends libsecret-1-dev
+        run: |
+          apt depends libsecret-1-dev
+          apt depends libsecret-1-0
