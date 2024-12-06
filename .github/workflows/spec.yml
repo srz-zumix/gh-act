@@ -22,12 +22,3 @@ jobs:
       - name: List installed packages
         if: runner.os == 'Linux'
         run: apt list --installed
-      - name: Packages dependencies
-        if: runner.os == 'Linux'
-        run: apt-cache dotty
-      - name: Check
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y libsecret-1-dev
-      - name: test
-        run: npm install @box/cli@3.16.0
