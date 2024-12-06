@@ -29,6 +29,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y apt-rdepends
+          sudo apt-get install -y libsecret-1-dev
           apt-rdepends libsecret-1-dev
       - name: test
         run: npm install @box/cli@3.16.0
