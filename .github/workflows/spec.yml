@@ -17,7 +17,7 @@ jobs:
       - run: npm list -g
       - name: List installed packages
         if: runner.os == 'Linux'
-        run: apt-get list --installed
+        run: apt list --installed
       - name: Packages dependencies
         if: runner.os == 'Linux'
         run: apt-cache depends --installed
