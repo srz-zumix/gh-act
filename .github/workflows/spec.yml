@@ -24,4 +24,5 @@ jobs:
       - name: Check
         if: runner.os == 'Linux'
         run: |
-          apt-cache rdepends libsecret-1-dev
+          apt-get install -y apt-rdepends
+          apt-rdepends libsecret-1-dev
