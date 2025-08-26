@@ -25,7 +25,7 @@ on:
   public:
   push:
   pull_request:
-    types:
+    types: &pull_request_types
       - assigned
       - unassigned
       - labeled
@@ -47,24 +47,7 @@ on:
   pull_request_review:
   pull_request_review_comment:
   pull_request_target:
-    types:
-      - assigned
-      - unassigned
-      - labeled
-      - unlabeled
-      - opened
-      - edited
-      - closed
-      - reopened
-      - synchronize
-      - converted_to_draft
-      - ready_for_review
-      - locked
-      - unlocked
-      - review_requested
-      - review_request_removed
-      - auto_merge_enabled
-      - auto_merge_disabled
+    types: *pull_request_types
   registry_package:
   release:
   repository_dispatch:
@@ -74,7 +57,7 @@ on:
   status:
   watch:
   workflow_call:
-    inputs:
+    inputs: &workflow_inputs
       username:
         description: 'Name'
         required: true
@@ -93,18 +76,7 @@ on:
       DOCKERHUB_TOKEN:
         required: true
   workflow_dispatch:
-    inputs:
-      name:
-        description: 'Name'
-        required: true
-      tv:
-        description: 'true flag'
-        type: boolean
-        default: true
-      fv:
-        description: 'false flag'
-        type: boolean
-        default: false
+    inputs: *workflow_inputs
   workflow_run:
     workflows: [Lint]
     types:
