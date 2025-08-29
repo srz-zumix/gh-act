@@ -21,13 +21,13 @@ die() {
 function help() {
     case "${2-}" in
         env )
-            die "gh act envs
+            die "gh act-on envs
 
 GHACT_ACTION                specify action name
 GHACT_AUTO_GITHUB_TOKEN     flag to automatically set the GITHUB_TOKEN secret
 GHACT_BRANCH                specify branch name
 GHACT_CLIENT_PAYLOAD        repository_dispatch client_payload json string
-GHACT_CREATE_EVENT_JSON     if you specify false, gh act will not generate event json
+GHACT_CREATE_EVENT_JSON     if you specify false, gh act-on will not generate event json
 GHACT_DISCUSSION_NUMBER     specify issue number ({github_host}/{owner}/{repo}/discussions/{__number__})
 GHACT_INPUTS                workflow_dispatch inputs json string
 GHACT_ISSUE_NUMBER          specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})
@@ -41,21 +41,21 @@ GHACT_SCHEDULE_CRON         specify cron string
 " 0
         ;;
         * )
-            msg "gh act help
-gh-act auto-generates event payload for act.
+            msg "gh act-on help
+gh act-on auto-generates event payload for act.
 
-gh-act sub commands
+gh act-on sub commands
 
 prune       prune act docker container/volume
     -n, --dryrun    dryrun mode
 
 help        show help
-    env             show gh-act envs
+env         show gh act-on envs
 
-gh-act is optionally compatible with act.
+gh act-on is optionally compatible with act.
 See below for act options.
 "
-            act --help | sed "s/  act /  gh act /g"
+            act --help | sed "s/  act /  gh act-on /g"
         ;;
     esac    
 }
@@ -147,7 +147,7 @@ parse_params() {
             ACT_DRYRUN=true
             ;;
         --version )
-            echo "gh-act version ${GH_ACT_VERSION}"
+            echo "gh act-on version ${GH_ACT_VERSION}"
             CREATE_EVENT_JSON=false
             ;;
         -g| --graph| -l| --list)
@@ -469,7 +469,7 @@ function pull_request_event_envs() {
         if [ "${PR_REVIEWS}" == "0" ]; then
             PR_REVIEW_ID=0
             PR_REVIEW_USER="${HEAD_USER}"
-            PR_REVIEW_BODY="gh-act review"
+            PR_REVIEW_BODY="gh act-on review"
             PR_REVIEW_AUTHOR_ASSOCIATION="OWNER"
             PR_REVIEW_SUBMITTED_AT="${PR_UPDATED_AT}"
             PR_REVIEW_STATE="COMMENTED"
@@ -538,13 +538,13 @@ function issue_event_envs() {
         ISSUE_AUTHOR=""
         ISSUE_ASSIGNEE=""
         ISSUE_ASSIGNEES=""
-        ISSUE_BODY="gh act dummy issue body"
+        ISSUE_BODY="gh act-on dummy issue body"
         ISSUE_CLOSED_AT="null"
         ISSUE_COMMENTS="0"
         ISSUE_CREATED_AT="null"
         ISSUE_NODE_ID="0"
         ISSUE_STATE="open"
-        ISSUE_TITLE="gh act dummy issue"
+        ISSUE_TITLE="gh act-on dummy issue"
         ISSUE_UPDATED_AT="null"
         ISSUE_URL=""
         ISSUE_REACTION_TOTAL_COUNT="0"
@@ -575,7 +575,7 @@ function issue_event_envs() {
             ISSUE_COMMENT_ID=0
             ISSUE_COMMENT_AUTHOR="${ISSUE_AUTHOR}"
             ISSUE_COMMENT_AUTHOR_ASSOCIATION="OWNER"
-            ISSUE_COMMENT_BODY="gh-act issue comment body"
+            ISSUE_COMMENT_BODY="gh act-on issue comment body"
             ISSUE_COMMENT_CREATED_AT="${ISSUE_CREATED_AT}"
             ISSUE_COMMENT_UPDATED_AT="${ISSUE_UPDATED_AT}"
         else
@@ -654,10 +654,10 @@ function label_event_envs() {
     LABEL_COUNT=$(gh label list --json name --jq length)
     if [ "${LABEL_COUNT}" == "0" ]; then
         LABEL_COLOR="d73a4a"
-        LABEL_DESCRIPTION="gh-act label"
+        LABEL_DESCRIPTION="gh act-on label"
         LABEL_NODE_ID=""
         LABEL_IS_DEFAULT="false"
-        LABEL_NAME="gh act"
+        LABEL_NAME="gh act-on"
         LABEL_URL="https://${GITHUB_API}/repos/${OWNER}/${REPO}/labels/gh%20act"
     else
         ACT_ENV="${TEMPFILE_DIR}/.label.env"
@@ -824,7 +824,7 @@ query($owner: String!, $repo: String!) {
         if [ "${DISCUSSION_COMMENTS_TOTAL_COUNT}" == "0" ]; then
             DISCUSSION_COMMENT_ID=0
             DISCUSSION_COMMENT_AUTHOR_ASSOCIATION="${DISCUSSION_AUTHOR_ASSOCIATION}"
-            DISCUSSION_COMMENT_BODY="gh-act discussion comment body"
+            DISCUSSION_COMMENT_BODY="gh act-on discussion comment body"
             DISCUSSION_COMMENT_CREATED_AT="${DISCUSSION_CREATED_AT}"
             DISCUSSION_COMMENT_DISCUSSION_ID="0"
             DISCUSSION_COMMENT_HTML_URL="${DISCUSSION_HTML_URL}"
@@ -1301,7 +1301,7 @@ function act_post_action() {
 
 function tempdir() {
     if [ -z "${TEMPFILE_DIR}" ] || [ ! -d "${TEMPFILE_DIR}" ]; then
-        TEMPFILE_DIR=$(mktemp -d gh-act.XXXXXX)
+        TEMPFILE_DIR=$(mktemp -d gh act-on.XXXXXX)
         mkdir "${TEMPFILE_DIR}/users"
         trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
     fi
