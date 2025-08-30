@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd -P)
 
-GH_ACT_VERSION=0.7
+GH_ACT_VERSION=0.8
 declare -a ACT_OPTIONS
 TEMPFILE_DIR=
 
