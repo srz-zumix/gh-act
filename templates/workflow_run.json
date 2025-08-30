@@ -1,0 +1,91 @@
+{
+    "action": "${GHACT_ACTION:-completed}",
+    "repository": ${HEAD_REPO_JSON},
+    "sender": ${HEAD_USER_JSON}, 
+    "workflow": {
+        "badge_url": "https://github.com/srz-zumix/gh-act/workflows/Lint/badge.svg",
+        "created_at": "2022-08-14T04:27:08.000Z",
+        "html_url": "https://github.com/srz-zumix/gh-act/blob/main/.github/workflows/lint.yml",
+        "id": 32354116,
+        "name": "Lint",
+        "node_id": "W_kwDOHxe7Pc4B7a9E",
+        "path": ".github/workflows/lint.yml",
+        "state": "active",
+        "updated_at": "2022-08-14T05:39:10.000Z",
+        "url": "https://api.github.com/repos/srz-zumix/gh-act/actions/workflows/32354116"
+    },
+    "workflow_run": {
+        "actor": ${HEAD_USER_JSON},
+        "artifacts_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456/artifacts",
+        "cancel_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456/cancel",
+        "check_suite_id": 11123448439,
+        "check_suite_node_id": "CS_kwDOHxe7Pc8AAAAClwJadw",
+        "check_suite_url": "https://api.github.com/repos/srz-zumix/gh-act/check-suites/11123448439",
+        "conclusion": "success",
+        "created_at": "2023-02-22T01:29:28Z",
+        "display_title": "support action specific envrionment variable (GHACT_ACTION)",
+        "event": "pull_request",
+        "head_branch": "feature/ghact_action",
+        "head_commit": {
+            "author": {
+            "email": "zumix.cpp@gmail.com",
+            "name": "srz_zumix"
+            },
+            "committer": {
+            "email": "zumix.cpp@gmail.com",
+            "name": "srz_zumix"
+            },
+            "id": "e2592c3a3602cc45fe35c51c8ce7678e97df0ea0",
+            "message": "up",
+            "timestamp": "2023-02-21T16:07:31Z",
+            "tree_id": "ae37f762fe9f20d52660f29287aa15ed9a6304c1"
+        },
+        "head_repository": ${HEAD_REPO_JSON},
+        "head_sha": "e2592c3a3602cc45fe35c51c8ce7678e97df0ea0",
+        "html_url": "https://github.com/srz-zumix/gh-act/actions/runs/4238475456",
+        "id": 0,
+        "jobs_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456/jobs",
+        "logs_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456/logs",
+        "name": "Lint",
+        "node_id": "WFR_kwLOHxe7Pc78ogDA",
+        "path": ".github/workflows/lint.yml",
+        "previous_attempt_url": null,
+        "pull_requests": [
+            {
+            "base": {
+                "ref": "main",
+                "repo": {
+                "id": 521648957,
+                "name": "gh-act",
+                "url": "https://api.github.com/repos/srz-zumix/gh-act"
+                },
+                "sha": "ece0527ccab1157941bf08076d5c5fb3f8760972"
+            },
+            "head": {
+                "ref": "feature/ghact_action",
+                "repo": {
+                "id": 521648957,
+                "name": "gh-act",
+                "url": "https://api.github.com/repos/srz-zumix/gh-act"
+                },
+                "sha": "e2592c3a3602cc45fe35c51c8ce7678e97df0ea0"
+            },
+            "id": 1249443988,
+            "number": 74,
+            "url": "https://api.github.com/repos/srz-zumix/gh-act/pulls/74"
+            }
+        ],
+        "referenced_workflows": [],
+        "repository": ${HEAD_REPO_JSON},
+        "rerun_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456/rerun",
+        "run_attempt": 1,
+        "run_number": 103,
+        "run_started_at": "2023-02-22T01:29:28Z",
+        "status": "completed",
+        "triggering_actor": ${HEAD_USER_JSON},
+        "updated_at": "2023-02-22T01:29:51Z",
+        "url": "https://api.github.com/repos/srz-zumix/gh-act/actions/runs/4238475456",
+        "workflow_id": 32354116,
+        "workflow_url": "https://api.github.com/repos/srz-zumix/gh-act/actions/workflows/32354116"
+    }
+}
