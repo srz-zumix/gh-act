@@ -1,27 +1,31 @@
-# gh-act
+# gh-act-on
 
-gh-act generates and configures event.json for [nektos/act][]
+gh-act-on generates and configures event.json for [nektos/act][]
 
 ## Installation
 
 ```sh
-gh extension install srz-zumix/gh-act
+gh extension install srz-zumix/gh-act-on
+```
+
+```sh
+gh alias set act act-on
 ```
 
 ## Usage
 
 ```sh
-gh act pull_request
+gh act-on pull_request
 ```
 
 Create event.json in a temporary file, add it to the options of act and execute
 
 ```sh
-gh act pull_request -e pull_request.json
+gh act-on pull_request -e pull_request.json
 ```
 
-gh-act does nothing if exist pull_request.json file.  
-If pull_request.json is not exist, gh-act will generate it in the specified file.
+gh-act-on does nothing if exist pull_request.json file.  
+If pull_request.json is not exist, gh-act-on will generate it in the specified file.
 
 Please check [test workflow][](Diff step) for the difference between the generated event.json and the actual event
 
@@ -67,7 +71,7 @@ Supported Events
 | GHACT_AUTO_GITHUB_TOKEN    | flag to automatically set the GITHUB_TOKEN secret                                      | true                   |
 | GHACT_BRANCH               | specify branch name                                                                    | current branch         |
 | GHACT_CLIENT_PAYLOAD       | repository_dispatch client_payload json string                                         | null                   |
-| GHACT_CREATE_EVENT_JSON    | if you specify false, gh act will not generate event json                              | true                   |
+| GHACT_CREATE_EVENT_JSON    | if you specify false, gh act-on will not generate event json                           | true                   |
 | GHACT_DISCUSSION_NUMBER    | specify issue number ({github_host}/{owner}/{repo}/discussions/{__number__})           | null                   |
 | GHACT_INPUTS               | workflow_dispatch inputs json string                                                   | null                   |
 | GHACT_ISSUE_NUMBER         | specify issue number ({github_host}/{owner}/{repo}/issues/{__number__})                | last issue number      |
@@ -81,19 +85,18 @@ Supported Events
 
 ### GITHUB_TOKEN
 
-gh-act passes following token as GITHUB_TOKEN secret to act.
+gh-act-on passes following token as GITHUB_TOKEN secret to act.
 
-* GITHUB_TOKEN
-* GH_TOKEN / GH_ENTERPRISE_TOKEN
-* gh auth token
-* \<gh-config-dir\>/hosts.yml token
+- GITHUB_TOKEN
+- GH_TOKEN / GH_ENTERPRISE_TOKEN
+- gh auth token
+- \<gh-config-dir\>/hosts.yml token
 
 Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
 
-> GHACT_AUTO_GITHUB_TOKEN=false gh act ...
+> GHACT_AUTO_GITHUB_TOKEN=false gh act-on ...
 
-[act]:https://github.com/nektos/act
 [nektos/act]:https://github.com/nektos/act
-[test workflow]:https://github.com/srz-zumix/gh-act/actions/workflows/main.yml
+[test workflow]:https://github.com/srz-zumix/gh-act-on/actions/workflows/main.yml
 [cron string]:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
 [supported package_type]:https://docs.github.com/ja/rest/packages#list-packages-for-an-organization

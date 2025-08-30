@@ -24,14 +24,14 @@
       "head_sha": "${HEAD}",
       "html_url": "https://${GITHUB_HOSTNAME}/${OWNER}/${REPO}/runs/${CHECK_RUN_ID}",
       "id": ${CHECK_RUN_ID},
-      "name": "gh-act-checks-workflow",
+      "name": "gh-act-on-checks-workflow",
       "node_id": "",
       "output": {
         "annotations_count": 0,
         "annotations_url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/check-runs/${CHECK_RUN_ID}/annotations",
-        "summary": "* gh-act checks - Success",
+        "summary": "* gh-act-on checks - Success",
         "text": null,
-        "title": "Workflow: gh-act-checks-workflow"
+        "title": "Workflow: gh-act-on-checks-workflow"
       },
       "pull_requests": [],
       "started_at": "${DATE_UTC_NOW}",

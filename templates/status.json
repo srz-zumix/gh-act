@@ -27,9 +27,9 @@
       "sha": "${HEAD}",
       "url": "https://${GITHUB_API}/repos/${OWNER}/${REPO}/commits/${HEAD}"
     },
-    "context": "gh-act check",
+    "context": "gh-act-on check",
     "created_at": "${DATE_NOW}",
-    "description": "gh-act check",
+    "description": "gh-act-on check",
     "id": 0,
     "name": "${OWNER}/${REPO}",
     "repository": ${HEAD_REPO_JSON},

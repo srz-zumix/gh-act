@@ -1,4 +1,4 @@
-EXTENSION_NAME=act
+EXTENSION_NAME=act-on
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z][a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed -e 's/^GNUmakefile://' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -21,7 +21,7 @@ clean:
 repository_dispatch:
 	jq -n '{"event_type":"on-demand-test","client_payload":{"unit":false,"integration":true}}' | \
 		gh api -H "Accept: application/vnd.github+json" \
-			/repos/srz-zumix/gh-act/dispatches \
+			/repos/srz-zumix/gh-act-on/dispatches \
 			--input -
 
 ghact_envs:

@@ -1,4 +1,4 @@
-name: gh act tests
+name: gh-act-on tests
 on:
   branch_protection_rule:
   create:
@@ -76,7 +76,7 @@ on:
        - requested
        - completed
 
-# https://github.com/srz-zumix/gh-act/issues/57
+# https://github.com/srz-zumix/gh-act-on/issues/57
 permissions: write-all
 
 jobs:
@@ -107,7 +107,7 @@ jobs:
           echo "-P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04"
           echo "-P ubuntu-18.04=ghcr.io/catthehacker/ubuntu:act-18.04"
         } > .actrc
-    - name: Install gh-act
+    - name: Install gh-act-on
       run: |
         make install
     - name: Dump github.event
@@ -115,7 +115,7 @@ jobs:
         jq . < "${GITHUB_EVENT_PATH}" | tee github_event.json
     - name: Create act event.json
       run: |
-        gh act "${ACT_EVENT_NAME}" -e gh_act_event_raw.json -j noop -W .github/workflows/main.yml
+        gh act-on "${ACT_EVENT_NAME}" -e gh_act_event_raw.json -j noop -W .github/workflows/main.yml
         jq . < gh_act_event_raw.json | tee gh_act_event.json
     - name: Diff
       run: |
