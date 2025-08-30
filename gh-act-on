@@ -1301,7 +1301,7 @@ function act_post_action() {
 
 function tempdir() {
     if [ -z "${TEMPFILE_DIR}" ] || [ ! -d "${TEMPFILE_DIR}" ]; then
-        TEMPFILE_DIR=$(mktemp -d gh act-on.XXXXXX)
+        TEMPFILE_DIR=$(mktemp -d gh-act-on.XXXXXX)
         mkdir "${TEMPFILE_DIR}/users"
         trap 'rm -rf "${TEMPFILE_DIR}"' EXIT
     fi
