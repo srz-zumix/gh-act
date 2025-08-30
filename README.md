@@ -87,16 +87,15 @@ Supported Events
 
 gh-act-on passes following token as GITHUB_TOKEN secret to act.
 
-* GITHUB_TOKEN
-* GH_TOKEN / GH_ENTERPRISE_TOKEN
-* gh auth token
-* \<gh-config-dir\>/hosts.yml token
+- GITHUB_TOKEN
+- GH_TOKEN / GH_ENTERPRISE_TOKEN
+- gh auth token
+- \<gh-config-dir\>/hosts.yml token
 
 Set GHACT_AUTO_GITHUB_TOKEN=false to disable this feature.
 
 > GHACT_AUTO_GITHUB_TOKEN=false gh act-on ...
 
-[act]:https://github.com/nektos/act
 [nektos/act]:https://github.com/nektos/act
 [test workflow]:https://github.com/srz-zumix/gh-act-on/actions/workflows/main.yml
 [cron string]:https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07
